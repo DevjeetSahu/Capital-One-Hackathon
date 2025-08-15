@@ -2,3 +2,4 @@
 .env
 chroma_data/
 __pycache__/
+agri_chromadb/
