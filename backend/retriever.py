@@ -284,14 +284,23 @@ class AgriculturalRetriever:
             Dictionary with retrieved context and metadata
         """
         try:
-            # Step 1: For weather queries, prioritize weather data regardless of bucket existence
-            if intent_result.intent == IntentType.WEATHER_INSIGHTS:
+            # Step 1: Define weather-relevant intents that should include weather data
+            weather_relevant_intents = {
+                IntentType.WEATHER_INSIGHTS,
+                IntentType.IRRIGATION_PLANNING,
+                IntentType.SEASONAL_PLANNING,
+                IntentType.GENERAL_FARMING,
+                IntentType.CROP_RECOMMENDATIONS
+            }
+            
+            # Step 2: For weather-relevant queries, include weather data
+            if intent_result.intent in weather_relevant_intents:
                 weather_data_list = self.get_comprehensive_weather_data()
                 if weather_data_list:
-                    logger.info(f"Retrieved {len(weather_data_list)} weather data documents for Bargarh district")
+                    logger.info(f"Retrieved {len(weather_data_list)} weather data documents for {intent_result.intent.value}")
                     
                     # Try to get additional context from vector DB if bucket exists
-                    bucket_name = self.intent_to_bucket.get(intent_result.intent, "weather_data")
+                    bucket_name = self.intent_to_bucket.get(intent_result.intent, "market_prediction_data")
                     additional_context = []
                     
                     if bucket_name in self.vector_db.list_buckets():
@@ -304,9 +313,9 @@ class AgriculturalRetriever:
                             additional_context = self._format_results(search_results)
                             logger.info(f"Found {len(additional_context)} additional context documents from vector DB")
                         except Exception as e:
-                            logger.warning(f"Failed to query vector DB for weather context: {e}")
+                            logger.warning(f"Failed to query vector DB for context: {e}")
                     
-                    # Combine weather data with additional context
+                    # Combine weather data with additional context (weather data first for priority)
                     all_context = weather_data_list + additional_context
                     
                     return {
@@ -317,15 +326,9 @@ class AgriculturalRetriever:
                     }
                 else:
                     logger.warning("Failed to fetch weather data")
-                    return {
-                        "context": [],
-                        "bucket_used": "weather_api_only",
-                        "query_used": query,
-                        "total_results": 0,
-                        "error": "Failed to fetch weather data"
-                    }
+                    # Continue with normal retrieval even if weather data fails
             
-            # Step 2: For non-weather queries, use normal bucket-based retrieval
+            # Step 3: For all queries, use normal bucket-based retrieval
             bucket_name = self.intent_to_bucket.get(intent_result.intent, "market_prediction_data")
             
             # Check if bucket exists - if not, return no context
@@ -348,6 +351,15 @@ class AgriculturalRetriever:
             
             # Format results
             context_documents = self._format_results(search_results)
+            
+            # For weather-relevant intents, add weather data if not already added
+            if intent_result.intent in weather_relevant_intents and context_documents:
+                weather_data_list = self.get_comprehensive_weather_data()
+                if weather_data_list:
+                    # Add weather data at the beginning for high priority
+                    for weather_data in reversed(weather_data_list):
+                        context_documents.insert(0, weather_data)
+                    logger.info(f"Added {len(weather_data_list)} weather data documents to {intent_result.intent.value} context")
             
             return {
                 "context": context_documents,
@@ -428,7 +440,11 @@ def test_retriever():
     test_queries = [
         "What is the price of tomato in Bargarh mandi?",
         "What is the weather forecast for farming in Bargarh?",
-        "How to control pest in paddy crop in Bargarh?"
+        "How to control pest in paddy crop in Bargarh?",
+        "When should I irrigate my paddy field in Bargarh?",
+        "Which crops are best to plant this season in Bargarh?",
+        "How to plan irrigation for my farm in Bargarh?",
+        "What farming activities should I do this month in Bargarh?"
     ]
     
     for query in test_queries:
