@@ -96,7 +96,7 @@ class AgriculturalAssistant:
             logger.error(f"Error processing query: {e}")
             return {
                 "query": query,
-                "response": "Sorry, I encountered an error processing your question. Please try again.",
+                "response": "Sorry, I encountered an error processing your question about Bargarh district agriculture. Please try again or contact local agricultural experts.",
                 "error": str(e),
                 "status": "error"
             }
@@ -110,10 +110,10 @@ def main():
         print("\nUsage:")
         print("  python main.py 'Your agricultural question here' [provider] [model]")
         print("\nExamples:")
-        print("  python main.py 'What is the price of tomato in Karnataka?'")
-        print("  python main.py 'How to control pest in wheat crop?' groq")
-        print("  python main.py 'Which variety of rice is best for Punjab?' groq llama-3.1-8b-instant")
-        print("  python main.py 'Weather forecast for farming' perplexity")
+        print("  python main.py 'What is the price of tomato in Bargarh mandi?'")
+        print("  python main.py 'How to control pest in paddy crop in Bargarh?' groq")
+        print("  python main.py 'Which variety of rice is best for Bargarh district?' groq llama-3.1-8b-instant")
+        print("  python main.py 'Weather forecast for farming in Bargarh' perplexity")
         print("\nAvailable providers: groq, perplexity")
         print("\nAvailable Groq models:")
         print("  • llama-3.1-8b-instant (default - fast and efficient)")
@@ -245,7 +245,7 @@ def run_benchmark():
     
     test_query = input("Enter a query to test across all models: ").strip()
     if not test_query:
-        test_query = "What is the price of tomato in Karnataka?"
+        test_query = "What is the price of tomato?"
     
     # Models to benchmark
     models_to_test = [

@@ -207,23 +207,24 @@ class AgricultureIntentClassifier:
             return None
         
         try:
-            system_prompt = """You are an expert agricultural assistant. Classify the user's query into one of these categories:
+            system_prompt = """You are an expert agricultural assistant specializing in Bargarh district of Odisha, India. Classify the user's query into one of these categories:
 
-- market_prices: Questions about crop prices, rates, market values, buying/selling prices
-- irrigation_planning: Questions about watering, irrigation systems, water management, scheduling  
-- pest_control: Questions about pests, diseases, insects, plant protection, spraying, treatment
-- crop_recommendations: Questions about which crops to grow, varieties, seed selection, suitability
-- weather_insights: Questions about weather, rainfall, temperature, climate, forecasts
-- government_schemes: Questions about subsidies, policies, loans, insurance, government support
-- fertilizer_guidance: Questions about fertilizers, nutrients, soil nutrition, compost, manure
-- seasonal_planning: Questions about planting time, harvest season, crop calendar, timing
-- general_farming: General farming advice, cultivation practices, farm management
+- market_prices: Questions about crop prices, rates, market values, buying/selling prices in Bargarh mandis (Attabira, Bargarh, Godabhaga, Sohela, Padampur)
+- irrigation_planning: Questions about watering, irrigation systems, water management, scheduling for Bargarh's climate and river systems
+- pest_control: Questions about pests, diseases, insects, plant protection, spraying, treatment for Bargarh's common crops
+- crop_recommendations: Questions about which crops to grow, varieties, seed selection, suitability for Bargarh's soil and climate
+- weather_insights: Questions about weather, rainfall, temperature, climate, forecasts specific to Bargarh district
+- government_schemes: Questions about subsidies, policies, loans, insurance, government support available in Bargarh district
+- fertilizer_guidance: Questions about fertilizers, nutrients, soil nutrition, compost, manure for Bargarh's soil types
+- seasonal_planning: Questions about planting time, harvest season, crop calendar, timing for Bargarh's agricultural seasons
+- general_farming: General farming advice, cultivation practices, farm management for Bargarh district
 - unknown: Queries not related to agriculture or unclear intent
 
 Rules:
 1. Return only the category name (e.g., "market_prices")
 2. If the query is not agricultural or unclear, return "unknown"
-3. Be precise and confident in your classification"""
+3. Be precise and confident in your classification
+4. Consider local context and farming practices specific to Bargarh district"""
 
             user_prompt = f'Classify this agricultural query: "{query}"\n\nReturn only the category name from the list above.'
             

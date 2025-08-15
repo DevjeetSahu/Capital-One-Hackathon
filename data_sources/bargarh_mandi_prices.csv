@@ -1,0 +1,466 @@
+State,District,Market,Commodity,Variety,Grade,Arrival_Date,Min_Price,Max_Price,Modal_Price,Commodity_Code
+Odisha,Bargarh,Attabira,Bhindi(Ladies Finger),Bhindi,FAQ,21/07/2025,4000,4500,4200,85
+Odisha,Bargarh,Attabira,Bhindi(Ladies Finger),Bhindi,FAQ,28/07/2025,4000,4500,4200,85
+Odisha,Bargarh,Attabira,Bhindi(Ladies Finger),Bhindi,FAQ,7/8/2025,3800,4200,4000,85
+Odisha,Bargarh,Attabira,Bhindi(Ladies Finger),Bhindi,FAQ,11/8/2025,3800,4000,3800,85
+Odisha,Bargarh,Attabira,Bhindi(Ladies Finger),Bhindi,FAQ,14/07/2025,4000,4500,4200,85
+Odisha,Bargarh,Attabira,Bhindi(Ladies Finger),Bhindi,FAQ,7/8/2025,2300,2320,2300,85
+Odisha,Bargarh,Bargarh,Bhindi(Ladies Finger),Other,FAQ,4/8/2025,2900,3100,3000,85
+Odisha,Bargarh,Bargarh,Bhindi(Ladies Finger),Other,FAQ,5/8/2025,2400,2600,2500,85
+Odisha,Bargarh,Bargarh,Bhindi(Ladies Finger),Other,FAQ,12/8/2025,2700,2900,2800,85
+Odisha,Bargarh,Bargarh,Bhindi(Ladies Finger),Other,FAQ,13/08/2025,3400,3600,3500,85
+Odisha,Bargarh,Bargarh,Bhindi(Ladies Finger),Other,FAQ,18/07/2025,3200,3400,3300,85
+Odisha,Bargarh,Bargarh,Bhindi(Ladies Finger),Other,FAQ,28/07/2025,2800,3000,2900,85
+Odisha,Bargarh,Bargarh,Bhindi(Ladies Finger),Other,FAQ,9/8/2025,3400,3600,3500,85
+Odisha,Bargarh,Bargarh,Bhindi(Ladies Finger),Other,FAQ,16/07/2025,3200,3400,3300,85
+Odisha,Bargarh,Bargarh,Bhindi(Ladies Finger),Other,FAQ,22/07/2025,2700,2900,2800,85
+Odisha,Bargarh,Bargarh,Bhindi(Ladies Finger),Other,FAQ,25/07/2025,3400,3600,3500,85
+Odisha,Bargarh,Bargarh,Bhindi(Ladies Finger),Other,FAQ,26/07/2025,3400,3600,3500,85
+Odisha,Bargarh,Bargarh,Bhindi(Ladies Finger),Other,FAQ,27/07/2025,2800,3000,2900,85
+Odisha,Bargarh,Bargarh,Bhindi(Ladies Finger),Other,FAQ,1/8/2025,2500,2700,2600,85
+Odisha,Bargarh,Bargarh,Bhindi(Ladies Finger),Other,FAQ,6/8/2025,2400,2600,2500,85
+Odisha,Bargarh,Bargarh,Bhindi(Ladies Finger),Other,FAQ,14/07/2025,2400,2600,2500,85
+Odisha,Bargarh,Bargarh,Bhindi(Ladies Finger),Other,FAQ,19/07/2025,2600,2800,2700,85
+Odisha,Bargarh,Bargarh,Bhindi(Ladies Finger),Other,FAQ,21/07/2025,2900,3100,3000,85
+Odisha,Bargarh,Bargarh,Bhindi(Ladies Finger),Other,FAQ,29/07/2025,3100,3300,3200,85
+Odisha,Bargarh,Bargarh,Bhindi(Ladies Finger),Other,FAQ,31/07/2025,3100,3300,3200,85
+Odisha,Bargarh,Bargarh,Bhindi(Ladies Finger),Other,FAQ,7/8/2025,3100,3300,3200,85
+Odisha,Bargarh,Bargarh,Bhindi(Ladies Finger),Other,FAQ,17/07/2025,2700,2900,2800,85
+Odisha,Bargarh,Bargarh,Bhindi(Ladies Finger),Other,FAQ,23/07/2025,2400,2600,2500,85
+Odisha,Bargarh,Bargarh,Bhindi(Ladies Finger),Other,FAQ,8/8/2025,2500,2700,2600,85
+Odisha,Bargarh,Bargarh,Bhindi(Ladies Finger),Other,FAQ,10/8/2025,3200,3400,3300,85
+Odisha,Bargarh,Bargarh,Bhindi(Ladies Finger),Other,FAQ,11/8/2025,2900,3100,3000,85
+Odisha,Bargarh,Bargarh,Bhindi(Ladies Finger),Other,FAQ,15/07/2025,2400,2600,2500,85
+Odisha,Bargarh,Bargarh,Bhindi(Ladies Finger),Other,FAQ,20/07/2025,2700,2900,2800,85
+Odisha,Bargarh,Bargarh,Bhindi(Ladies Finger),Other,FAQ,24/07/2025,2500,2700,2600,85
+Odisha,Bargarh,Godabhaga,Bhindi(Ladies Finger),Other,FAQ,31/07/2025,4000,4500,4200,85
+Odisha,Bargarh,Godabhaga,Bhindi(Ladies Finger),Other,FAQ,24/07/2025,4500,5000,4800,85
+Odisha,Bargarh,Godabhaga,Bhindi(Ladies Finger),Other,FAQ,7/8/2025,4000,4500,4200,85
+Odisha,Bargarh,Sohela,Bhindi(Ladies Finger),Other,FAQ,6/8/2025,4200,4400,4300,85
+Odisha,Bargarh,Sohela,Bhindi(Ladies Finger),Other,FAQ,15/07/2025,5100,5300,5200,85
+Odisha,Bargarh,Sohela,Bhindi(Ladies Finger),Other,FAQ,11/8/2025,4100,4300,4200,85
+Odisha,Bargarh,Sohela,Bhindi(Ladies Finger),Other,FAQ,28/07/2025,5200,5400,5300,85
+Odisha,Bargarh,Sohela,Bhindi(Ladies Finger),Other,FAQ,7/8/2025,5100,5300,5200,85
+Odisha,Bargarh,Sohela,Bhindi(Ladies Finger),Other,FAQ,12/8/2025,3500,3700,3600,85
+Odisha,Bargarh,Sohela,Bhindi(Ladies Finger),Other,FAQ,18/07/2025,5100,5300,5200,85
+Odisha,Bargarh,Sohela,Bhindi(Ladies Finger),Other,FAQ,22/07/2025,5000,5200,5100,85
+Odisha,Bargarh,Sohela,Bhindi(Ladies Finger),Other,FAQ,31/07/2025,5100,5300,5200,85
+Odisha,Bargarh,Sohela,Bhindi(Ladies Finger),Other,FAQ,8/8/2025,5100,5300,5200,85
+Odisha,Bargarh,Sohela,Bhindi(Ladies Finger),Other,FAQ,13/08/2025,4800,5000,4900,85
+Odisha,Bargarh,Sohela,Bhindi(Ladies Finger),Other,FAQ,14/07/2025,5100,5300,5200,85
+Odisha,Bargarh,Sohela,Bhindi(Ladies Finger),Other,FAQ,25/07/2025,5100,5300,5200,85
+Odisha,Bargarh,Sohela,Bhindi(Ladies Finger),Other,FAQ,5/8/2025,4100,4300,4200,85
+Odisha,Bargarh,Attabira,Bitter gourd,Bitter Gourd,FAQ,14/07/2025,4000,4500,4200,81
+Odisha,Bargarh,Attabira,Bitter gourd,Bitter Gourd,FAQ,21/07/2025,3800,4500,4000,81
+Odisha,Bargarh,Attabira,Bitter gourd,Bitter Gourd,FAQ,28/07/2025,3800,4500,4000,81
+Odisha,Bargarh,Attabira,Bitter gourd,Bitter Gourd,FAQ,11/8/2025,3800,4000,3800,81
+Odisha,Bargarh,Godabhaga,Bitter gourd,Other,FAQ,31/07/2025,4000,4500,4200,81
+Odisha,Bargarh,Godabhaga,Bitter gourd,Other,FAQ,24/07/2025,4800,5000,4800,81
+Odisha,Bargarh,Godabhaga,Bitter gourd,Other,FAQ,7/8/2025,3800,4500,4000,81
+Odisha,Bargarh,Attabira,Bottle gourd,Bottle Gourd,FAQ,21/07/2025,1200,1500,1200,82
+Odisha,Bargarh,Attabira,Bottle gourd,Bottle Gourd,FAQ,28/07/2025,1400,1600,1500,82
+Odisha,Bargarh,Attabira,Bottle gourd,Bottle Gourd,FAQ,14/07/2025,1200,1500,1200,82
+Odisha,Bargarh,Attabira,Bottle gourd,Bottle Gourd,FAQ,11/8/2025,1200,1500,1400,82
+Odisha,Bargarh,Godabhaga,Bottle gourd,Other,FAQ,31/07/2025,1600,2000,1800,82
+Odisha,Bargarh,Godabhaga,Bottle gourd,Other,FAQ,24/07/2025,2000,2500,2200,82
+Odisha,Bargarh,Godabhaga,Bottle gourd,Other,FAQ,7/8/2025,1400,1500,1400,82
+Odisha,Bargarh,Attabira,Brinjal,Other,FAQ,21/07/2025,4500,5000,4500,35
+Odisha,Bargarh,Attabira,Brinjal,Other,FAQ,28/07/2025,4500,5000,4800,35
+Odisha,Bargarh,Attabira,Brinjal,Other,FAQ,11/8/2025,4000,4500,4200,35
+Odisha,Bargarh,Attabira,Brinjal,Other,FAQ,14/07/2025,4200,4500,4200,35
+Odisha,Bargarh,Bargarh,Brinjal,Other,FAQ,9/8/2025,2700,2900,2800,35
+Odisha,Bargarh,Bargarh,Brinjal,Other,FAQ,10/8/2025,2800,3000,2900,35
+Odisha,Bargarh,Bargarh,Brinjal,Other,FAQ,4/8/2025,2700,2900,2800,35
+Odisha,Bargarh,Bargarh,Brinjal,Other,FAQ,7/8/2025,2900,3100,3000,35
+Odisha,Bargarh,Bargarh,Brinjal,Other,FAQ,14/07/2025,3200,3400,3300,35
+Odisha,Bargarh,Bargarh,Brinjal,Other,FAQ,15/07/2025,2400,2600,2500,35
+Odisha,Bargarh,Bargarh,Brinjal,Other,FAQ,27/07/2025,3100,3300,3200,35
+Odisha,Bargarh,Bargarh,Brinjal,Other,FAQ,31/07/2025,5500,5700,5600,35
+Odisha,Bargarh,Bargarh,Brinjal,Other,FAQ,1/8/2025,2900,3100,3000,35
+Odisha,Bargarh,Bargarh,Brinjal,Other,FAQ,12/8/2025,2300,2500,2400,35
+Odisha,Bargarh,Bargarh,Brinjal,Other,FAQ,16/07/2025,2700,2900,2800,35
+Odisha,Bargarh,Bargarh,Brinjal,Other,FAQ,18/07/2025,3200,3400,3300,35
+Odisha,Bargarh,Bargarh,Brinjal,Other,FAQ,19/07/2025,2000,2200,2100,35
+Odisha,Bargarh,Bargarh,Brinjal,Other,FAQ,21/07/2025,2700,2900,2800,35
+Odisha,Bargarh,Bargarh,Brinjal,Other,FAQ,24/07/2025,2600,2800,2700,35
+Odisha,Bargarh,Bargarh,Brinjal,Other,FAQ,28/07/2025,2400,2600,2500,35
+Odisha,Bargarh,Bargarh,Brinjal,Other,FAQ,5/8/2025,3200,3400,3300,35
+Odisha,Bargarh,Bargarh,Brinjal,Other,FAQ,6/8/2025,2400,2600,2500,35
+Odisha,Bargarh,Bargarh,Brinjal,Other,FAQ,8/8/2025,2700,2900,2800,35
+Odisha,Bargarh,Bargarh,Brinjal,Other,FAQ,11/8/2025,2400,2600,2500,35
+Odisha,Bargarh,Bargarh,Brinjal,Other,FAQ,22/07/2025,3100,3300,3200,35
+Odisha,Bargarh,Bargarh,Brinjal,Other,FAQ,23/07/2025,2900,3100,3000,35
+Odisha,Bargarh,Bargarh,Brinjal,Other,FAQ,25/07/2025,3500,3700,3600,35
+Odisha,Bargarh,Bargarh,Brinjal,Other,FAQ,13/08/2025,3100,3300,3200,35
+Odisha,Bargarh,Bargarh,Brinjal,Other,FAQ,17/07/2025,2500,2700,2600,35
+Odisha,Bargarh,Bargarh,Brinjal,Other,FAQ,20/07/2025,2400,2600,2500,35
+Odisha,Bargarh,Bargarh,Brinjal,Other,FAQ,26/07/2025,3000,3200,3100,35
+Odisha,Bargarh,Bargarh,Brinjal,Other,FAQ,29/07/2025,2500,2700,2600,35
+Odisha,Bargarh,Bargarh(Barapalli),Brinjal,Other,FAQ,4/8/2025,2300,2500,2400,35
+Odisha,Bargarh,Bargarh(Barapalli),Brinjal,Other,FAQ,8/8/2025,3200,3400,3300,35
+Odisha,Bargarh,Bargarh(Barapalli),Brinjal,Other,FAQ,11/8/2025,3600,3800,3700,35
+Odisha,Bargarh,Bargarh(Barapalli),Brinjal,Other,FAQ,14/07/2025,2500,2700,2600,35
+Odisha,Bargarh,Bargarh(Barapalli),Brinjal,Other,FAQ,18/07/2025,2700,2900,2800,35
+Odisha,Bargarh,Bargarh(Barapalli),Brinjal,Other,FAQ,6/8/2025,2900,3100,3000,35
+Odisha,Bargarh,Bargarh(Barapalli),Brinjal,Other,FAQ,7/8/2025,2700,2900,2800,35
+Odisha,Bargarh,Bargarh(Barapalli),Brinjal,Other,FAQ,16/07/2025,3400,3600,3500,35
+Odisha,Bargarh,Bargarh(Barapalli),Brinjal,Other,FAQ,21/07/2025,2800,3000,2900,35
+Odisha,Bargarh,Bargarh(Barapalli),Brinjal,Other,FAQ,22/07/2025,3400,3600,3500,35
+Odisha,Bargarh,Bargarh(Barapalli),Brinjal,Other,FAQ,25/07/2025,3200,3400,3300,35
+Odisha,Bargarh,Bargarh(Barapalli),Brinjal,Other,FAQ,27/07/2025,2200,2400,2300,35
+Odisha,Bargarh,Bargarh(Barapalli),Brinjal,Other,FAQ,28/07/2025,2700,2900,2800,35
+Odisha,Bargarh,Bargarh(Barapalli),Brinjal,Other,FAQ,10/8/2025,2900,3100,3000,35
+Odisha,Bargarh,Bargarh(Barapalli),Brinjal,Other,FAQ,13/08/2025,3500,3700,3600,35
+Odisha,Bargarh,Bargarh(Barapalli),Brinjal,Other,FAQ,20/07/2025,2400,2600,2500,35
+Odisha,Bargarh,Bargarh(Barapalli),Brinjal,Other,FAQ,23/07/2025,3200,3400,3300,35
+Odisha,Bargarh,Bargarh(Barapalli),Brinjal,Other,FAQ,5/8/2025,2500,2700,2600,35
+Odisha,Bargarh,Bargarh(Barapalli),Brinjal,Other,FAQ,15/07/2025,2800,3000,2900,35
+Odisha,Bargarh,Bargarh(Barapalli),Brinjal,Other,FAQ,17/07/2025,3200,3400,3300,35
+Odisha,Bargarh,Bargarh(Barapalli),Brinjal,Other,FAQ,26/07/2025,2800,3000,2900,35
+Odisha,Bargarh,Bargarh(Barapalli),Brinjal,Other,FAQ,1/8/2025,5600,5800,5700,35
+Odisha,Bargarh,Bargarh(Barapalli),Brinjal,Other,FAQ,9/8/2025,2800,3000,2900,35
+Odisha,Bargarh,Bargarh(Barapalli),Brinjal,Other,FAQ,12/8/2025,3200,3400,3300,35
+Odisha,Bargarh,Bargarh(Barapalli),Brinjal,Other,FAQ,19/07/2025,2800,3000,2900,35
+Odisha,Bargarh,Bargarh(Barapalli),Brinjal,Other,FAQ,24/07/2025,2600,2800,2700,35
+Odisha,Bargarh,Bargarh(Barapalli),Brinjal,Other,FAQ,29/07/2025,2800,3000,2900,35
+Odisha,Bargarh,Bargarh(Barapalli),Brinjal,Other,FAQ,31/07/2025,4600,4800,4700,35
+Odisha,Bargarh,Godabhaga,Brinjal,Other,FAQ,24/07/2025,5200,6000,5500,35
+Odisha,Bargarh,Godabhaga,Brinjal,Other,FAQ,31/07/2025,5000,6000,5500,35
+Odisha,Bargarh,Godabhaga,Brinjal,Other,FAQ,7/8/2025,4500,5000,4800,35
+Odisha,Bargarh,Padampur,Brinjal,Brinjal,FAQ,7/8/2025,4500,4700,4600,35
+Odisha,Bargarh,Padampur,Brinjal,Brinjal,FAQ,13/08/2025,4500,4700,4600,35
+Odisha,Bargarh,Padampur,Brinjal,Brinjal,FAQ,14/07/2025,4100,4300,4200,35
+Odisha,Bargarh,Padampur,Brinjal,Brinjal,FAQ,15/07/2025,4100,4300,4200,35
+Odisha,Bargarh,Padampur,Brinjal,Brinjal,FAQ,16/07/2025,4100,4300,4200,35
+Odisha,Bargarh,Padampur,Brinjal,Brinjal,FAQ,25/07/2025,4100,4300,4200,35
+Odisha,Bargarh,Padampur,Brinjal,Brinjal,FAQ,6/8/2025,4100,4300,4200,35
+Odisha,Bargarh,Padampur,Brinjal,Brinjal,FAQ,8/8/2025,4800,5000,4900,35
+Odisha,Bargarh,Padampur,Brinjal,Brinjal,FAQ,12/8/2025,4500,4700,4600,35
+Odisha,Bargarh,Padampur,Brinjal,Brinjal,FAQ,18/07/2025,4100,4300,4200,35
+Odisha,Bargarh,Padampur,Brinjal,Brinjal,FAQ,22/07/2025,4100,4300,4200,35
+Odisha,Bargarh,Padampur,Brinjal,Brinjal,FAQ,31/07/2025,4500,4700,4600,35
+Odisha,Bargarh,Padampur,Brinjal,Brinjal,FAQ,5/8/2025,4100,4300,4200,35
+Odisha,Bargarh,Padampur,Brinjal,Brinjal,FAQ,11/8/2025,4500,4700,4600,35
+Odisha,Bargarh,Padampur,Brinjal,Brinjal,FAQ,28/07/2025,5100,5300,5200,35
+Odisha,Bargarh,Padampur,Brinjal,Brinjal,FAQ,29/07/2025,4500,4700,4600,35
+Odisha,Bargarh,Sohela,Brinjal,Other,FAQ,12/8/2025,4600,4800,4700,35
+Odisha,Bargarh,Sohela,Brinjal,Other,FAQ,5/8/2025,4500,4700,4600,35
+Odisha,Bargarh,Sohela,Brinjal,Other,FAQ,11/8/2025,4600,4800,4700,35
+Odisha,Bargarh,Sohela,Brinjal,Other,FAQ,31/07/2025,4500,4700,4600,35
+Odisha,Bargarh,Sohela,Brinjal,Other,FAQ,6/8/2025,4400,4600,4500,35
+Odisha,Bargarh,Sohela,Brinjal,Other,FAQ,8/8/2025,4400,4600,4500,35
+Odisha,Bargarh,Sohela,Brinjal,Other,FAQ,13/08/2025,4500,4700,4600,35
+Odisha,Bargarh,Sohela,Brinjal,Other,FAQ,25/07/2025,4200,4400,4300,35
+Odisha,Bargarh,Sohela,Brinjal,Other,FAQ,28/07/2025,4800,5000,4900,35
+Odisha,Bargarh,Sohela,Brinjal,Other,FAQ,7/8/2025,4400,4600,4500,35
+Odisha,Bargarh,Sohela,Brinjal,Other,FAQ,18/07/2025,4200,4400,4300,35
+Odisha,Bargarh,Sohela,Brinjal,Other,FAQ,22/07/2025,4200,4400,4300,35
+Odisha,Bargarh,Sohela,Brinjal,Other,FAQ,14/07/2025,4100,4300,4200,35
+Odisha,Bargarh,Sohela,Brinjal,Other,FAQ,15/07/2025,4100,4300,4200,35
+Odisha,Bargarh,Bargarh(Barapalli),Cabbage,Cabbage,FAQ,12/8/2025,3100,3300,3200,154
+Odisha,Bargarh,Bargarh(Barapalli),Cabbage,Cabbage,FAQ,9/8/2025,3500,3700,3600,154
+Odisha,Bargarh,Bargarh(Barapalli),Cabbage,Cabbage,FAQ,15/07/2025,3500,3700,3600,154
+Odisha,Bargarh,Bargarh(Barapalli),Cabbage,Cabbage,FAQ,17/07/2025,3200,3400,3300,154
+Odisha,Bargarh,Bargarh(Barapalli),Cabbage,Cabbage,FAQ,19/07/2025,2600,2800,2700,154
+Odisha,Bargarh,Bargarh(Barapalli),Cabbage,Cabbage,FAQ,22/07/2025,3100,3300,3200,154
+Odisha,Bargarh,Bargarh(Barapalli),Cabbage,Cabbage,FAQ,28/07/2025,2500,2700,2600,154
+Odisha,Bargarh,Bargarh(Barapalli),Cabbage,Cabbage,FAQ,29/07/2025,3300,3500,3400,154
+Odisha,Bargarh,Bargarh(Barapalli),Cabbage,Cabbage,FAQ,10/8/2025,3200,3400,3300,154
+Odisha,Bargarh,Bargarh(Barapalli),Cabbage,Cabbage,FAQ,11/8/2025,2200,2400,2300,154
+Odisha,Bargarh,Bargarh(Barapalli),Cabbage,Cabbage,FAQ,20/07/2025,3100,3300,3200,154
+Odisha,Bargarh,Bargarh(Barapalli),Cabbage,Cabbage,FAQ,21/07/2025,2500,2700,2600,154
+Odisha,Bargarh,Bargarh(Barapalli),Cabbage,Cabbage,FAQ,25/07/2025,2500,2700,2600,154
+Odisha,Bargarh,Bargarh(Barapalli),Cabbage,Cabbage,FAQ,13/08/2025,3100,3300,3200,154
+Odisha,Bargarh,Bargarh(Barapalli),Cabbage,Cabbage,FAQ,23/07/2025,3000,3200,3100,154
+Odisha,Bargarh,Bargarh(Barapalli),Cabbage,Cabbage,FAQ,24/07/2025,3200,3400,3300,154
+Odisha,Bargarh,Bargarh(Barapalli),Cabbage,Cabbage,FAQ,5/8/2025,3100,3300,3200,154
+Odisha,Bargarh,Bargarh(Barapalli),Cabbage,Cabbage,FAQ,14/07/2025,2400,2600,2500,154
+Odisha,Bargarh,Bargarh(Barapalli),Cabbage,Cabbage,FAQ,4/8/2025,3200,3400,3300,154
+Odisha,Bargarh,Bargarh(Barapalli),Cabbage,Cabbage,FAQ,6/8/2025,2700,2900,2800,154
+Odisha,Bargarh,Bargarh(Barapalli),Cabbage,Cabbage,FAQ,26/07/2025,3200,3400,3300,154
+Odisha,Bargarh,Bargarh(Barapalli),Cabbage,Cabbage,FAQ,1/8/2025,4100,4300,4200,154
+Odisha,Bargarh,Bargarh(Barapalli),Cabbage,Cabbage,FAQ,7/8/2025,3300,3500,3400,154
+Odisha,Bargarh,Bargarh(Barapalli),Cabbage,Cabbage,FAQ,8/8/2025,2500,2700,2600,154
+Odisha,Bargarh,Bargarh(Barapalli),Cabbage,Cabbage,FAQ,16/07/2025,3400,3600,3500,154
+Odisha,Bargarh,Bargarh(Barapalli),Cabbage,Cabbage,FAQ,18/07/2025,2800,3000,2900,154
+Odisha,Bargarh,Bargarh(Barapalli),Cabbage,Cabbage,FAQ,27/07/2025,3200,3400,3300,154
+Odisha,Bargarh,Bargarh(Barapalli),Cabbage,Cabbage,FAQ,31/07/2025,4200,4400,4300,154
+Odisha,Bargarh,Attabira,Cucumbar(Kheera),Other,FAQ,14/07/2025,3000,3500,3000,159
+Odisha,Bargarh,Attabira,Cucumbar(Kheera),Other,FAQ,21/07/2025,3500,4000,3500,159
+Odisha,Bargarh,Attabira,Cucumbar(Kheera),Other,FAQ,28/07/2025,2500,3000,2500,159
+Odisha,Bargarh,Godabhaga,Cucumbar(Kheera),Other,FAQ,24/07/2025,3500,4000,3500,159
+Odisha,Bargarh,Godabhaga,Cucumbar(Kheera),Other,FAQ,31/07/2025,3000,3500,3000,159
+Odisha,Bargarh,Attabira,Drumstick,Other,FAQ,28/07/2025,8000,8500,8200,168
+Odisha,Bargarh,Attabira,Drumstick,Other,FAQ,21/07/2025,8000,8500,8200,168
+Odisha,Bargarh,Attabira,Drumstick,Other,FAQ,14/07/2025,6500,7000,6500,168
+Odisha,Bargarh,Godabhaga,Drumstick,Other,FAQ,24/07/2025,7000,7500,7200,168
+Odisha,Bargarh,Godabhaga,Fish,Other,FAQ,31/07/2025,18000,19000,18500,366
+Odisha,Bargarh,Attabira,Green Chilli,Other,FAQ,28/07/2025,8500,9000,8800,87
+Odisha,Bargarh,Attabira,Green Chilli,Other,FAQ,14/07/2025,5000,6000,5500,87
+Odisha,Bargarh,Attabira,Green Chilli,Other,FAQ,11/8/2025,10000,11000,10500,87
+Odisha,Bargarh,Attabira,Green Chilli,Other,FAQ,21/07/2025,10000,11000,10500,87
+Odisha,Bargarh,Godabhaga,Green Chilli,Other,FAQ,31/07/2025,9000,9500,9200,87
+Odisha,Bargarh,Godabhaga,Green Chilli,Other,FAQ,24/07/2025,9200,10000,9500,87
+Odisha,Bargarh,Godabhaga,Green Chilli,Other,FAQ,7/8/2025,9000,9500,9000,87
+Odisha,Bargarh,Padampur,Green Chilli,Other,FAQ,8/8/2025,7100,7300,7200,87
+Odisha,Bargarh,Padampur,Green Chilli,Other,FAQ,14/07/2025,7100,7300,7200,87
+Odisha,Bargarh,Padampur,Green Chilli,Other,FAQ,25/07/2025,7100,7300,7200,87
+Odisha,Bargarh,Padampur,Green Chilli,Other,FAQ,11/8/2025,7000,7200,7100,87
+Odisha,Bargarh,Padampur,Green Chilli,Other,FAQ,16/07/2025,7100,7300,7200,87
+Odisha,Bargarh,Padampur,Green Chilli,Other,FAQ,7/8/2025,7100,7300,7200,87
+Odisha,Bargarh,Padampur,Green Chilli,Other,FAQ,12/8/2025,7100,7300,7200,87
+Odisha,Bargarh,Padampur,Green Chilli,Other,FAQ,13/08/2025,7100,7300,7200,87
+Odisha,Bargarh,Padampur,Green Chilli,Other,FAQ,22/07/2025,7100,7300,7200,87
+Odisha,Bargarh,Padampur,Green Chilli,Other,FAQ,29/07/2025,7500,7700,7600,87
+Odisha,Bargarh,Padampur,Green Chilli,Other,FAQ,31/07/2025,8100,8300,8200,87
+Odisha,Bargarh,Padampur,Green Chilli,Other,FAQ,5/8/2025,7400,7600,7500,87
+Odisha,Bargarh,Padampur,Green Chilli,Other,FAQ,6/8/2025,7100,7300,7200,87
+Odisha,Bargarh,Padampur,Green Chilli,Other,FAQ,15/07/2025,8100,8300,8200,87
+Odisha,Bargarh,Padampur,Green Chilli,Other,FAQ,18/07/2025,7100,7300,7200,87
+Odisha,Bargarh,Padampur,Green Chilli,Other,FAQ,28/07/2025,7100,7300,7200,87
+Odisha,Bargarh,Attabira,Lemon,Other,FAQ,14/07/2025,3400,3500,3500,310
+Odisha,Bargarh,Attabira,Lemon,Other,FAQ,11/08/2025,3200,3400,3200,310
+Odisha,Bargarh,Attabira,Lemon,Other,FAQ,28/07/2025,3400,3600,3500,310
+Odisha,Bargarh,Attabira,Lemon,Other,FAQ,21/07/2025,3400,3600,3500,310
+Odisha,Bargarh,Attabira,Little gourd (Kundru),Other,FAQ,21/07/2025,2500,3000,2500,302
+Odisha,Bargarh,Attabira,Little gourd (Kundru),Other,FAQ,28/07/2025,2000,2500,2200,302
+Odisha,Bargarh,Attabira,Little gourd (Kundru),Other,FAQ,11/08/2025,1800,2000,1800,302
+Odisha,Bargarh,Attabira,Little gourd (Kundru),Other,FAQ,14/07/2025,2500,3000,2500,302
+Odisha,Bargarh,Godabhaga,Little gourd (Kundru),Other,FAQ,07/08/2025,2000,2500,2200,302
+Odisha,Bargarh,Godabhaga,Little gourd (Kundru),Other,FAQ,24/07/2025,2500,3000,2500,302
+Odisha,Bargarh,Godabhaga,Little gourd (Kundru),Other,FAQ,31/07/2025,2500,3000,2500,302
+Odisha,Bargarh,Attabira,Onion,Other,FAQ,11/8/2025,1800,2000,1900,23
+Odisha,Bargarh,Attabira,Onion,Other,FAQ,14/07/2025,1800,2000,1800,23
+Odisha,Bargarh,Attabira,Onion,Other,FAQ,28/07/2025,1800,2000,1900,23
+Odisha,Bargarh,Attabira,Onion,Other,FAQ,21/07/2025,2000,3000,2500,23
+Odisha,Bargarh,Bargarh,Onion,Other,FAQ,6/8/2025,2300,2500,2400,23
+Odisha,Bargarh,Bargarh,Onion,Other,FAQ,7/8/2025,2300,2500,2400,23
+Odisha,Bargarh,Bargarh,Onion,Other,FAQ,8/8/2025,2400,2600,2500,23
+Odisha,Bargarh,Bargarh,Onion,Other,FAQ,19/07/2025,2500,2700,2600,23
+Odisha,Bargarh,Bargarh,Onion,Other,FAQ,22/07/2025,2300,2500,2400,23
+Odisha,Bargarh,Bargarh,Onion,Other,FAQ,29/07/2025,2400,2600,2500,23
+Odisha,Bargarh,Bargarh,Onion,Other,FAQ,4/8/2025,2300,2500,2400,23
+Odisha,Bargarh,Bargarh,Onion,Other,FAQ,9/8/2025,2100,2300,2200,23
+Odisha,Bargarh,Bargarh,Onion,Other,FAQ,13/08/2025,2400,2600,2500,23
+Odisha,Bargarh,Bargarh,Onion,Other,FAQ,14/07/2025,2500,2700,2600,23
+Odisha,Bargarh,Bargarh,Onion,Other,FAQ,15/07/2025,2400,2600,2500,23
+Odisha,Bargarh,Bargarh,Onion,Other,FAQ,17/07/2025,2500,2700,2600,23
+Odisha,Bargarh,Bargarh,Onion,Other,FAQ,18/07/2025,2500,2700,2600,23
+Odisha,Bargarh,Bargarh,Onion,Other,FAQ,21/07/2025,2400,2600,2500,23
+Odisha,Bargarh,Bargarh,Onion,Other,FAQ,23/07/2025,2400,2600,2500,23
+Odisha,Bargarh,Bargarh,Onion,Other,FAQ,24/07/2025,2300,2500,2400,23
+Odisha,Bargarh,Bargarh,Onion,Other,FAQ,27/07/2025,2400,2600,2500,23
+Odisha,Bargarh,Bargarh,Onion,Other,FAQ,28/07/2025,2300,2500,2400,23
+Odisha,Bargarh,Bargarh,Onion,Other,FAQ,10/8/2025,2500,2700,2600,23
+Odisha,Bargarh,Bargarh,Onion,Other,FAQ,11/8/2025,2600,2800,2700,23
+Odisha,Bargarh,Bargarh,Onion,Other,FAQ,12/8/2025,2500,2700,2600,23
+Odisha,Bargarh,Bargarh,Onion,Other,FAQ,16/07/2025,2300,2500,2400,23
+Odisha,Bargarh,Bargarh,Onion,Other,FAQ,20/07/2025,2300,2500,2400,23
+Odisha,Bargarh,Bargarh,Onion,Other,FAQ,31/07/2025,2400,2600,2500,23
+Odisha,Bargarh,Bargarh,Onion,Other,FAQ,1/8/2025,2400,2600,2500,23
+Odisha,Bargarh,Bargarh,Onion,Other,FAQ,5/8/2025,2400,2600,2500,23
+Odisha,Bargarh,Bargarh,Onion,Other,FAQ,25/07/2025,2400,2600,2500,23
+Odisha,Bargarh,Bargarh,Onion,Other,FAQ,26/07/2025,2300,2500,2400,23
+Odisha,Bargarh,Bargarh(Barapalli),Onion,Other,FAQ,11/8/2025,2300,2500,2400,23
+Odisha,Bargarh,Bargarh(Barapalli),Onion,Other,FAQ,14/07/2025,2400,2600,2500,23
+Odisha,Bargarh,Bargarh(Barapalli),Onion,Other,FAQ,24/07/2025,2400,2600,2500,23
+Odisha,Bargarh,Bargarh(Barapalli),Onion,Other,FAQ,5/8/2025,2300,2500,2400,23
+Odisha,Bargarh,Bargarh(Barapalli),Onion,Other,FAQ,10/8/2025,2300,2500,2400,23
+Odisha,Bargarh,Bargarh(Barapalli),Onion,Other,FAQ,26/07/2025,2400,2600,2500,23
+Odisha,Bargarh,Bargarh(Barapalli),Onion,Other,FAQ,4/8/2025,2300,2500,2400,23
+Odisha,Bargarh,Bargarh(Barapalli),Onion,Other,FAQ,7/8/2025,2200,2400,2300,23
+Odisha,Bargarh,Bargarh(Barapalli),Onion,Other,FAQ,13/08/2025,2400,2600,2500,23
+Odisha,Bargarh,Bargarh(Barapalli),Onion,Other,FAQ,15/07/2025,2500,2700,2600,23
+Odisha,Bargarh,Bargarh(Barapalli),Onion,Other,FAQ,17/07/2025,2300,2500,2400,23
+Odisha,Bargarh,Bargarh(Barapalli),Onion,Other,FAQ,21/07/2025,2400,2600,2500,23
+Odisha,Bargarh,Bargarh(Barapalli),Onion,Other,FAQ,22/07/2025,2100,2300,2200,23
+Odisha,Bargarh,Bargarh(Barapalli),Onion,Other,FAQ,25/07/2025,2300,2500,2400,23
+Odisha,Bargarh,Bargarh(Barapalli),Onion,Other,FAQ,27/07/2025,2500,2700,2600,23
+Odisha,Bargarh,Bargarh(Barapalli),Onion,Other,FAQ,29/07/2025,2400,2600,2500,23
+Odisha,Bargarh,Bargarh(Barapalli),Onion,Other,FAQ,8/8/2025,2400,2600,2500,23
+Odisha,Bargarh,Bargarh(Barapalli),Onion,Other,FAQ,23/07/2025,2200,2400,2300,23
+Odisha,Bargarh,Bargarh(Barapalli),Onion,Other,FAQ,6/8/2025,2600,2800,2700,23
+Odisha,Bargarh,Bargarh(Barapalli),Onion,Other,FAQ,9/8/2025,2600,2800,2700,23
+Odisha,Bargarh,Bargarh(Barapalli),Onion,Other,FAQ,18/07/2025,2500,2700,2600,23
+Odisha,Bargarh,Bargarh(Barapalli),Onion,Other,FAQ,31/07/2025,2600,2800,2700,23
+Odisha,Bargarh,Bargarh(Barapalli),Onion,Other,FAQ,12/8/2025,2400,2600,2500,23
+Odisha,Bargarh,Bargarh(Barapalli),Onion,Other,FAQ,1/8/2025,2600,2800,2700,23
+Odisha,Bargarh,Bargarh(Barapalli),Onion,Other,FAQ,19/07/2025,2300,2500,2400,23
+Odisha,Bargarh,Bargarh(Barapalli),Onion,Other,FAQ,20/07/2025,2400,2600,2500,23
+Odisha,Bargarh,Bargarh(Barapalli),Onion,Other,FAQ,28/07/2025,2400,2600,2500,23
+Odisha,Bargarh,Godabhaga,Onion,Other,FAQ,31/07/2025,1900,2000,1900,23
+Odisha,Bargarh,Godabhaga,Onion,Other,FAQ,24/07/2025,2500,3000,2700,23
+Odisha,Bargarh,Godabhaga,Onion,Other,FAQ,7/8/2025,1900,2000,1900,23
+Odisha,Bargarh,Attabira,Paddy(Dhan)(Common),Other,FAQ,25/07/2025,2300,2320,2300,2
+Odisha,Bargarh,Attabira,Paddy(Dhan)(Common),Other,FAQ,1/8/2025,2300,2320,2300,2
+Odisha,Bargarh,Attabira,Paddy(Dhan)(Common),Other,FAQ,2/8/2025,2300,2320,2300,2
+Odisha,Bargarh,Attabira,Paddy(Dhan)(Common),Other,FAQ,9/8/2025,2300,2320,2300,2
+Odisha,Bargarh,Attabira,Paddy(Dhan)(Common),Other,FAQ,16/07/2025,2300,2320,2300,2
+Odisha,Bargarh,Attabira,Paddy(Dhan)(Common),Other,FAQ,6/8/2025,2300,2320,2300,2
+Odisha,Bargarh,Attabira,Paddy(Dhan)(Common),Other,FAQ,18/07/2025,2300,2320,2300,2
+Odisha,Bargarh,Attabira,Paddy(Dhan)(Common),Other,FAQ,24/07/2025,2300,2320,2300,2
+Odisha,Bargarh,Attabira,Paddy(Dhan)(Common),Other,FAQ,23/07/2025,2300,2320,2300,2
+Odisha,Bargarh,Attabira,Paddy(Dhan)(Common),Other,FAQ,26/07/2025,2300,2320,2300,2
+Odisha,Bargarh,Attabira,Paddy(Dhan)(Common),Other,FAQ,30/07/2025,2300,2320,2300,2
+Odisha,Bargarh,Attabira,Paddy(Dhan)(Common),Other,FAQ,13/08/2025,2300,2320,2300,2
+Odisha,Bargarh,Attabira,Paddy(Dhan)(Common),Other,FAQ,5/8/2025,2300,2320,2300,2
+Odisha,Bargarh,Attabira,Paddy(Dhan)(Common),Other,FAQ,12/8/2025,2300,2320,2300,2
+Odisha,Bargarh,Attabira,Paddy(Dhan)(Common),Other,FAQ,19/07/2025,2300,2320,2300,2
+Odisha,Bargarh,Attabira,Paddy(Dhan)(Common),Other,FAQ,22/07/2025,2300,2320,2300,2
+Odisha,Bargarh,Attabira,Paddy(Dhan)(Common),Other,FAQ,31/07/2025,2300,2320,2300,2
+Odisha,Bargarh,Godabhaga,Paddy(Dhan)(Common),Other,FAQ,5/8/2025,2300,2320,2300,2
+Odisha,Bargarh,Godabhaga,Paddy(Dhan)(Common),Other,FAQ,1/8/2025,2300,2320,2300,2
+Odisha,Bargarh,Godabhaga,Paddy(Dhan)(Common),Other,FAQ,25/07/2025,2300,2320,2300,2
+Odisha,Bargarh,Godabhaga,Paddy(Dhan)(Common),Other,FAQ,28/07/2025,2300,2320,2300,2
+Odisha,Bargarh,Godabhaga,Paddy(Dhan)(Common),Other,FAQ,2/8/2025,2300,2320,2300,2
+Odisha,Bargarh,Godabhaga,Paddy(Dhan)(Common),Other,FAQ,6/8/2025,2300,2320,2300,2
+Odisha,Bargarh,Godabhaga,Paddy(Dhan)(Common),Other,FAQ,18/07/2025,2300,2320,2300,2
+Odisha,Bargarh,Godabhaga,Paddy(Dhan)(Common),Other,FAQ,21/07/2025,2300,2320,2300,2
+Odisha,Bargarh,Godabhaga,Paddy(Dhan)(Common),Other,FAQ,12/8/2025,2300,2320,2300,2
+Odisha,Bargarh,Godabhaga,Paddy(Dhan)(Common),Other,FAQ,19/07/2025,2300,2320,2300,2
+Odisha,Bargarh,Godabhaga,Paddy(Dhan)(Common),Other,FAQ,26/07/2025,2300,2320,2300,2
+Odisha,Bargarh,Godabhaga,Paddy(Dhan)(Common),Other,FAQ,13/08/2025,2300,2320,2300,2
+Odisha,Bargarh,Godabhaga,Paddy(Dhan)(Common),Other,FAQ,14/07/2025,2300,2320,2300,2
+Odisha,Bargarh,Godabhaga,Paddy(Dhan)(Common),Other,FAQ,16/07/2025,2300,2320,2300,2
+Odisha,Bargarh,Godabhaga,Paddy(Dhan)(Common),Other,FAQ,22/07/2025,2300,2320,2300,2
+Odisha,Bargarh,Godabhaga,Paddy(Dhan)(Common),Other,FAQ,30/07/2025,2300,2320,2300,2
+Odisha,Bargarh,Attabira,Papaya (Raw),Other,FAQ,21/07/2025,1500,2000,1800,313
+Odisha,Bargarh,Godabhaga,Papaya (Raw),Other,FAQ,24/07/2025,1200,1500,1400,313
+Odisha,Bargarh,Attabira,Pointed gourd (Parval),Other,FAQ,11/08/2025,3800,4000,3800,303
+Odisha,Bargarh,Attabira,Pointed gourd (Parval),Other,FAQ,14/07/2025,5000,6000,5500,303
+Odisha,Bargarh,Attabira,Pointed gourd (Parval),Other,FAQ,21/07/2025,4000,4500,4200,303
+Odisha,Bargarh,Attabira,Pointed gourd (Parval),Other,FAQ,28/07/2025,3000,3500,3200,303
+Odisha,Bargarh,Godabhaga,Pointed gourd (Parval),Other,FAQ,31/07/2025,3800,4000,3800,303
+Odisha,Bargarh,Godabhaga,Pointed gourd (Parval),Other,FAQ,07/08/2025,3800,4000,3800,303
+Odisha,Bargarh,Godabhaga,Pointed gourd (Parval),Other,FAQ,24/07/2025,4000,4500,4200,303
+Odisha,Bargarh,Attabira,Potato,Other,FAQ,11/8/2025,1800,2000,1900,24
+Odisha,Bargarh,Attabira,Potato,Other,FAQ,21/07/2025,1800,2000,1800,24
+Odisha,Bargarh,Attabira,Potato,Other,FAQ,14/07/2025,1800,2000,1800,24
+Odisha,Bargarh,Attabira,Potato,Other,FAQ,28/07/2025,1800,2000,1800,24
+Odisha,Bargarh,Bargarh,Potato,Other,FAQ,8/8/2025,2300,2500,2400,24
+Odisha,Bargarh,Bargarh,Potato,Other,FAQ,14/07/2025,2500,2700,2600,24
+Odisha,Bargarh,Bargarh,Potato,Other,FAQ,15/07/2025,2100,2300,2200,24
+Odisha,Bargarh,Bargarh,Potato,Other,FAQ,21/07/2025,2000,2200,2100,24
+Odisha,Bargarh,Bargarh,Potato,Other,FAQ,25/07/2025,2300,2500,2400,24
+Odisha,Bargarh,Bargarh,Potato,Other,FAQ,26/07/2025,2100,2300,2200,24
+Odisha,Bargarh,Bargarh,Potato,Other,FAQ,31/07/2025,2400,2600,2500,24
+Odisha,Bargarh,Bargarh,Potato,Other,FAQ,9/8/2025,2200,2400,2300,24
+Odisha,Bargarh,Bargarh,Potato,Other,FAQ,16/07/2025,2000,2200,2100,24
+Odisha,Bargarh,Bargarh,Potato,Other,FAQ,19/07/2025,2400,2600,2500,24
+Odisha,Bargarh,Bargarh,Potato,Other,FAQ,1/8/2025,2500,2700,2600,24
+Odisha,Bargarh,Bargarh,Potato,Other,FAQ,7/8/2025,2200,2400,2300,24
+Odisha,Bargarh,Bargarh,Potato,Other,FAQ,20/07/2025,2400,2600,2500,24
+Odisha,Bargarh,Bargarh,Potato,Other,FAQ,23/07/2025,2300,2500,2400,24
+Odisha,Bargarh,Bargarh,Potato,Other,FAQ,27/07/2025,2300,2500,2400,24
+Odisha,Bargarh,Bargarh,Potato,Other,FAQ,28/07/2025,2200,2400,2300,24
+Odisha,Bargarh,Bargarh,Potato,Other,FAQ,4/8/2025,2400,2600,2500,24
+Odisha,Bargarh,Bargarh,Potato,Other,FAQ,10/8/2025,2300,2500,2400,24
+Odisha,Bargarh,Bargarh,Potato,Other,FAQ,12/8/2025,2300,2500,2400,24
+Odisha,Bargarh,Bargarh,Potato,Other,FAQ,29/07/2025,2300,2500,2400,24
+Odisha,Bargarh,Bargarh,Potato,Other,FAQ,5/8/2025,2500,2700,2600,24
+Odisha,Bargarh,Bargarh,Potato,Other,FAQ,6/8/2025,2300,2500,2400,24
+Odisha,Bargarh,Bargarh,Potato,Other,FAQ,11/8/2025,2400,2600,2500,24
+Odisha,Bargarh,Bargarh,Potato,Other,FAQ,13/08/2025,2300,2500,2400,24
+Odisha,Bargarh,Bargarh,Potato,Other,FAQ,17/07/2025,2000,2200,2100,24
+Odisha,Bargarh,Bargarh,Potato,Other,FAQ,18/07/2025,2200,2400,2300,24
+Odisha,Bargarh,Bargarh,Potato,Other,FAQ,22/07/2025,2100,2300,2200,24
+Odisha,Bargarh,Bargarh,Potato,Other,FAQ,24/07/2025,2100,2300,2200,24
+Odisha,Bargarh,Bargarh(Barapalli),Potato,Other,FAQ,1/8/2025,2300,2500,2400,24
+Odisha,Bargarh,Bargarh(Barapalli),Potato,Other,FAQ,7/8/2025,2400,2600,2500,24
+Odisha,Bargarh,Bargarh(Barapalli),Potato,Other,FAQ,16/07/2025,2100,2300,2200,24
+Odisha,Bargarh,Bargarh(Barapalli),Potato,Other,FAQ,17/07/2025,2100,2300,2200,24
+Odisha,Bargarh,Bargarh(Barapalli),Potato,Other,FAQ,22/07/2025,2300,2500,2400,24
+Odisha,Bargarh,Bargarh(Barapalli),Potato,Other,FAQ,26/07/2025,2100,2300,2200,24
+Odisha,Bargarh,Bargarh(Barapalli),Potato,Other,FAQ,4/8/2025,2500,2700,2600,24
+Odisha,Bargarh,Bargarh(Barapalli),Potato,Other,FAQ,11/8/2025,2300,2500,2400,24
+Odisha,Bargarh,Bargarh(Barapalli),Potato,Other,FAQ,13/08/2025,2500,2700,2600,24
+Odisha,Bargarh,Bargarh(Barapalli),Potato,Other,FAQ,19/07/2025,2400,2600,2500,24
+Odisha,Bargarh,Bargarh(Barapalli),Potato,Other,FAQ,31/07/2025,2200,2400,2300,24
+Odisha,Bargarh,Bargarh(Barapalli),Potato,Other,FAQ,12/8/2025,2300,2500,2400,24
+Odisha,Bargarh,Bargarh(Barapalli),Potato,Other,FAQ,15/07/2025,2400,2600,2500,24
+Odisha,Bargarh,Bargarh(Barapalli),Potato,Other,FAQ,25/07/2025,2300,2500,2400,24
+Odisha,Bargarh,Bargarh(Barapalli),Potato,Other,FAQ,28/07/2025,2300,2500,2400,24
+Odisha,Bargarh,Bargarh(Barapalli),Potato,Other,FAQ,5/8/2025,2200,2400,2300,24
+Odisha,Bargarh,Bargarh(Barapalli),Potato,Other,FAQ,6/8/2025,2200,2400,2300,24
+Odisha,Bargarh,Bargarh(Barapalli),Potato,Other,FAQ,9/8/2025,2200,2400,2300,24
+Odisha,Bargarh,Bargarh(Barapalli),Potato,Other,FAQ,10/8/2025,2500,2700,2600,24
+Odisha,Bargarh,Bargarh(Barapalli),Potato,Other,FAQ,14/07/2025,2300,2500,2400,24
+Odisha,Bargarh,Bargarh(Barapalli),Potato,Other,FAQ,20/07/2025,2300,2500,2400,24
+Odisha,Bargarh,Bargarh(Barapalli),Potato,Other,FAQ,21/07/2025,2100,2300,2200,24
+Odisha,Bargarh,Bargarh(Barapalli),Potato,Other,FAQ,23/07/2025,2300,2500,2400,24
+Odisha,Bargarh,Bargarh(Barapalli),Potato,Other,FAQ,27/07/2025,2400,2600,2500,24
+Odisha,Bargarh,Bargarh(Barapalli),Potato,Other,FAQ,8/8/2025,2100,2300,2200,24
+Odisha,Bargarh,Bargarh(Barapalli),Potato,Other,FAQ,18/07/2025,2400,2600,2500,24
+Odisha,Bargarh,Bargarh(Barapalli),Potato,Other,FAQ,24/07/2025,2300,2500,2400,24
+Odisha,Bargarh,Bargarh(Barapalli),Potato,Other,FAQ,29/07/2025,2300,2500,2400,24
+Odisha,Bargarh,Godabhaga,Potato,Other,FAQ,24/07/2025,1900,2000,1900,24
+Odisha,Bargarh,Godabhaga,Potato,Other,FAQ,31/07/2025,1900,2000,1900,24
+Odisha,Bargarh,Godabhaga,Potato,Other,FAQ,7/8/2025,1800,2000,1800,24
+Odisha,Bargarh,Attabira,Ridgeguard(Tori),Ridgeguard(Tori),FAQ,21/07/2025,3500,4000,3500,160
+Odisha,Bargarh,Attabira,Ridgeguard(Tori),Ridgeguard(Tori),FAQ,11/08/2025,2500,2600,2500,160
+Odisha,Bargarh,Attabira,Ridgeguard(Tori),Ridgeguard(Tori),FAQ,14/07/2025,2500,3000,2500,160
+Odisha,Bargarh,Attabira,Tomato,Other,FAQ,28/07/2025,4500,5000,4500,78
+Odisha,Bargarh,Attabira,Tomato,Other,FAQ,14/07/2025,3500,4000,3500,78
+Odisha,Bargarh,Attabira,Tomato,Other,FAQ,########,4500,5000,4500,78
+Odisha,Bargarh,Attabira,Tomato,Other,FAQ,21/07/2025,4500,5000,4500,78
+Odisha,Bargarh,Bargarh,Tomato,Other,FAQ,7/8/2025,4300,4500,4400,78
+Odisha,Bargarh,Bargarh,Tomato,Other,FAQ,########,4100,4300,4200,78
+Odisha,Bargarh,Bargarh,Tomato,Other,FAQ,########,5800,6000,5900,78
+Odisha,Bargarh,Bargarh,Tomato,Other,FAQ,14/07/2025,4500,4700,4600,78
+Odisha,Bargarh,Bargarh,Tomato,Other,FAQ,15/07/2025,4500,4700,4600,78
+Odisha,Bargarh,Bargarh,Tomato,Other,FAQ,20/07/2025,3800,4000,3900,78
+Odisha,Bargarh,Bargarh,Tomato,Other,FAQ,22/07/2025,4800,5000,4900,78
+Odisha,Bargarh,Bargarh,Tomato,Other,FAQ,24/07/2025,4200,4400,4300,78
+Odisha,Bargarh,Bargarh,Tomato,Other,FAQ,26/07/2025,4500,4700,4600,78
+Odisha,Bargarh,Bargarh,Tomato,Other,FAQ,29/07/2025,4500,4700,4600,78
+Odisha,Bargarh,Bargarh,Tomato,Other,FAQ,1/8/2025,4100,4300,4200,78
+Odisha,Bargarh,Bargarh,Tomato,Other,FAQ,5/8/2025,4200,4400,4300,78
+Odisha,Bargarh,Bargarh,Tomato,Other,FAQ,9/8/2025,4300,4500,4400,78
+Odisha,Bargarh,Bargarh,Tomato,Other,FAQ,########,4300,4500,4400,78
+Odisha,Bargarh,Bargarh,Tomato,Other,FAQ,16/07/2025,4500,4700,4600,78
+Odisha,Bargarh,Bargarh,Tomato,Other,FAQ,17/07/2025,4000,4200,4100,78
+Odisha,Bargarh,Bargarh,Tomato,Other,FAQ,25/07/2025,4600,4800,4700,78
+Odisha,Bargarh,Bargarh,Tomato,Other,FAQ,31/07/2025,4100,4300,4200,78
+Odisha,Bargarh,Bargarh,Tomato,Other,FAQ,6/8/2025,4300,4500,4400,78
+Odisha,Bargarh,Bargarh,Tomato,Other,FAQ,27/07/2025,4500,4700,4600,78
+Odisha,Bargarh,Bargarh,Tomato,Other,FAQ,23/07/2025,4500,4700,4600,78
+Odisha,Bargarh,Bargarh,Tomato,Other,FAQ,28/07/2025,4200,4400,4300,78
+Odisha,Bargarh,Bargarh,Tomato,Other,FAQ,13/08/2025,5600,5800,5700,78
+Odisha,Bargarh,Bargarh,Tomato,Other,FAQ,4/8/2025,4300,4500,4400,78
+Odisha,Bargarh,Bargarh,Tomato,Other,FAQ,21/07/2025,4000,4200,4100,78
+Odisha,Bargarh,Bargarh,Tomato,Other,FAQ,8/8/2025,4300,4500,4400,78
+Odisha,Bargarh,Bargarh,Tomato,Other,FAQ,18/07/2025,4500,4700,4600,78
+Odisha,Bargarh,Bargarh,Tomato,Other,FAQ,19/07/2025,3800,4000,3900,78
+Odisha,Bargarh,Godabhaga,Tomato,Other,FAQ,24/07/2025,4000,4500,4200,78
+Odisha,Bargarh,Godabhaga,Tomato,Other,FAQ,31/07/2025,4800,5000,4800,78
+Odisha,Bargarh,Godabhaga,Tomato,Other,FAQ,7/8/2025,4800,5000,4800,78
+Odisha,Bargarh,Padampur,Tomato,Other,Non-FAQ,8/8/2025,4800,5000,4900,78
+Odisha,Bargarh,Padampur,Tomato,Other,Non-FAQ,########,4700,4900,4800,78
+Odisha,Bargarh,Padampur,Tomato,Other,Non-FAQ,13/08/2025,4700,4900,4800,78
+Odisha,Bargarh,Padampur,Tomato,Other,Non-FAQ,18/07/2025,2800,3000,2900,78
+Odisha,Bargarh,Padampur,Tomato,Other,Non-FAQ,29/07/2025,4900,5100,5000,78
+Odisha,Bargarh,Padampur,Tomato,Other,Non-FAQ,31/07/2025,5100,5300,5200,78
+Odisha,Bargarh,Padampur,Tomato,Other,Non-FAQ,5/8/2025,5100,5300,5200,78
+Odisha,Bargarh,Padampur,Tomato,Other,Non-FAQ,6/8/2025,4800,5000,4900,78
+Odisha,Bargarh,Padampur,Tomato,Other,Non-FAQ,16/07/2025,2600,2800,2700,78
+Odisha,Bargarh,Padampur,Tomato,Other,Non-FAQ,25/07/2025,2800,3000,2900,78
+Odisha,Bargarh,Padampur,Tomato,Other,Non-FAQ,28/07/2025,5100,5300,5200,78
+Odisha,Bargarh,Padampur,Tomato,Other,Non-FAQ,7/8/2025,5100,5300,5200,78
+Odisha,Bargarh,Padampur,Tomato,Other,Non-FAQ,########,4600,4800,4700,78
+Odisha,Bargarh,Padampur,Tomato,Other,Non-FAQ,14/07/2025,2600,2800,2700,78
+Odisha,Bargarh,Padampur,Tomato,Other,Non-FAQ,22/07/2025,3000,3200,3100,78
+Odisha,Bargarh,Padampur,Tomato,Other,Non-FAQ,15/07/2025,3000,3200,3100,78
+Odisha,Bargarh,Sohela,Tomato,Other,Non-FAQ,########,4400,4600,4500,78
+Odisha,Bargarh,Sohela,Tomato,Other,Non-FAQ,13/08/2025,4700,4900,4800,78
+Odisha,Bargarh,Sohela,Tomato,Other,Non-FAQ,28/07/2025,4800,5000,4900,78
+Odisha,Bargarh,Sohela,Tomato,Other,Non-FAQ,31/07/2025,4800,5000,4900,78
+Odisha,Bargarh,Sohela,Tomato,Other,Non-FAQ,6/8/2025,4500,4700,4600,78
+Odisha,Bargarh,Sohela,Tomato,Other,Non-FAQ,7/8/2025,4900,5100,5000,78
+Odisha,Bargarh,Sohela,Tomato,Other,Non-FAQ,8/8/2025,4700,4900,4800,78
+Odisha,Bargarh,Sohela,Tomato,Other,Non-FAQ,########,4600,4800,4700,78
+Odisha,Bargarh,Sohela,Tomato,Other,Non-FAQ,14/07/2025,2800,3000,2900,78
+Odisha,Bargarh,Sohela,Tomato,Other,Non-FAQ,5/8/2025,4800,5000,4900,78
+Odisha,Bargarh,Sohela,Tomato,Other,Non-FAQ,22/07/2025,2900,3100,3000,78
+Odisha,Bargarh,Sohela,Tomato,Other,Non-FAQ,25/07/2025,2900,3100,3000,78
+Odisha,Bargarh,Sohela,Tomato,Other,Non-FAQ,15/07/2025,2600,2800,2700,78
+Odisha,Bargarh,Sohela,Tomato,Other,Non-FAQ,18/07/2025,2600,2800,2700,78

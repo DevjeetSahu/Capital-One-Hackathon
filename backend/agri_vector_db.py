@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 def load_and_clean_csv(path: str) -> pd.DataFrame:
     """Load CSV and clean columns."""
     df = pd.read_csv(path)
-    df.columns = df.columns.str.replace("_x0020_", "_")
+    df = df[df['Arrival_Date'] != '########']
     df = df.dropna(subset=["Commodity", "Market", "Modal_Price"])
     return df
 
@@ -301,7 +301,7 @@ class AgriculturalVectorDB:
             
             # Load market data if bucket is market_prediction_data
             if bucket_name == 'market_prediction_data':
-                csv_path = "../data_sources/mandi_prices.csv"
+                csv_path = "../data_sources/bargarh_mandi_prices.csv"
                 if os.path.exists(csv_path):
                     logger.info(f"Loading market data from {csv_path}...")
                     self.load_dataset_from_file(csv_path, bucket_name, 'csv')

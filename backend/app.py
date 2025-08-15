@@ -13,8 +13,8 @@ from main import AgriculturalAssistant
 
 # Initialize FastAPI
 app = FastAPI(
-    title="Agricultural AI Assistant API",
-    description="AI-powered agricultural assistant for farmers with flexible model selection",
+    title="Bargarh Agricultural AI Assistant API",
+    description="AI-powered agricultural assistant specifically designed for farmers in Bargarh district of Odisha, India with flexible model selection",
     version="2.0.0"
 )
 
@@ -87,8 +87,9 @@ def startup_event():
 async def root():
     """Welcome endpoint with API information"""
     return {
-        "message": "Agricultural AI Assistant API",
+        "message": "Bargarh Agricultural AI Assistant API",
         "version": "2.0.0",
+        "description": "Specialized AI assistant for farmers in Bargarh district, Odisha",
         "docs": "/docs",
         "endpoints": {
             "query": "/query",
@@ -110,7 +111,7 @@ async def health_check():
             service_info = None
         else:
             status = "healthy"
-            message = "Agricultural AI Assistant is running"
+            message = "Bargarh Agricultural AI Assistant is running"
             # Get service information
             classifier_info = assistant.classifier.get_service_info()
             service_info = {
@@ -171,6 +172,11 @@ async def process_query_endpoint(
                 status_code=500, 
                 detail=result.get('error', 'Unknown error')
             )
+        
+        # Check if no context was available (but allow weather API responses)
+        if result.get('context_count', 0) == 0 and result.get('bucket_used') == '' and result.get('intent') != 'weather_insights':
+            # This is not an error, just no data available for this intent
+            result['response'] = f"I don't have specific data available for {result.get('intent', 'this type of query')} in Bargarh district. Please consult with local agricultural experts or visit the nearest Krishi Vigyan Kendra in Bargarh for assistance."
         
         return QueryResponse(**result)
         
