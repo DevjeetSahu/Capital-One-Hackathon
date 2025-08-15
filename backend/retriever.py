@@ -123,7 +123,7 @@ def test_retriever():
     from intent_classifier import AgricultureIntentClassifier
     
     # Initialize components
-    classifier = AgricultureIntentClassifier()
+    classifier = AgricultureIntentClassifier(use_llm=True)
     retriever = AgriculturalRetriever()
     
     # Test query

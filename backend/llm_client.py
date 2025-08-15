@@ -1,35 +1,49 @@
 # llm_client.py
 
-import os
 import logging
-from typing import Dict, Any, List
-from dotenv import load_dotenv
-from openai import OpenAI
+from typing import Dict, Any, List, Optional
 from intent_classifier import IntentResult, IntentType
-
-# Load environment variables
-load_dotenv()
+from llm_service import get_llm_service
 
 logger = logging.getLogger(__name__)
 
 class LLMClient:
     """
-    Simple LLM client for agricultural responses using Perplexity API
+    Simple LLM client for agricultural responses using Groq or Perplexity API
     """
     
-    def __init__(self):
-        """Initialize LLM client with Perplexity API"""
-        self.api_key = os.getenv("PERPLEXITY_API_KEY")
+    def __init__(self, provider: str = "groq", model: Optional[str] = None):
+        """
+        Initialize LLM client with LLM service
         
-        if not self.api_key:
-            logger.warning("PERPLEXITY_API_KEY not found in environment variables")
-            self.client = None
-        else:
-            self.client = OpenAI(
-                api_key=self.api_key, 
-                base_url="https://api.perplexity.ai"
-            )
-            logger.info("LLM Client initialized with Perplexity API")
+        Args:
+            provider: LLM provider ("groq" or "perplexity")
+            model: Specific model to use (optional, will use default if not specified)
+        """
+        self.model = model
+        try:
+            # Try specified provider first, fallback to other if not available
+            self.llm_service = get_llm_service(provider)
+            if not self.llm_service.is_available():
+                fallback_provider = "perplexity" if provider == "groq" else "groq"
+                logger.info(f"{provider} not available, trying {fallback_provider}...")
+                self.llm_service = get_llm_service(fallback_provider)
+            
+            if self.llm_service.is_available():
+                # Validate model if specified
+                if self.model and not self.llm_service.validate_model(self.model):
+                    logger.warning(f"Model {self.model} not available for {self.llm_service.provider}, using default")
+                    self.model = None
+                
+                logger.info(f"LLM Client initialized with {self.llm_service.provider} service")
+                if self.model:
+                    logger.info(f"Using model: {self.model}")
+            else:
+                logger.warning("No LLM service available")
+                self.llm_service = None
+        except Exception as e:
+            logger.warning(f"Failed to initialize LLM service: {e}")
+            self.llm_service = None
     
     def generate_response(self, query: str, intent_result: IntentResult, context_data: List[Dict]) -> Dict[str, Any]:
         """
@@ -44,7 +58,7 @@ class LLMClient:
             Dictionary with response and metadata
         """
         try:
-            if not self.client:
+            if not self.llm_service or not self.llm_service.is_available():
                 return self._fallback_response(query, context_data)
             
             # Build context text from retrieval results
@@ -56,26 +70,27 @@ class LLMClient:
             # Create user prompt
             user_prompt = self._build_user_prompt(query, context_text, intent_result)
             
-            # Call Perplexity API
-            response = self.client.chat.completions.create(
-                model="sonar-pro",
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": user_prompt}
-                ],
+            # Call LLM service
+            result = self.llm_service.call_llm(
+                system_prompt=system_prompt,
+                user_prompt=user_prompt,
+                model=self.model,  # Use specified model or default
                 temperature=0.3,
                 max_tokens=500
             )
             
-            response_text = response.choices[0].message.content.strip()
-            
-            return {
-                "status": "success",
-                "response": response_text,
-                "context_used": len(context_data),
-                "intent": intent_result.intent.value,
-                "model": "sonar-pro"
-            }
+            if result['status'] == 'success':
+                return {
+                    "status": "success",
+                    "response": result['response'],
+                    "context_used": len(context_data),
+                    "intent": intent_result.intent.value,
+                    "model": result['model'],
+                    "provider": result.get('provider', 'unknown')
+                }
+            else:
+                logger.warning(f"LLM call failed: {result.get('error', 'Unknown error')}")
+                return self._fallback_response(query, context_data)
             
         except Exception as e:
             logger.error(f"Error generating LLM response: {e}")
@@ -176,14 +191,17 @@ Instructions:
             "model": "fallback"
         }
 
+
 # Test function
 def test_llm_client():
     """Test the LLM client with sample data"""
     from intent_classifier import AgricultureIntentClassifier
     
     # Sample data
-    classifier = AgricultureIntentClassifier()
-    llm_client = LLMClient()
+    classifier = AgricultureIntentClassifier(use_llm=True)
+    
+    # Updated to use one of the new Groq models
+    llm_client = LLMClient(provider="groq", model="llama-3.1-8b-instant")  # Fast and efficient
     
     query = "What is the price of tomato in Karnataka?"
     intent_result = classifier.classify_intent(query)
@@ -208,6 +226,51 @@ def test_llm_client():
     print(f"Status: {result['status']}")
     print(f"Response: {result['response']}")
     print(f"Context used: {result['context_used']}")
+    print(f"Model: {result.get('model', 'unknown')}")
+    print(f"Provider: {result.get('provider', 'unknown')}")
+
+
+def test_different_models():
+    """Test different Groq models"""
+    from intent_classifier import AgricultureIntentClassifier
+    
+    classifier = AgricultureIntentClassifier(use_llm=True)
+    query = "How to control pest in wheat crop?"
+    intent_result = classifier.classify_intent(query)
+    
+    sample_context = [{
+        "document": "For wheat pest control, use integrated pest management. Apply neem oil spray every 7-10 days during early infestation.",
+        "similarity_score": 0.9,
+        "metadata": {"crop": "wheat", "topic": "pest_control"}
+    }]
+    
+    # Test different models
+    models_to_test = [
+        "llama-3.1-8b-instant",      # Fast default
+        "gemma2-9b-it",              # Efficient Google model
+        "openai/gpt-oss-120b",       # Large reasoning model
+        "deepseek-r1-distill-llama-70b",  # High-quality distilled model
+        "compound-beta"              # Experimental model
+    ]
+    
+    for model in models_to_test:
+        print(f"\n--- Testing {model} ---")
+        try:
+            llm_client = LLMClient(provider="groq", model=model)
+            result = llm_client.generate_response(query, intent_result, sample_context)
+            
+            print(f"Status: {result['status']}")
+            print(f"Response: {result['response'][:150]}...")
+            print(f"Model: {result.get('model', 'unknown')}")
+            
+        except Exception as e:
+            print(f"Error with {model}: {e}")
+
 
 if __name__ == "__main__":
-    test_llm_client()
+    import sys
+    
+    if len(sys.argv) > 1 and sys.argv[1] == "--test-models":
+        test_different_models()
+    else:
+        test_llm_client()
