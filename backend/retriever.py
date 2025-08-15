@@ -12,7 +12,7 @@ class AgriculturalRetriever:
     Simple retriever that takes intent and retrieves relevant context from vector database
     """
     
-    def __init__(self, db_path: str = "agri_chromadb"):
+    def __init__(self, db_path: str = "../agri_chromadb"):
         """Initialize retriever with vector database"""
         self.vector_db = AgriculturalVectorDB(persist_directory=db_path)
         

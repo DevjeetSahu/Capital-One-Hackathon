@@ -71,7 +71,7 @@ class AgriculturalVectorDB:
     # Maximum batch size for ChromaDB (set to 5000 to be safe)
     MAX_BATCH_SIZE = 5000
 
-    def __init__(self, persist_directory: str = 'agri_chromadb'):
+    def __init__(self, persist_directory: str = '../agri_chromadb'):
         """Initialize the vector database with persistent storage"""
         self.persist_directory = persist_directory
         
@@ -301,7 +301,7 @@ class AgriculturalVectorDB:
             
             # Load market data if bucket is market_prediction_data
             if bucket_name == 'market_prediction_data':
-                csv_path = "data_sources/mandi_prices.csv"
+                csv_path = "../data_sources/mandi_prices.csv"
                 if os.path.exists(csv_path):
                     logger.info(f"Loading market data from {csv_path}...")
                     self.load_dataset_from_file(csv_path, bucket_name, 'csv')
@@ -327,7 +327,7 @@ class AgriculturalVectorDB:
 def main():
     """Command line interface for the vector database"""
     parser = argparse.ArgumentParser(description="Manage agricultural vector database")
-    parser.add_argument('--persist_dir', type=str, default='agri_chromadb',
+    parser.add_argument('--persist_dir', type=str, default='../agri_chromadb',
                        help='Directory to persist database')
     
     # Operations

@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 class AgriculturalAssistant:
     """Simple Agricultural AI Assistant Pipeline"""
     
-    def __init__(self, db_path: str = "agri_chromadb"):
+    def __init__(self, db_path: str = "../agri_chromadb"):
         """Initialize all components"""
         logger.info("Initializing Agricultural Assistant...")
         
