@@ -106,8 +106,8 @@ class AgricultureIntentClassifier:
                 'weight': 1.0
             },
             IntentType.GOVERNMENT_SCHEMES: {
-                'keywords': ['scheme', 'subsidy', 'government', 'policy', 'loan', 'insurance', 'benefit', 'support'],
-                'phrases': ['government scheme', 'subsidy available', 'farmer scheme', 'agricultural policy'],
+                'keywords': ['scheme', 'subsidy', 'government', 'policy', 'loan', 'insurance', 'benefit', 'support', 'pm-kisan', 'kalia', 'pmfby', 'pm-kusum', 'bkky', 'kamadhenu', 'ffda', 'dbt', 'agab', 'kcc'],
+                'phrases': ['government scheme', 'subsidy available', 'farmer scheme', 'agricultural policy', 'pm kisan', 'kalia scheme', 'crop insurance', 'solar pump', 'health insurance', 'dairy scheme', 'fishery subsidy', 'farm implements', 'rural infrastructure', 'crop loan'],
                 'weight': 1.0
             },
             IntentType.FERTILIZER_GUIDANCE: {
@@ -214,7 +214,7 @@ class AgricultureIntentClassifier:
 - pest_control: Questions about pests, diseases, insects, plant protection, spraying, treatment for Bargarh's common crops
 - crop_recommendations: Questions about which crops to grow, varieties, seed selection, suitability for Bargarh's soil and climate
 - weather_insights: Questions about weather, rainfall, temperature, climate, forecasts specific to Bargarh district
-- government_schemes: Questions about subsidies, policies, loans, insurance, government support available in Bargarh district
+- government_schemes: Questions about subsidies, policies, loans, insurance, government support, PM-Kisan, KALIA, PMFBY, PM-Kusum, BKKY, Kamadhenu, FFDA, DBT schemes, AGAB, crop loans, farm implements, rural infrastructure available in Bargarh district
 - fertilizer_guidance: Questions about fertilizers, nutrients, soil nutrition, compost, manure for Bargarh's soil types
 - seasonal_planning: Questions about planting time, harvest season, crop calendar, timing for Bargarh's agricultural seasons
 - general_farming: General farming advice, cultivation practices, farm management for Bargarh district

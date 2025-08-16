@@ -57,6 +57,51 @@ def create_documents_metadata(df: pd.DataFrame):
 
     return documents, metadatas, ids
 
+def load_and_clean_schemes_csv(path: str) -> pd.DataFrame:
+    """Load government schemes CSV and clean columns."""
+    df = pd.read_csv(path)
+    # Remove rows with missing essential data
+    df = df.dropna(subset=["Scheme Name", "Focus / Description", "Benefits"])
+    # Clean up any empty strings
+    df = df[df['Scheme Name'].str.strip() != '']
+    df = df[df['Focus / Description'].str.strip() != '']
+    return df
+
+def create_schemes_documents_metadata(df: pd.DataFrame):
+    """Generate Chroma-ready documents from government schemes dataframe."""
+    documents, metadatas, ids = [], [], []
+
+    for i, row in tqdm(df.iterrows(), total=len(df), desc="Preparing schemes data"):
+        # Create a comprehensive document description
+        doc = (
+            f"Government Scheme: {row['Scheme Name']}. "
+            f"Sector: {row['Sector']}. "
+            f"Description: {row['Focus / Description']}. "
+            f"Benefits: {row['Benefits']}. "
+            f"Eligibility: {row['Eligibility Criteria']}. "
+            f"How to Apply: {row['How to Apply']}. "
+            f"Launched: {row['Launched On & By Whom']}. "
+            f"More information available at: {row['URL']}."
+        )
+        
+        metadata = {
+            "scheme_name": row["Scheme Name"],
+            "sector": row["Sector"],
+            "focus_description": row["Focus / Description"],
+            "benefits": row["Benefits"],
+            "how_to_apply": row["How to Apply"],
+            "eligibility_criteria": row["Eligibility Criteria"],
+            "launched_info": row["Launched On & By Whom"],
+            "url": row["URL"],
+            "data_type": "government_scheme"
+        }
+
+        documents.append(doc)
+        metadatas.append(metadata)
+        ids.append(f"scheme_{i}")
+
+    return documents, metadatas, ids
+
 class AgriculturalVectorDB:
     """
     Agricultural Vector Database Manager using ChromaDB
@@ -65,7 +110,8 @@ class AgriculturalVectorDB:
 
     # Default bucket names mapping to intent types
     DEFAULT_BUCKETS = {
-        'market_prediction_data': 'Market prices and prediction data'
+        'market_prediction_data': 'Market prices and prediction data',
+        'government_schemes_data': 'Government agricultural schemes and subsidies'
     }
     
     # Maximum batch size for ChromaDB (set to 5000 to be safe)
@@ -246,8 +292,16 @@ class AgriculturalVectorDB:
                 ids = [f"txt_{i}" for i in range(len(documents))]
                 
             elif file_type == 'csv':
-                df = load_and_clean_csv(file_path)
-                documents, metadatas, ids = create_documents_metadata(df)
+                # Check if this is government schemes data by looking at column names
+                df_temp = pd.read_csv(file_path, nrows=1)
+                if 'Scheme Name' in df_temp.columns:
+                    # This is government schemes data
+                    df = load_and_clean_schemes_csv(file_path)
+                    documents, metadatas, ids = create_schemes_documents_metadata(df)
+                else:
+                    # This is mandi prices data (default)
+                    df = load_and_clean_csv(file_path)
+                    documents, metadatas, ids = create_documents_metadata(df)
             
             if documents:
                 success = self.add_documents_to_bucket(bucket_name, documents, metadatas, ids)
@@ -307,6 +361,15 @@ class AgriculturalVectorDB:
                     self.load_dataset_from_file(csv_path, bucket_name, 'csv')
                 else:
                     logger.warning(f"Market data file {csv_path} not found.")
+            
+            # Load government schemes data if bucket is government_schemes_data
+            elif bucket_name == 'government_schemes_data':
+                csv_path = "../data_sources/bargarh_government_schemes.csv"
+                if os.path.exists(csv_path):
+                    logger.info(f"Loading government schemes data from {csv_path}...")
+                    self.load_dataset_from_file(csv_path, bucket_name, 'csv')
+                else:
+                    logger.warning(f"Government schemes data file {csv_path} not found.")
         
         logger.info("Default buckets initialization completed.")
 
