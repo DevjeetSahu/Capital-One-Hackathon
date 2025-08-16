@@ -1,5 +1,13 @@
 .venv/
+backend/venv/
 .env
 chroma_data/
+backend/__pycache__/
 __pycache__/
 agri_chromadb/
+node_modules/
+dist/
+build/
+coverage/
+.DS_Store
+*.log

@@ -1,15 +1,21 @@
 # app.py
-
+import logging
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Any
 import logging
 import asyncio
 from datetime import datetime
+from retriever import AgriculturalRetriever
+from intent_classifier import AgricultureIntentClassifier
 
 # Import your existing AgriculturalAssistant from main.py
 from main import AgriculturalAssistant
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Initialize FastAPI
 app = FastAPI(
@@ -29,6 +35,19 @@ app.add_middleware(
 
 # Global assistant instance
 assistant = None
+
+# Initialize retriever and classifier at app startup
+retriever = AgriculturalRetriever()
+intent_classifier = AgricultureIntentClassifier(use_llm=True)
+
+# Pydantic models for request/response
+class WeatherRequest(BaseModel):
+    location: Optional[str] = "Bargarh,IN"
+
+class ContextRequest(BaseModel):
+    query: str
+    top_k: Optional[int] = 5
+    include_weather: Optional[bool] = True
 
 # Pydantic models
 class QueryRequest(BaseModel):
@@ -151,7 +170,7 @@ async def process_query_endpoint(
     try:
         # Determine final provider and model (query params override request body)
         final_provider = llm_provider or request.llm_provider or "groq"
-        final_model = llm_model or request.llm_model or "llama-3.1-8b-instant"
+        final_model = llm_model or request.llm_model or "gemma2-9b-it"
         
         # Initialize assistant with selected provider and model
         temp_assistant = AgriculturalAssistant(
@@ -330,6 +349,205 @@ async def process_batch_queries(
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Batch processing error: {str(e)}")
+    
+# 1. Comprehensive Weather Data Endpoint
+@app.get("/weather/comprehensive")
+async def get_comprehensive_weather():
+    """
+    Get comprehensive weather data for Bargarh district
+    Includes: Current weather, 7-day forecast, and past 7 days history
+    """
+    try:
+        weather_data = retriever.get_comprehensive_weather_data()
+        
+        if not weather_data:
+            raise HTTPException(
+                status_code=404, 
+                detail="No weather data available at the moment"
+            )
+        
+        # Organize data by type
+        organized_data = {
+            "current_weather": None,
+            "forecast": None,
+            "historical": None,
+            "total_documents": len(weather_data)
+        }
+        
+        for data in weather_data:
+            data_type = data.get('metadata', {}).get('data_type', 'unknown')
+            
+            if data_type == 'live_weather':
+                organized_data['current_weather'] = data
+            elif data_type == 'weather_forecast':
+                organized_data['forecast'] = data
+            elif data_type == 'weather_history':
+                organized_data['historical'] = data
+        
+        return {
+            "status": "success",
+            "location": "Bargarh, Odisha",
+            "data": organized_data,
+            "message": "Comprehensive weather data retrieved successfully"
+        }
+        
+    except Exception as e:
+        logger.error(f"Error fetching comprehensive weather data: {e}")
+        raise HTTPException(status_code=500, detail=f"Weather service error: {str(e)}")
+
+# 2. Current Weather Only
+@app.get("/weather/current")
+async def get_current_weather():
+    """Get current weather data for Bargarh district"""
+    try:
+        current_weather = retriever.get_live_weather_data()
+        
+        if not current_weather:
+            raise HTTPException(
+                status_code=404, 
+                detail="Current weather data not available"
+            )
+        
+        return {
+            "status": "success",
+            "location": "Bargarh, Odisha",
+            "data": current_weather,
+            "message": "Current weather data retrieved successfully"
+        }
+        
+    except Exception as e:
+        logger.error(f"Error fetching current weather: {e}")
+        raise HTTPException(status_code=500, detail=f"Weather service error: {str(e)}")
+
+# 3. Weather Forecast Only
+@app.get("/weather/forecast")
+async def get_weather_forecast():
+    """Get 7-day weather forecast for Bargarh district"""
+    try:
+        forecast = retriever.get_weather_forecast()
+        
+        if not forecast:
+            raise HTTPException(
+                status_code=404, 
+                detail="Weather forecast data not available"
+            )
+        
+        return {
+            "status": "success",
+            "location": "Bargarh, Odisha",
+            "data": forecast,
+            "message": "7-day weather forecast retrieved successfully"
+        }
+        
+    except Exception as e:
+        logger.error(f"Error fetching weather forecast: {e}")
+        raise HTTPException(status_code=500, detail=f"Weather service error: {str(e)}")
+
+# 4. Historical Weather Data
+@app.get("/weather/historical")
+async def get_historical_weather():
+    """Get past 7 days weather history for Bargarh district"""
+    try:
+        historical = retriever.get_historical_weather_data()
+        
+        if not historical:
+            raise HTTPException(
+                status_code=404, 
+                detail="Historical weather data not available"
+            )
+        
+        return {
+            "status": "success",
+            "location": "Bargarh, Odisha",
+            "data": historical,
+            "message": "Historical weather data retrieved successfully"
+        }
+        
+    except Exception as e:
+        logger.error(f"Error fetching historical weather: {e}")
+        raise HTTPException(status_code=500, detail=f"Weather service error: {str(e)}")
+    
+# 5. Context Retrieval Endpoint (Advanced)
+@app.post("/query/context")
+async def get_query_context(request: ContextRequest):
+    """
+    Get relevant context for a farming query
+    Includes intent classification and context retrieval with optional weather data
+    """
+    try:
+        query = request.query.strip()
+        if not query:
+            raise HTTPException(status_code=400, detail="Query cannot be empty")
+        
+        # Classify intent
+        intent_result = intent_classifier.classify_intent(query)
+        
+        # Retrieve context
+        context_result = retriever.retrieve_context(
+            query=query,
+            intent_result=intent_result,
+            top_k=request.top_k
+        )
+        
+        # Format response
+        response = {
+            "status": "success",
+            "query": query,
+            "intent": {
+                "type": intent_result.intent.value,
+                "confidence": intent_result.confidence,
+                "crop": intent_result.crop,
+                "location": intent_result.location
+            },
+            "context": {
+                "total_results": context_result['total_results'],
+                "bucket_used": context_result['bucket_used'],
+                "documents": context_result['context']
+            },
+            "message": "Context retrieved successfully"
+        }
+        
+        if context_result.get('error'):
+            response['warning'] = context_result['error']
+        
+        return response
+        
+    except Exception as e:
+        logger.error(f"Error getting query context: {e}")
+        raise HTTPException(status_code=500, detail=f"Context retrieval error: {str(e)}")
+
+# 6. Weather Status Check
+@app.get("/weather/status")
+async def check_weather_service_status():
+    """Check if weather API service is working"""
+    try:
+        # Try to fetch a small amount of data to test the service
+        current_weather = retriever.get_live_weather_data()
+        
+        if current_weather:
+            return {
+                "status": "online",
+                "service": "OpenWeatherMap API",
+                "location": "Bargarh, Odisha", 
+                "last_updated": current_weather.get('metadata', {}).get('timestamp'),
+                "message": "Weather service is operational"
+            }
+        else:
+            return {
+                "status": "offline",
+                "service": "OpenWeatherMap API",
+                "message": "Weather service is currently unavailable"
+            }
+            
+    except Exception as e:
+        logger.error(f"Weather service check failed: {e}")
+        return {
+            "status": "error",
+            "service": "OpenWeatherMap API",
+            "error": str(e),
+            "message": "Weather service check failed"
+        }
+
 
 # Run the server
 if __name__ == "__main__":
