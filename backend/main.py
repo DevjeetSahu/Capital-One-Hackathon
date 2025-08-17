@@ -9,6 +9,7 @@ from typing import Optional
 from intent_classifier import AgricultureIntentClassifier
 from retriever import AgriculturalRetriever
 from llm_client import LLMClient
+from workflow_manager import WorkflowManager
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -40,6 +41,10 @@ class AgriculturalAssistant:
         # Get service information for logging
         classifier_info = self.classifier.get_service_info()
         logger.info(f"Intent Classification: {classifier_info}")
+        
+        # Initialize workflow manager
+        self.workflow_manager = WorkflowManager(self.classifier, self.retriever, self.llm_client)
+        
         logger.info("Agricultural Assistant ready!")
     
     def process_query(self, query: str, top_k: int = 5) -> dict:
@@ -61,17 +66,22 @@ class AgriculturalAssistant:
             logger.info("Step 1: Classifying intent...")
             intent_result = self.classifier.classify_intent(query)
             
-            # Step 2: Retrieve Context
+            # Step 2: Handle workflow queries
+            if intent_result.is_workflow:
+                logger.info("Step 2: Processing workflow query...")
+                return self.workflow_manager.process_workflow_query(query, intent_result, top_k, start_time)
+            
+            # Step 3: Handle simple queries (existing logic)
             logger.info("Step 2: Retrieving context...")
             context_result = self.retriever.retrieve_context(query, intent_result, top_k)
             
-            # Step 3: Generate Response
+            # Step 4: Generate Response
             logger.info("Step 3: Generating response...")
             llm_result = self.llm_client.generate_response(
                 query, intent_result, context_result['context']
             )
             
-            # Step 4: Format Final Result
+            # Step 5: Format Final Result
             processing_time = (datetime.now() - start_time).total_seconds()
             
             return {
@@ -89,7 +99,8 @@ class AgriculturalAssistant:
                 "intent_model": intent_result.model,
                 "intent_provider": intent_result.provider,
                 "llm_model": llm_result.get('model', 'unknown'),
-                "llm_provider": llm_result.get('provider', 'unknown')
+                "llm_provider": llm_result.get('provider', 'unknown'),
+                "is_workflow": False
             }
             
         except Exception as e:
@@ -100,6 +111,8 @@ class AgriculturalAssistant:
                 "error": str(e),
                 "status": "error"
             }
+
+
 
 def main():
     """Simple command line interface"""

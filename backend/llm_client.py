@@ -99,6 +99,46 @@ class LLMClient:
                 "response": "I apologize, but I'm having trouble processing your request. Please try again.",
                 "error": str(e)
             }
+
+    def call_llm(self, system_prompt: str, user_prompt: str, max_tokens: int = 500) -> Dict[str, Any]:
+        """
+        Direct LLM call for workflow processing
+        
+        Args:
+            system_prompt: System prompt for the LLM
+            user_prompt: User prompt/message
+            max_tokens: Maximum tokens in response
+            
+        Returns:
+            Dictionary with response and metadata
+        """
+        try:
+            if not self.llm_service or not self.llm_service.is_available():
+                return {
+                    "status": "error",
+                    "response": "LLM service not available",
+                    "error": "No LLM service available"
+                }
+            
+            # Call LLM service
+            result = self.llm_service.call_llm(
+                system_prompt=system_prompt,
+                user_prompt=user_prompt,
+                model=self.model,
+                temperature=0.3,
+                max_tokens=max_tokens
+            )
+            
+            return result
+            
+        except Exception as e:
+            logger.error(f"Error in direct LLM call: {e}")
+            return {
+                "status": "error",
+                "response": "LLM call failed",
+                "error": str(e)
+            }
+            
     
     def _build_context_text(self, context_data: List[Dict]) -> str:
         """Build context string from retrieved documents"""

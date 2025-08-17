@@ -1,0 +1,182 @@
+Village,Nutrient/ Condition,Status,Area (ha),Percentage (%),No. of Plots
+Ambasada,Boron,Deficient(<0.5 ppm),281.21,57.33,737
+Ambasada,Boron,Sufficient(>0.5 ppm),181.04,36.91,474
+Ambasada,Copper,Deficient(<0.2 ppm),0.45,0.09,2
+Ambasada,Copper,Sufficient(>0.2 ppm),461.89,94.15,1283
+Ambasada,Phosphorus,Low (<10 kg/ha),0.04,0.01,1
+Ambasada,Phosphorus,Medium (10 - 25 kg/ha),8.57,1.75,23
+Ambasada,Phosphorus,High (>25 kg/ha),453.72,92.48,1261
+Ambasada,Potassium,Low (<120 kg/ha),6.13,1.25,16
+Ambasada,Potassium,Medium (120 - 280 kg/ha),386.09,78.71,1011
+Ambasada,Potassium,High (>280 kg/ha),70.06,14.28,186
+Ambasada,Organic Carbon,Low (<0.50%),7.4,1.51,20
+Ambasada,Organic Carbon,Medium (0.50 - 0.75%),264.95,54.02,694
+Ambasada,Organic Carbon,High (>0.75%),189.9,38.71,505
+Ambasada,Soil pH,Strongly acidic (<4.5),0.88,0.18,2
+Ambasada,Soil pH,Moderately acidic (4.5 - 5.5),319.01,65.04,841
+Ambasada,Soil pH,Slightly acidic (>5.5 - 6.5),139.84,28.51,369
+Ambasada,Soil pH,Normal (>6.5 - 7.5),2.45,0.49,13
+Ambasada,Electrical Conductivity (EC),Non saline (0 - 1.68 dS/m),462.16,94.2,1215
+Ambasada,Electrical Conductivity (EC),Low saline (1.68 - 3.36 dS/m),0.18,0.04,2
+Ambasada,Iron,Deficient (<4.5 ppm),0.23,0.05,1
+Ambasada,Iron,Sufficient (>4.5 ppm),462.11,94.19,1214
+Ambasada,Zinc,Deficient (<0.6 ppm),44.71,9.11,119
+Ambasada,Zinc,Sufficient (>0.6 ppm),417.56,85.12,1105
+Ambasada,Manganese,Deficient (<2.0 ppm),354.33,72.22,940
+Ambasada,Manganese,Sufficient (>2.0 ppm),108.05,22.02,289
+Chepetibahal,Phosphorus (P),Low (<10 kg/ha),65.1,35.61,257
+Chepetibahal,Phosphorus (P),Medium (10 - 25 kg/ha),98.02,53.61,387
+Chepetibahal,Phosphorus (P),High (>25 kg/ha),11.85,6.48,51
+Chepetibahal,Potassium (K),Low (<120 kg/ha),7.01,3.83,27
+Chepetibahal,Potassium (K),Medium (120 - 280 kg/ha),121,66.15,478
+Chepetibahal,Potassium (K),High (>280 kg/ha),47.04,25.72,187
+Chepetibahal,Organic Carbon (OC),Low (<0.50%),128.34,70.18,506
+Chepetibahal,Organic Carbon (OC),Medium (0.50 - 0.75%),44.36,24.26,175
+Chepetibahal,Organic Carbon (OC),High (>0.75%),2.31,1.26,9
+Chepetibahal,Soil pH,Strongly acidic (<4.5),0.16,0.088,1
+Chepetibahal,Soil pH,Moderately acidic (4.5 - 5.5),0.22,0.12,1
+Chepetibahal,Soil pH,Slightly acidic (>5.5 - 6.5),4.8,2.62,19
+Chepetibahal,Soil pH,Normal (>6.5 - 7.5),162.93,89.09,643
+Chepetibahal,Soil pH,Slightly alkaline (>7.5 - 8.5),6.88,3.76,29
+Chepetibahal,Electrical Conductivity (EC),Non saline (0 - 1.68 dS/m),175.04,95.7,694
+Chepetibahal,Boron (B),Deficient (<0.5 ppm),126.74,69.3,501
+Chepetibahal,Boron (B),Sufficient (>0.5 ppm),48.28,26.4,191
+Chepetibahal,Copper (Cu),Deficient (<0.2 ppm),0.09,0.05,1
+Chepetibahal,Copper (Cu),Sufficient (>0.2 ppm),174.95,95.65,693
+Chepetibahal,Sulphur (S),Deficient (<10.0 ppm),2.5,1.37,10
+Chepetibahal,Sulphur (S),Sufficient (>10.0 ppm),172.53,94.33,684
+Chepetibahal,Zinc (Zn),Deficient (<0.6 ppm),4.35,2.38,17
+Chepetibahal,Zinc (Zn),Sufficient (>0.6 ppm),170.68,93.32,674
+Guduramunda,Phosphorus (P),Low (<10 kg/ha),6.48,4.75,20
+Guduramunda,Phosphorus (P),Medium (10 - 25 kg/ha),83.39,61.14,255
+Guduramunda,Phosphorus (P),High (>25 kg/ha),41.71,30.58,127
+Guduramunda,Potassium (K),Low (<120 kg/ha),2.82,2.06,9
+Guduramunda,Potassium (K),Medium (120 - 280 kg/ha),25.62,18.77,78
+Guduramunda,Potassium (K),High (>280 kg/ha),103.23,75.64,314
+Guduramunda,Organic Carbon (OC),Low (<0.50%),96.84,70.99,296
+Guduramunda,Organic Carbon (OC),Medium (0.50 - 0.75%),34.72,25.45,105
+Guduramunda,Organic Carbon (OC),High (>0.75%),0.05,0.04,1
+Guduramunda,Soil pH,Strongly acidic (<4.5),21.13,15.48,65
+Guduramunda,Soil pH,Moderately acidic (4.5 - 5.5),34.03,24.94,104
+Guduramunda,Soil pH,Slightly acidic (>5.5 - 6.5),75.73,55.49,196
+Guduramunda,Soil pH,Normal (>6.5 - 7.5),0.76,0.55,2
+Guduramunda,Electrical Conductivity (EC),Non saline (0 - 1.68 dS/m),131.69,96.48,400
+Guduramunda,Boron (B),Deficient (<0.5 ppm),127.56,93.45,389
+Guduramunda,Boron (B),Sufficient (>0.5 ppm),4.13,3.03,13
+Guduramunda,Copper (Cu),Deficient (<0.2 ppm),1.24,0.91,4
+Guduramunda,Copper (Cu),Sufficient (>0.2 ppm),130.42,95.57,398
+Guduramunda,Sulphur (S),Deficient (<10.0 ppm),44.27,32.44,134
+Guduramunda,Sulphur (S),Sufficient (>10.0 ppm),87.39,64.04,267
+Guduramunda,Zinc (Zn),Deficient (<0.6 ppm),24.82,18.19,75
+Guduramunda,Zinc (Zn),Sufficient (>0.6 ppm),106.82,78.28,324
+Lebri,Phosphorus (P),Low (<10 kg/ha),119.4,35.9,261
+Lebri,Phosphorus (P),Medium (10 - 25 kg/ha),209.1,62.86,458
+Lebri,Phosphorus (P),High (>25 kg/ha),4.12,1.24,9
+Lebri,Potassium (K),Low (<120 kg/ha),0.36,0.1,1
+Lebri,Potassium (K),Medium (120 - 280 kg/ha),166.62,46.64,344
+Lebri,Potassium (K),High (>280 kg/ha),165.68,46.38,342
+Lebri,Organic Carbon (OC),Low (<0.50%),256.65,71.86,525
+Lebri,Organic Carbon (OC),Medium (0.50 - 0.75%),74.83,20.95,153
+Lebri,Organic Carbon (OC),High (>0.75%),1.11,0.31,2
+Lebri,Soil pH,Strongly acidic (<4.5),0.003,0.001,0
+Lebri,Soil pH,Moderately acidic (4.5 - 5.5),4.55,1.27,9
+Lebri,Soil pH,Slightly acidic (>5.5 - 6.5),283.89,79.47,580
+Lebri,Soil pH,Normal (>6.5 - 7.5),44.05,12.3,90
+Lebri,Soil pH,Slightly alkaline (>7.5 - 8.5),0.12,0.03,0
+Lebri,Soil pH,Moderately alkaline (Sodic) (>8.5 - 9.5),0.0127,0.0035,0
+Lebri,Electrical Conductivity (EC),Non saline (0 - 1.68 dS/m),332.77,93.13,679
+Lebri,Boron (B),Deficient (<0.5 ppm),307.49,86.07,628
+Lebri,Boron (B),Sufficient (>0.5 ppm),25.19,7.05,51
+Lebri,Copper (Cu),Deficient (<0.2 ppm),0.32,0.09,1
+Lebri,Copper (Cu),Sufficient (>0.2 ppm),332.45,93.04,678
+Lebri,Sulphur (S),Deficient (<10.0 ppm),101.39,28.39,207
+Lebri,Sulphur (S),Sufficient (>10.0 ppm),231.21,64.74,473
+Lebri,Zinc (Zn),Deficient (<0.6 ppm),17.09,4.78,35
+Lebri,Zinc (Zn),Sufficient (>0.6 ppm),315.61,88.34,645
+Ludupali,Organic Carbon (OC),Low (<0.50%),4.27,2.47,10
+Ludupali,Organic Carbon (OC),Medium (0.50 - 0.75%),141.21,81.62,321
+Ludupali,Organic Carbon (OC),High (>0.75%),8.71,5.03,20
+Ludupali,Copper (Cu),Deficient (<0.2 ppm),0.07,0.04,0
+Ludupali,Copper (Cu),Sufficient (>0.2 ppm),154.09,89.08,349
+Ludupali,Soil Reaction (pH),Strongly acidic (<4.5),0.016,0.009,0
+Ludupali,Soil Reaction (pH),Moderately acidic (4.5 - 5.5),4.06,2.34,9
+Ludupali,Soil Reaction (pH),Slightly acidic (>5.5 - 6.5),142.02,82.08,322
+Ludupali,Soil Reaction (pH),Normal (>6.5 - 7.5),8.104,4.68,18
+Ludupali,Boron (B),Deficient (<0.5 ppm),139.91,80.87,318
+Ludupali,Boron (B),Sufficient (>0.5 ppm),14.28,8.25,32
+Ludupali,Zinc (Zn),Deficient (<0.6 ppm),11.04,6.38,25
+Ludupali,Zinc (Zn),Sufficient (>0.6 ppm),143.13,82.74,325
+Ludupali,Electrical Conductivity (EC),Non saline (0 - 1.68 dS/m),154.15,89.12,350
+Ludupali,Phosphorus (P),Low (<10 kg/ha),8.28,4.79,19
+Ludupali,Phosphorus (P),Medium (10 - 25 kg/ha),43.36,25.06,98
+Ludupali,Phosphorus (P),High (>25 kg/ha),102.57,59.28,233
+Ludupali,Potassium (K),Low (<120 kg/ha),1.59,0.92,4
+Ludupali,Potassium (K),Medium (120 - 280 kg/ha),53.56,30.96,122
+Ludupali,Potassium (K),High (>280 kg/ha),99.05,57.24,225
+Ludupali,Sulphur (S),Deficient (<10.0 ppm),15.2,8.79,35
+Ludupali,Sulphur (S),Sufficient (>10.0 ppm),138.95,80.33,316
+Naghapali,Potassium (K),Low (<120 kg/ha),3.99,5.49,19
+Naghapali,Potassium (K),Medium (120 - 280 kg/ha),32.73,45.06,153
+Naghapali,Potassium (K),High (>280 kg/ha),29.21,40.22,136
+Naghapali,Boron (B),Deficient (<0.5 ppm),57.4,78.98,268
+Naghapali,Boron (B),Sufficient (>0.5 ppm),8.57,11.8,40
+Naghapali,Organic Carbon (OC),Low (<0.50%),0.05,0.07,0
+Naghapali,Organic Carbon (OC),Medium (0.50 - 0.75%),12.79,17.6,60
+Naghapali,Organic Carbon (OC),High (>0.75%),53.11,73.1,248
+Naghapali,Soil Reaction (pH),Strongly acidic (<4.5),0.03,0.042,0
+Naghapali,Soil Reaction (pH),Moderately acidic (4.5 - 5.5),44.18,60.8,206
+Naghapali,Soil Reaction (pH),Slightly acidic (>5.5 - 6.5),21.279,29.28,99
+Naghapali,Soil Reaction (pH),Normal (>6.5 - 7.5),0.45,0.62,2
+Naghapali,Soil Reaction (pH),Slightly alkaline (>7.5 - 8.5),0.01,0.01,0
+Naghapali,Sulphur (S),Deficient (<10.0 ppm),6.49,8.93,31
+Naghapali,Sulphur (S),Sufficient (>10.0 ppm),59.45,81.84,277
+Naghapali,Zinc (Zn),Deficient (<0.6 ppm),9.33,12.84,44
+Naghapali,Zinc (Zn),Sufficient (>0.6 ppm),56.64,77.93,264
+Naghapali,Copper (Cu),Deficient (<0.2 ppm),0.23,0.32,1
+Naghapali,Copper (Cu),Sufficient (>0.2 ppm),65.74,90.45,307
+Naghapali,Phosphorus (P),Medium (10 - 25 kg/ha),1.09,1.49,5
+Naghapali,Phosphorus (P),High (>25 kg/ha),64.87,89.28,303
+Naghapali,Electrical Conductivity (EC),Non saline (0 - 1.68 dS/m),65.78,90.51,307
+Naghapali,Electrical Conductivity (EC),Low saline (1.68 - 3.36 dS/m),0.19,0.26,1
+Salhepali,Potassium (K),Low (<120 kg/ha),0.78,0.23,2
+Salhepali,Potassium (K),Medium (120 - 280 kg/ha),136.03,39.36,257
+Salhepali,Potassium (K),High (>280 kg/ha),124.41,36,235
+Salhepali,Soil Reaction (pH),Moderately acidic (4.5 - 5.5),0.91,0.26,2
+Salhepali,Soil Reaction (pH),Slightly acidic (>5.5 - 6.5),223.36,64.63,422
+Salhepali,Soil Reaction (pH),Normal (>6.5 - 7.5),36.931,10.68,70
+Salhepali,Electrical Conductivity (EC),Non saline (0 - 1.68 dS/m),261.06,75.58,493
+Salhepali,Sulphur (S),Deficient (<10.0 ppm),249.91,72.32,473
+Salhepali,Sulphur (S),Sufficient (>10.0 ppm),11.26,3.26,21
+Salhepali,Boron (B),Deficient (<0.5 ppm),249.56,72.24,472
+Salhepali,Boron (B),Sufficient (>0.5 ppm),11.54,3.34,22
+Salhepali,Copper (Cu),Sufficient (>0.2 ppm),261.06,75.58,493
+Salhepali,Organic Carbon (OC),Low (<0.50%),110.26,31.91,208
+Salhepali,Organic Carbon (OC),Medium (0.50 - 0.75%),147.86,42.79,280
+Salhepali,Organic Carbon (OC),High (>0.75%),3.03,0.88,6
+Salhepali,Zinc (Zn),Deficient (<0.6 ppm),0.23,0.05,0
+Salhepali,Zinc (Zn),Sufficient (>0.6 ppm),345.28,80.32,619
+Salhepali,Phosphorus (P),Low (<10 kg/ha),26.74,7.74,50
+Salhepali,Phosphorus (P),Medium (10 - 25 kg/ha),154.94,44.84,293
+Salhepali,Phosphorus (P),High (>25 kg/ha),79.5,23.01,150
+Tala,Phosphorus (P),Low (<10 kg/ha),13.08,10.02,28
+Tala,Phosphorus (P),Medium (10 - 25 kg/ha),40.58,31.09,87
+Tala,Phosphorus (P),High (>25 kg/ha),68.21,52.25,146
+Tala,Potassium (K),Low (<120 kg/ha),27.56,22.62,63
+Tala,Potassium (K),Medium (120 - 280 kg/ha),73.12,60,168
+Tala,Potassium (K),High (>280 kg/ha),21.18,17.38,49
+Tala,Organic Carbon (OC),Low (<0.50%),66.77,51.16,143
+Tala,Organic Carbon (OC),Medium (0.50 - 0.75%),51.85,39.73,111
+Tala,Organic Carbon (OC),High (>0.75%),3.23,2.47,7
+Tala,Soil pH,Strongly acidic (<4.5),60.35,46.24,130
+Tala,Soil pH,Moderately acidic (4.5 - 5.5),40.21,30.81,86
+Tala,Soil pH,Slightly acidic (>5.5 - 6.5),20.63,15.81,44
+Tala,Soil pH,Normal (>6.5 - 7.5),0.62,0.47,1
+Tala,Electrical Conductivity (EC),Non saline (0 - 1.68 dS/m),119.76,100,277
+Tala,Boron (B),Deficient (<0.5 ppm),95.28,72.99,205
+Tala,Boron (B),Sufficient (>0.5 ppm),26.59,20.37,57
+Tala,Copper (Cu),Deficient (<0.2 ppm),10.02,8.22,23
+Tala,Copper (Cu),Sufficient (>0.2 ppm),111.88,91.78,257
+Tala,Sulphur (S),Deficient (<10.0 ppm),19.2,14.7,41
+Tala,Sulphur (S),Sufficient (>10.0 ppm),102.69,78.65,220
+Tala,Zinc (Zn),Deficient (<0.6 ppm),28.87,22.12,62
+Tala,Zinc (Zn),Sufficient (>0.6 ppm),93.01,71.24,200

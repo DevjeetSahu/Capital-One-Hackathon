@@ -44,12 +44,23 @@ import {
   Eye,
   MessageCircle
 } from "lucide-react";
+import { WorkflowProgress } from "./WorkflowProgress";
 
 // Add interface for pending query
 interface PendingQuery {
   question: string;
   answer: string | null;
   status: 'answered' | 'error';
+}
+
+// Add interface for workflow
+interface WorkflowQuery {
+  id: string;
+  workflowId: string;
+  question: string;
+  subtasks: any[];
+  status: 'processing' | 'completed' | 'error';
+  result?: any;
 }
 
 // Add interface for component props
@@ -90,6 +101,7 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
   const [tab, setTab] = useState("query");
   const [loading, setLoading] = useState(false);
   const [queries, setQueries] = useState([]);
+  const [workflowQueries, setWorkflowQueries] = useState<WorkflowQuery[]>([]);
   const [showPreviousChats, setShowPreviousChats] = useState(false);
    const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [selectedSupplier, setSelectedSupplier] = useState<number | null>(null);
@@ -360,19 +372,65 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
       if (!res.ok) throw new Error("API error");
       const data = await res.json();
 
-      // Update the specific query with response
-      setQueries((prev) =>
-        prev.map((q) =>
-          q.id === newQuery.id
-            ? {
-              ...q,
-              status: "answered",
-              responses: (q.responses || 0) + 1,
-              answer: data.response
-            }
-            : q
-        )
-      );
+      // Check if this is a workflow query that needs to be redirected
+      if (data.redirect_to_workflow) {
+        // Call the workflow endpoint
+        const workflowRes = await fetch("http://127.0.0.1:8000/workflow", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            query: newQuery.question,
+            llm_provider: "groq",
+            llm_model: "llama-3.1-8b-instant",
+            top_k: 5
+          })
+        });
+
+        if (!workflowRes.ok) throw new Error("Workflow API error");
+        const workflowData = await workflowRes.json();
+
+        // Add to workflow queries
+        const workflowQuery: WorkflowQuery = {
+          id: newQuery.id.toString(),
+          workflowId: workflowData.workflow_id,
+          question: newQuery.question,
+          subtasks: data.subtasks || [],
+          status: 'processing'
+        };
+        setWorkflowQueries(prev => [workflowQuery, ...prev]);
+        
+        // Remove from regular queries since it's now a workflow
+        setQueries(prev => prev.filter(q => q.id !== newQuery.id));
+      } else if (data.is_workflow && data.workflow_id) {
+        // Direct workflow response (fallback)
+        const workflowQuery: WorkflowQuery = {
+          id: newQuery.id.toString(),
+          workflowId: data.workflow_id,
+          question: newQuery.question,
+          subtasks: data.subtasks || [],
+          status: 'processing'
+        };
+        setWorkflowQueries(prev => [workflowQuery, ...prev]);
+        
+        // Remove from regular queries since it's now a workflow
+        setQueries(prev => prev.filter(q => q.id !== newQuery.id));
+      } else {
+        // Update the specific query with response (regular query)
+        setQueries((prev) =>
+          prev.map((q) =>
+            q.id === newQuery.id
+              ? {
+                  ...q,
+                  status: "answered",
+                  responses: (q.responses || 0) + 1,
+                  answer: data.response
+                }
+              : q
+          )
+        );
+      }
     } catch (err) {
       console.error("Error sending query:", err);
       setQueries((prev) =>
@@ -383,6 +441,46 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
     } finally {
       setLoading(false);
     }
+  };
+
+  // Handle workflow completion
+  const handleWorkflowComplete = (workflowId: string, result: any) => {
+    // Find the workflow query
+    const workflowQuery = workflowQueries.find(wq => wq.workflowId === workflowId);
+    
+    if (workflowQuery) {
+      // Add the workflow result to regular queries as an answered query
+      const newQuery = {
+        id: Date.now(),
+        question: workflowQuery.question,
+        timestamp: "Just now",
+        responses: 1,
+        status: "answered",
+        answer: result.response || result.summary || "Workflow completed successfully."
+      };
+      
+      setQueries(prev => [newQuery, ...prev]);
+    }
+    
+    // Update workflow status
+    setWorkflowQueries(prev => 
+      prev.map(wq => 
+        wq.workflowId === workflowId 
+          ? { ...wq, status: 'completed', result }
+          : wq
+      )
+    );
+  };
+
+  // Handle workflow error
+  const handleWorkflowError = (workflowId: string, error: string) => {
+    setWorkflowQueries(prev => 
+      prev.map(wq => 
+        wq.workflowId === workflowId 
+          ? { ...wq, status: 'error' }
+          : wq
+      )
+    );
   };
 
   // Handle Enter key press
@@ -594,8 +692,8 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
 
         {tab === "query" && (
           <div className="space-y-6 mt-6">
-            {/* Chat Container */}
-            <div className="bg-white border border-gray-200 rounded-2xl shadow-lg overflow-hidden">
+                         {/* Chat Container */}
+             <div className="chat-container bg-white border border-gray-200 rounded-2xl shadow-lg overflow-hidden">
 
               {/* Chat Header */}
               <div className="bg-gradient-to-r from-green-500 to-emerald-600 p-4">
@@ -709,39 +807,34 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
                           </div>
                         )}
 
-                        {q.status === "answered" && q.answer && (
-                          <div className="flex justify-start">
-                            <div className="max-w-xs lg:max-w-2xl">
-                              <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-2xl rounded-bl-sm p-4 shadow-md">
-                                <div className="flex items-center gap-2 mb-3">
+                                                 {q.status === "answered" && q.answer && (
+                           <div className="flex justify-start">
+                             <div className="max-w-xs lg:max-w-2xl">
+                               <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-2xl rounded-bl-sm p-4 shadow-md">
+                                 <div className="flex items-center gap-2 mb-3">
 
-                                  <span className="text-xs font-semibold text-green-700">JAI-Kissan</span>
-                                  <Sparkles className="w-3 h-3 text-green-500" />
-                                </div>
-                                <div className="prose prose-sm max-w-none text-gray-700">
-                                  <ReactMarkdown
-                                    components={{
-                                      h1: ({ node, ...props }) => <h1 className="text-lg font-bold text-green-800 mb-2" {...props} />,
-                                      h2: ({ node, ...props }) => <h2 className="text-base font-semibold text-green-700 mb-2" {...props} />,
-                                      h3: ({ node, ...props }) => <h3 className="text-sm font-semibold text-green-600 mb-1" {...props} />,
-                                      p: ({ node, ...props }) => <p className="text-sm mb-2 leading-relaxed" {...props} />,
-                                      ul: ({ node, ...props }) => <ul className="list-none space-y-1 mb-2" {...props} />,
-                                      ol: ({ node, ...props }) => <ol className="list-none space-y-1 mb-2" {...props} />,
-                                      li: ({ node, ...props }) => (
-                                        <li className="flex items-start gap-2" {...props}>
-                                          <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
-                                          <span className="text-sm">{props.children}</span>
-                                        </li>
-                                      ),
-                                      strong: ({ node, ...props }) => <strong className="font-semibold text-green-800" {...props} />,
-                                      em: ({ node, ...props }) => <em className="italic text-green-700" {...props} />,
-                                      code: ({ node, ...props }) => <code className="bg-green-100 text-green-800 px-1 py-0.5 rounded text-xs font-mono" {...props} />,
-                                      blockquote: ({ node, ...props }) => <blockquote className="border-l-2 border-green-300 pl-3 italic text-green-700" {...props} />
-                                    }}
-                                  >
-                                    {q.answer}
-                                  </ReactMarkdown>
-                                </div>
+                                   <span className="text-xs font-semibold text-green-700">JAI-Kissan</span>
+                                   <Sparkles className="w-3 h-3 text-green-500" />
+                                 </div>
+                                 <div className="prose prose-sm max-w-none text-gray-700">
+                                   <ReactMarkdown
+                                     components={{
+                                       h1: ({ node, ...props }) => <h1 className="text-lg font-bold text-gray-800 mb-2" {...props} />,
+                                       h2: ({ node, ...props }) => <h2 className="text-base font-semibold text-gray-700 mb-2" {...props} />,
+                                       h3: ({ node, ...props }) => <h3 className="text-sm font-semibold text-gray-600 mb-1" {...props} />,
+                                       p: ({ node, ...props }) => <p className="text-sm mb-2 leading-relaxed" {...props} />,
+                                       ul: ({ node, ...props }) => <ul className="list-disc list-inside space-y-1 mb-2" {...props} />,
+                                       ol: ({ node, ...props }) => <ol className="list-decimal list-inside space-y-1 mb-2" {...props} />,
+                                       li: ({ node, ...props }) => <li className="text-sm" {...props} />,
+                                       strong: ({ node, ...props }) => <strong className="font-semibold text-gray-800" {...props} />,
+                                       em: ({ node, ...props }) => <em className="italic text-gray-700" {...props} />,
+                                       code: ({ node, ...props }) => <code className="bg-gray-100 px-1 py-0.5 rounded text-xs font-mono" {...props} />,
+                                       pre: ({ node, ...props }) => <pre className="bg-gray-100 p-2 rounded text-xs font-mono overflow-x-auto" {...props} />
+                                     }}
+                                   >
+                                     {q.answer}
+                                   </ReactMarkdown>
+                                 </div>
 
                                 {/* Action Buttons */}
                                 <div className="flex items-center gap-2 mt-3 pt-2 border-t border-green-100">
@@ -1153,6 +1246,55 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
                   <p className="text-sm text-gray-600">Avg Delivery</p>
                 </div>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/** Workflow Queries Section **/}
+        {workflowQueries.length > 0 && (
+          <div className="bg-white border border-purple-200 rounded-xl p-6 shadow-lg">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center">
+                <Brain className="w-4 h-4 text-white" />
+              </div>
+              <h4 className="text-lg font-bold text-gray-800">Complex AI Workflows</h4>
+            </div>
+            
+            <div className="space-y-4">
+              {workflowQueries.map((workflow) => (
+                <div key={workflow.id} className="bg-purple-50 border border-purple-200 rounded-xl p-4">
+                  {/** Workflow Question **/}
+                  <div className="flex items-start gap-3 mb-3">
+                    <div className="w-6 h-6 bg-purple-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Brain className="w-3 h-3 text-white" />
+                    </div>
+                    <p className="text-sm leading-relaxed font-medium text-gray-800">{workflow.question}</p>
+                  </div>
+
+                                     {/** Workflow Progress Component **/}
+                   <div className="ml-9">
+                     <WorkflowProgress
+                       workflowId={workflow.workflowId}
+                       originalQuery={workflow.question}
+                       subtasks={workflow.subtasks}
+                       onComplete={(result) => handleWorkflowComplete(workflow.workflowId, result)}
+                       onError={(error) => handleWorkflowError(workflow.workflowId, error)}
+                     />
+                   </div>
+
+                  {/** Error State **/}
+                  {workflow.status === 'error' && (
+                    <div className="ml-9 mt-4">
+                      <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                        <div className="flex items-center gap-2">
+                          <AlertCircle className="w-4 h-4 text-red-600" />
+                          <span className="text-sm text-red-700">Workflow processing failed. Please try again.</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           </div>
         )}

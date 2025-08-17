@@ -1,14 +1,17 @@
-# app.py
+#!/usr/bin/env python3
+"""
+FastAPI application for Agricultural Assistant with Integrated Workflow Engine
+"""
+
 import logging
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
-import logging
 import asyncio
+import json
 from datetime import datetime
-from retriever import AgriculturalRetriever
-from intent_classifier import AgricultureIntentClassifier
 
 # Import your existing AgriculturalAssistant from main.py
 from main import AgriculturalAssistant
@@ -20,7 +23,7 @@ logger = logging.getLogger(__name__)
 # Initialize FastAPI
 app = FastAPI(
     title="Bargarh Agricultural AI Assistant API",
-    description="AI-powered agricultural assistant specifically designed for farmers in Bargarh district of Odisha, India with flexible model selection",
+    description="AI-powered agricultural assistant specifically designed for farmers in Bargarh district of Odisha, India with integrated workflow engine for complex queries",
     version="2.0.0"
 )
 
@@ -35,10 +38,6 @@ app.add_middleware(
 
 # Global assistant instance
 assistant = None
-
-# Initialize retriever and classifier at app startup
-retriever = AgriculturalRetriever()
-intent_classifier = AgricultureIntentClassifier(use_llm=True)
 
 # Pydantic models for request/response
 class WeatherRequest(BaseModel):
@@ -72,6 +71,43 @@ class QueryResponse(BaseModel):
     intent_provider: Optional[str] = None
     llm_model: Optional[str] = None
     llm_provider: Optional[str] = None
+    # NEW: Workflow information
+    is_workflow: bool = False
+    workflow_id: Optional[str] = None
+    subtasks: Optional[List[Dict[str, Any]]] = None
+    # NEW: Redirect flag for workflow queries
+    redirect_to_workflow: bool = False
+
+class WorkflowExecuteRequest(BaseModel):
+    workflow_id: str
+    subtask_index: int
+
+class SubtaskResult(BaseModel):
+    subtask_id: int
+    completed: bool
+    result: Dict[str, Any]
+    error: Optional[str] = None
+
+class WorkflowSummaryRequest(BaseModel):
+    workflow_id: str
+
+class WorkflowSummary(BaseModel):
+    workflow_id: str
+    summary: str
+    completed: bool
+    error: Optional[str] = None
+
+class WorkflowStatusResponse(BaseModel):
+    workflow_id: str
+    original_query: str
+    status: str
+    progress: int
+    total_subtasks: int
+    current_subtask: Optional[int]
+    completed_subtasks: List[Dict[str, Any]]
+    processing_time: float
+    summary: Optional[str]
+    error: Optional[str]
 
 class HealthResponse(BaseModel):
     status: str
@@ -108,14 +144,24 @@ async def root():
     return {
         "message": "Bargarh Agricultural AI Assistant API",
         "version": "2.0.0",
-        "description": "Specialized AI assistant for farmers in Bargarh district, Odisha",
+        "description": "Specialized AI assistant for farmers in Bargarh district, Odisha with integrated workflow engine",
         "docs": "/docs",
         "endpoints": {
             "query": "/query",
+            "workflow": "/workflow",
+            "workflow_stream": "/workflow/stream/{workflow_id}",
             "health": "/health",
             "intents": "/intents",
             "providers": "/providers",
-            "models": "/models"
+            "models": "/models",
+            "weather": "/weather/comprehensive",
+            "workflow_status": "/workflow/{workflow_id}/status",
+            "workflow_result": "/workflow/{workflow_id}/result",
+            "workflow_cleanup": "/workflow/{workflow_id}"
+        },
+        "features": {
+            "workflow_support": True,
+            "sse_streaming": True
         }
     }
 
@@ -136,7 +182,8 @@ async def health_check():
             service_info = {
                 "intent_classification": classifier_info,
                 "retriever_available": hasattr(assistant, 'retriever'),
-                "llm_client_available": hasattr(assistant, 'llm_client')
+                "llm_client_available": hasattr(assistant, 'llm_client'),
+                "workflow_engine": "integrated"
             }
         
         return HealthResponse(
@@ -160,27 +207,85 @@ async def process_query_endpoint(
     llm_model: Optional[str] = Query(None, description="Specific LLM model to use")
 ):
     """
-    Process agricultural query through AI pipeline with flexible model selection
+    Process agricultural query through AI pipeline with integrated workflow support
     
     Model selection priority:
     1. Query parameters (llm_provider, llm_model)
     2. Request body fields (llm_provider, llm_model)
     3. Default values
+    
+    Workflow detection is automatic based on query complexity.
     """
     try:
+        global assistant
+        
         # Determine final provider and model (query params override request body)
         final_provider = llm_provider or request.llm_provider or "groq"
         final_model = llm_model or request.llm_model or "gemma2-9b-it"
         
-        # Initialize assistant with selected provider and model
-        temp_assistant = AgriculturalAssistant(
-            llm_provider=final_provider,
-            llm_model=final_model
+        # Use the global assistant instance for workflow state management
+        if assistant is None:
+            raise HTTPException(status_code=503, detail="Assistant not initialized")
+        
+        # Update the global assistant's LLM settings if different from current
+        current_provider = assistant.llm_client.llm_service.provider if assistant.llm_client.llm_service else None
+        if (current_provider != final_provider or 
+            assistant.llm_client.model != final_model):
+            # Create new assistant with updated settings
+            assistant = AgriculturalAssistant(
+                llm_provider=final_provider,
+                llm_model=final_model
+            )
+        
+        # First, classify the intent to check if it's a workflow query
+        intent_result = await asyncio.to_thread(
+            assistant.classifier.classify_intent,
+            request.query
         )
         
-        # Use asyncio.to_thread to run synchronous function asynchronously
+        # If it's a workflow query, return subtasks immediately
+        if intent_result.is_workflow:
+            import uuid
+            workflow_id = str(uuid.uuid4())
+            
+            # Store workflow state for later execution
+            workflow_state = {
+                "workflow_id": workflow_id,
+                "original_query": request.query,
+                "subtasks": intent_result.subtasks,
+                "status": "initialized",
+                "start_time": datetime.now(),
+                "completed_subtasks": [],
+                "current_subtask": 0,
+                "summary": None,
+                "completion_time": None
+            }
+            
+            # Store in workflow manager
+            assistant.workflow_manager.active_workflows[workflow_id] = workflow_state
+            
+            logger.info(f"Workflow {workflow_id} initialized with {len(intent_result.subtasks)} subtasks")
+            
+            return QueryResponse(
+                query=request.query,
+                response="Complex query detected. Subtasks have been generated and are ready for execution.",
+                intent=intent_result.intent.value,
+                confidence=intent_result.confidence,
+                crop=None,
+                location=None,
+                bucket_used="",
+                context_count=0,
+                processing_time=0.0,
+                status="workflow_ready",
+                is_workflow=True,
+                workflow_id=workflow_id,
+                subtasks=intent_result.subtasks,
+                redirect_to_workflow=False
+            )
+        
+        # Process regular query
         result = await asyncio.to_thread(
-            temp_assistant.process_query, 
+            assistant.process_query, 
             request.query, 
             request.top_k
         )
@@ -208,9 +313,287 @@ async def process_query_endpoint(
             detail=f"Error processing query: {str(e)}"
         )
 
+@app.post("/workflow", response_model=QueryResponse)
+async def start_workflow_endpoint(request: QueryRequest):
+    """
+    Start a new workflow for complex queries with real-time progress tracking
+    """
+    global assistant
+    
+    try:
+        # Determine final provider and model
+        final_provider = request.llm_provider or "groq"
+        final_model = request.llm_model or "gemma2-9b-it"
+        
+        # Initialize assistant if needed
+        if assistant is None:
+            assistant = AgriculturalAssistant(
+                llm_provider=final_provider,
+                llm_model=final_model
+            )
+        
+        # Update assistant settings if different
+        current_provider = assistant.llm_client.llm_service.provider if assistant.llm_client.llm_service else None
+        if (current_provider != final_provider or 
+            assistant.llm_client.model != final_model):
+            assistant = AgriculturalAssistant(
+                llm_provider=final_provider,
+                llm_model=final_model
+            )
+        
+        # Classify intent to get subtasks
+        intent_result = await asyncio.to_thread(
+            assistant.classifier.classify_intent,
+            request.query
+        )
+        
+        if not intent_result.is_workflow:
+            raise HTTPException(
+                status_code=400,
+                detail="This query is not complex enough for workflow processing"
+            )
+        
+        # Generate workflow ID
+        import uuid
+        workflow_id = str(uuid.uuid4())
+        
+        # Initialize workflow state to match the expected structure
+        workflow_state = {
+            "original_query": request.query,
+            "subtasks": intent_result.subtasks,
+            "completed_subtasks": [],
+            "current_subtask": None,
+            "status": "processing",
+            "progress": 0,
+            "total_subtasks": len(intent_result.subtasks),
+            "start_time": datetime.now(),
+            "summary": None,
+            "error": None,
+            "completion_time": None
+        }
+        
+        # Store workflow state
+        assistant.workflow_manager.active_workflows[workflow_id] = workflow_state
+        
+        logger.info(f"Workflow {workflow_id} initialized with {len(intent_result.subtasks)} subtasks")
+        logger.info(f"Active workflows after initialization: {list(assistant.workflow_manager.active_workflows.keys())}")
+        logger.info(f"Connect to /workflow/stream/{workflow_id} to start processing")
+        
+        logger.info(f"Workflow {workflow_id} started with {len(intent_result.subtasks)} subtasks")
+        
+        return QueryResponse(
+            query=request.query,
+            response=f"Workflow started with {len(intent_result.subtasks)} subtasks. Use /workflow/{workflow_id}/status to track progress.",
+            intent=intent_result.intent.value,
+            confidence=intent_result.confidence,
+            crop=None,
+            location=None,
+            bucket_used="",
+            context_count=0,
+            processing_time=0.0,
+            status="workflow_started",
+            is_workflow=True,
+            workflow_id=workflow_id,
+            subtasks=intent_result.subtasks,
+            redirect_to_workflow=False
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logging.error(f"Error in workflow endpoint: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error starting workflow: {str(e)}"
+        )
+
+
+
+@app.get("/workflow/{workflow_id}/status", response_model=WorkflowStatusResponse)
+async def get_workflow_status(workflow_id: str):
+    """
+    Get current status of a workflow
+    """
+    try:
+        if assistant is None:
+            raise HTTPException(status_code=503, detail="Assistant not initialized")
+        
+        logger.info(f"Checking status for workflow {workflow_id}")
+        logger.info(f"Active workflows: {list(assistant.workflow_manager.active_workflows.keys())}")
+        
+        # Check if workflow exists in active workflows
+        if workflow_id not in assistant.workflow_manager.active_workflows:
+            logger.error(f"Workflow {workflow_id} not found in active workflows")
+            raise HTTPException(status_code=404, detail="Workflow not found")
+        
+        status = assistant.workflow_manager.get_workflow_status(workflow_id)
+        
+        logger.info(f"Workflow {workflow_id} status response: {status}")
+        
+        if "error" in status:
+            logger.error(f"Workflow {workflow_id} error: {status['error']}")
+            raise HTTPException(status_code=404, detail=status["error"])
+        
+        logger.info(f"Workflow {workflow_id} status: {status['status']}, progress: {status['progress']}/{status['total_subtasks']}")
+        return WorkflowStatusResponse(**status)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting workflow status: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error getting workflow status: {str(e)}"
+        )
+
+@app.get("/workflow/{workflow_id}/result", response_model=QueryResponse)
+async def get_workflow_result(workflow_id: str):
+    """
+    Get final result of a completed workflow
+    """
+    try:
+        if assistant is None:
+            raise HTTPException(status_code=503, detail="Assistant not initialized")
+        
+        result = assistant.workflow_manager.get_workflow_result(workflow_id)
+        
+        if "error" in result:
+            raise HTTPException(status_code=404, detail=result["error"])
+        
+        return QueryResponse(**result)
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting workflow result: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error getting workflow result: {str(e)}"
+        )
+
+@app.delete("/workflow/{workflow_id}")
+async def cleanup_workflow(workflow_id: str):
+    """
+    Clean up a completed workflow from memory
+    """
+    try:
+        if assistant is None:
+            raise HTTPException(status_code=503, detail="Assistant not initialized")
+        
+        # Check if workflow exists
+        if workflow_id not in assistant.workflow_manager.active_workflows:
+            return {"message": "Workflow not found or already cleaned up"}
+        
+        success = assistant.workflow_manager.cleanup_workflow(workflow_id)
+        
+        if success:
+            return {"message": "Workflow cleaned up successfully"}
+        else:
+            return {"message": "Workflow not ready for cleanup yet (wait a few seconds)"}
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error cleaning up workflow: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error cleaning up workflow: {str(e)}"
+        )
+
+@app.get("/workflow/stream/{workflow_id}")
+async def stream_workflow_progress(workflow_id: str):
+    """
+    Stream workflow progress in real-time using Server-Sent Events (SSE)
+    """
+    try:
+        if assistant is None:
+            raise HTTPException(status_code=503, detail="Assistant not initialized")
+        
+        logger.info(f"SSE connection requested for workflow {workflow_id}")
+        logger.info(f"Active workflows: {list(assistant.workflow_manager.active_workflows.keys())}")
+        
+        # Check if workflow exists
+        if workflow_id not in assistant.workflow_manager.active_workflows:
+            logger.error(f"Workflow {workflow_id} not found in active workflows")
+            logger.error(f"Available workflows: {list(assistant.workflow_manager.active_workflows.keys())}")
+            raise HTTPException(status_code=404, detail="Workflow not found")
+        
+        workflow = assistant.workflow_manager.active_workflows[workflow_id]
+        logger.info(f"Found workflow {workflow_id}, starting SSE stream")
+        
+        async def event_stream():
+            try:
+                # Send initial subtask list
+                yield f"data: {json.dumps({'type': 'subtasks', 'subtasks': workflow['subtasks']})}\n\n"
+                
+                # Process subtasks one by one and stream results
+                subtask_results = []
+                for i, subtask in enumerate(workflow['subtasks']):
+                    logger.info(f"Processing subtask {i+1}/{len(workflow['subtasks'])}: {subtask['description']}")
+                    
+                    # Update current subtask
+                    workflow["current_subtask"] = i + 1
+                    
+                    # Process subtask using the workflow manager
+                    subtask_result = await asyncio.to_thread(
+                        assistant.workflow_manager._process_subtask,
+                        subtask, workflow['original_query'], 5  # top_k=5
+                    )
+                    subtask_results.append(subtask_result)
+                    
+                    # Update workflow state
+                    workflow["completed_subtasks"].append(subtask_result)
+                    workflow["progress"] = i + 1
+                    
+                    # Stream subtask completion
+                    yield f"data: {json.dumps({'type': 'subtask_complete', 'subtask_id': i, 'result': subtask_result})}\n\n"
+                    
+                    # Add delay to make progress visible
+                    await asyncio.sleep(3)
+                
+                # Generate final summary
+                logger.info("Generating workflow summary...")
+                summary = await asyncio.to_thread(
+                    assistant.workflow_manager._generate_workflow_summary,
+                    workflow['original_query'], subtask_results
+                )
+                
+                # Update workflow state
+                workflow["summary"] = summary
+                workflow["status"] = "completed"
+                workflow["completion_time"] = datetime.now()
+                
+                # Stream final summary
+                yield f"data: {json.dumps({'type': 'summary', 'summary': summary})}\n\n"
+                
+                # Stream completion
+                yield f"data: {json.dumps({'type': 'complete'})}\n\n"
+                
+                logger.info(f"Workflow {workflow_id} completed successfully")
+                
+            except Exception as e:
+                logger.error(f"Error in workflow stream: {e}")
+                # Update workflow state with error
+                workflow["error"] = str(e)
+                workflow["status"] = "error"
+                
+                # Stream error
+                yield f"data: {json.dumps({'type': 'error', 'error': str(e)})}\n\n"
+        
+        return StreamingResponse(event_stream(), media_type="text/plain")
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error setting up workflow stream: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error setting up workflow stream: {str(e)}"
+        )
+
 @app.get("/intents")
 async def get_supported_intents():
-    """Get list of supported agricultural intents"""
+    """Get list of supported agricultural intents including workflow support"""
     try:
         from intent_classifier import IntentType
         
@@ -224,6 +607,7 @@ async def get_supported_intents():
             "fertilizer_guidance": "Questions about fertilizers and soil nutrition",
             "seasonal_planning": "Questions about planting and harvest timing",
             "general_farming": "General farming advice and cultivation practices",
+            "workflow_complex": "Complex queries requiring multi-step processing",
             "unknown": "Unrecognized or non-agricultural queries"
         }
         
@@ -231,14 +615,42 @@ async def get_supported_intents():
             "intents": [
                 {
                     "name": intent.value,
-                    "description": intent_descriptions.get(intent.value, "No description available")
+                    "description": intent_descriptions.get(intent.value, "No description available"),
+                    "is_workflow": intent.value == "workflow_complex"
                 }
                 for intent in IntentType
             ],
-            "total": len(IntentType)
+            "total": len(IntentType),
+            "workflow_support": True
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error retrieving intents: {str(e)}")
+
+@app.get("/intent/{query}")
+async def classify_intent(query: str):
+    """Classify intent for a query with workflow detection"""
+    try:
+        if assistant is None:
+            raise HTTPException(status_code=503, detail="Assistant not initialized")
+        
+        intent_result = assistant.classifier.classify_intent(query)
+        return {
+            "query": query,
+            "intent": intent_result.intent.value,
+            "confidence": intent_result.confidence,
+            "crop": intent_result.crop,
+            "location": intent_result.location,
+            "model": intent_result.model,
+            "provider": intent_result.provider,
+            "is_workflow": intent_result.is_workflow,
+            "subtasks": intent_result.subtasks
+        }
+    except Exception as e:
+        logger.error(f"Error classifying intent: {e}")
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Error classifying intent: {str(e)}"
+        )
 
 @app.get("/providers", response_model=ProvidersResponse)
 async def get_providers_and_models():
@@ -312,22 +724,32 @@ async def process_batch_queries(
     llm_model: Optional[str] = Query("llama-3.1-8b-instant", description="Specific LLM model"),
     top_k: Optional[int] = Query(5, description="Number of context documents")
 ):
-    """Process multiple queries in batch"""
+    """Process multiple queries in batch with workflow support"""
     try:
+        global assistant
+        
         if len(queries) > 10:  # Limit batch size
             raise HTTPException(status_code=400, detail="Maximum 10 queries per batch")
         
-        # Initialize assistant with selected provider and model
-        temp_assistant = AgriculturalAssistant(
-            llm_provider=llm_provider,
-            llm_model=llm_model
-        )
+        # Use the global assistant instance
+        if assistant is None:
+            raise HTTPException(status_code=503, detail="Assistant not initialized")
+        
+        # Update the global assistant's LLM settings if different from current
+        current_provider = assistant.llm_client.llm_service.provider if assistant.llm_client.llm_service else None
+        if (current_provider != llm_provider or 
+            assistant.llm_client.model != llm_model):
+            # Create new assistant with updated settings
+            assistant = AgriculturalAssistant(
+                llm_provider=llm_provider,
+                llm_model=llm_model
+            )
         
         results = []
         for query in queries:
             try:
                 result = await asyncio.to_thread(
-                    temp_assistant.process_query,
+                    assistant.process_query,
                     query,
                     top_k
                 )
@@ -349,8 +771,8 @@ async def process_batch_queries(
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Batch processing error: {str(e)}")
-    
-# 1. Comprehensive Weather Data Endpoint
+
+# Weather endpoints
 @app.get("/weather/comprehensive")
 async def get_comprehensive_weather():
     """
@@ -358,7 +780,10 @@ async def get_comprehensive_weather():
     Includes: Current weather, 7-day forecast, and past 7 days history
     """
     try:
-        weather_data = retriever.get_comprehensive_weather_data()
+        if assistant is None:
+            raise HTTPException(status_code=503, detail="Assistant not initialized")
+        
+        weather_data = assistant.retriever.get_comprehensive_weather_data()
         
         if not weather_data:
             raise HTTPException(
@@ -395,12 +820,14 @@ async def get_comprehensive_weather():
         logger.error(f"Error fetching comprehensive weather data: {e}")
         raise HTTPException(status_code=500, detail=f"Weather service error: {str(e)}")
 
-# 2. Current Weather Only
 @app.get("/weather/current")
 async def get_current_weather():
     """Get current weather data for Bargarh district"""
     try:
-        current_weather = retriever.get_live_weather_data()
+        if assistant is None:
+            raise HTTPException(status_code=503, detail="Assistant not initialized")
+        
+        current_weather = assistant.retriever.get_live_weather_data()
         
         if not current_weather:
             raise HTTPException(
@@ -419,12 +846,14 @@ async def get_current_weather():
         logger.error(f"Error fetching current weather: {e}")
         raise HTTPException(status_code=500, detail=f"Weather service error: {str(e)}")
 
-# 3. Weather Forecast Only
 @app.get("/weather/forecast")
 async def get_weather_forecast():
     """Get 7-day weather forecast for Bargarh district"""
     try:
-        forecast = retriever.get_weather_forecast()
+        if assistant is None:
+            raise HTTPException(status_code=503, detail="Assistant not initialized")
+        
+        forecast = assistant.retriever.get_weather_forecast()
         
         if not forecast:
             raise HTTPException(
@@ -443,12 +872,14 @@ async def get_weather_forecast():
         logger.error(f"Error fetching weather forecast: {e}")
         raise HTTPException(status_code=500, detail=f"Weather service error: {str(e)}")
 
-# 4. Historical Weather Data
 @app.get("/weather/historical")
 async def get_historical_weather():
     """Get past 7 days weather history for Bargarh district"""
     try:
-        historical = retriever.get_historical_weather_data()
+        if assistant is None:
+            raise HTTPException(status_code=503, detail="Assistant not initialized")
+        
+        historical = assistant.retriever.get_historical_weather_data()
         
         if not historical:
             raise HTTPException(
@@ -466,8 +897,8 @@ async def get_historical_weather():
     except Exception as e:
         logger.error(f"Error fetching historical weather: {e}")
         raise HTTPException(status_code=500, detail=f"Weather service error: {str(e)}")
-    
-# 5. Context Retrieval Endpoint (Advanced)
+
+# Context retrieval endpoint
 @app.post("/query/context")
 async def get_query_context(request: ContextRequest):
     """
@@ -475,15 +906,18 @@ async def get_query_context(request: ContextRequest):
     Includes intent classification and context retrieval with optional weather data
     """
     try:
+        if assistant is None:
+            raise HTTPException(status_code=503, detail="Assistant not initialized")
+        
         query = request.query.strip()
         if not query:
             raise HTTPException(status_code=400, detail="Query cannot be empty")
         
         # Classify intent
-        intent_result = intent_classifier.classify_intent(query)
+        intent_result = assistant.classifier.classify_intent(query)
         
         # Retrieve context
-        context_result = retriever.retrieve_context(
+        context_result = assistant.retriever.retrieve_context(
             query=query,
             intent_result=intent_result,
             top_k=request.top_k
@@ -497,7 +931,9 @@ async def get_query_context(request: ContextRequest):
                 "type": intent_result.intent.value,
                 "confidence": intent_result.confidence,
                 "crop": intent_result.crop,
-                "location": intent_result.location
+                "location": intent_result.location,
+                "is_workflow": intent_result.is_workflow,
+                "subtasks": intent_result.subtasks
             },
             "context": {
                 "total_results": context_result['total_results'],
@@ -516,13 +952,123 @@ async def get_query_context(request: ContextRequest):
         logger.error(f"Error getting query context: {e}")
         raise HTTPException(status_code=500, detail=f"Context retrieval error: {str(e)}")
 
-# 6. Weather Status Check
+# New workflow execution endpoints
+@app.post("/workflow/execute", response_model=SubtaskResult)
+async def execute_subtask(request: WorkflowExecuteRequest):
+    """
+    Execute a single subtask in a workflow
+    """
+    try:
+        if assistant is None:
+            raise HTTPException(status_code=503, detail="Assistant not initialized")
+        
+        workflow_id = request.workflow_id
+        subtask_index = request.subtask_index
+        
+        # Check if workflow exists
+        if workflow_id not in assistant.workflow_manager.active_workflows:
+            raise HTTPException(status_code=404, detail="Workflow not found")
+        
+        workflow = assistant.workflow_manager.active_workflows[workflow_id]
+        
+        # Check if subtask index is valid
+        if subtask_index >= len(workflow["subtasks"]):
+            raise HTTPException(status_code=400, detail="Invalid subtask index")
+        
+        # Execute the subtask
+        logger.info(f"Executing subtask {subtask_index} for workflow {workflow_id}")
+        
+        # Get the subtask data
+        subtask = workflow["subtasks"][subtask_index]
+        original_query = workflow["original_query"]
+        
+        result = await asyncio.to_thread(
+            assistant.workflow_manager._process_subtask,
+            subtask,
+            original_query,
+            5  # top_k value
+        )
+        
+        # Update workflow state
+        workflow["completed_subtasks"].append(result)
+        workflow["current_subtask"] = subtask_index + 1
+        workflow["progress"] = (len(workflow["completed_subtasks"]) / len(workflow["subtasks"])) * 100
+        
+        logger.info(f"Subtask {subtask_index} completed for workflow {workflow_id}")
+        
+        return SubtaskResult(
+            subtask_id=subtask_index,
+            completed=True,
+            result=result
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error executing subtask: {e}")
+        raise HTTPException(status_code=500, detail=f"Error executing subtask: {str(e)}")
+
+@app.post("/workflow/summary", response_model=WorkflowSummary)
+async def generate_workflow_summary(request: WorkflowSummaryRequest):
+    """
+    Generate final summary for a completed workflow
+    """
+    try:
+        if assistant is None:
+            raise HTTPException(status_code=503, detail="Assistant not initialized")
+        
+        workflow_id = request.workflow_id
+        
+        # Check if workflow exists
+        if workflow_id not in assistant.workflow_manager.active_workflows:
+            raise HTTPException(status_code=404, detail="Workflow not found")
+        
+        workflow = assistant.workflow_manager.active_workflows[workflow_id]
+        
+        # Check if all subtasks are completed
+        if len(workflow["completed_subtasks"]) != len(workflow["subtasks"]):
+            raise HTTPException(status_code=400, detail="Not all subtasks are completed")
+        
+        # Generate summary
+        logger.info(f"Generating summary for workflow {workflow_id}")
+        
+        original_query = workflow["original_query"]
+        completed_subtasks = workflow["completed_subtasks"]
+        
+        summary = await asyncio.to_thread(
+            assistant.workflow_manager._generate_workflow_summary,
+            original_query,
+            completed_subtasks
+        )
+        
+        # Update workflow state
+        workflow["summary"] = summary
+        workflow["status"] = "completed"
+        workflow["completion_time"] = datetime.now()
+        
+        logger.info(f"Summary generated for workflow {workflow_id}")
+        
+        return WorkflowSummary(
+            workflow_id=workflow_id,
+            summary=summary,
+            completed=True
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error generating summary: {e}")
+        raise HTTPException(status_code=500, detail=f"Error generating summary: {str(e)}")
+
 @app.get("/weather/status")
 async def check_weather_service_status():
     """Check if weather API service is working"""
     try:
+        if assistant is None:
+            raise HTTPException(status_code=503, detail="Assistant not initialized")
+        
         # Try to fetch a small amount of data to test the service
-        current_weather = retriever.get_live_weather_data()
+        current_weather = assistant.retriever.get_live_weather_data()
         
         if current_weather:
             return {
@@ -547,7 +1093,6 @@ async def check_weather_service_status():
             "error": str(e),
             "message": "Weather service check failed"
         }
-
 
 # Run the server
 if __name__ == "__main__":

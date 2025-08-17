@@ -31,14 +31,14 @@ class AgriculturalRetriever:
         # Map intent types to bucket names
         self.intent_to_bucket = {
             IntentType.MARKET_PRICES: "market_prediction_data",
-            IntentType.IRRIGATION_PLANNING: "crop_guidance_data",
+            IntentType.IRRIGATION_PLANNING: None,  # No bucket, only weather API
             IntentType.PEST_CONTROL: "pest_control_data", 
-            IntentType.CROP_RECOMMENDATIONS: "crop_guidance_data",
-            IntentType.WEATHER_INSIGHTS: "weather_data",
+            IntentType.CROP_RECOMMENDATIONS: "soil_health_data",
+            IntentType.WEATHER_INSIGHTS: None,  # No bucket, only weather API
             IntentType.GOVERNMENT_SCHEMES: "government_schemes_data",
-            IntentType.FERTILIZER_GUIDANCE: "soil_health_data",
-            IntentType.SEASONAL_PLANNING: "crop_guidance_data",
-            IntentType.GENERAL_FARMING: "crop_guidance_data",
+            IntentType.FERTILIZER_GUIDANCE: "fertilizer_guidance_data",
+            IntentType.SEASONAL_PLANNING: "all_buckets",  # Special flag for all buckets
+            IntentType.GENERAL_FARMING: "all_buckets",  # Special flag for all buckets
             IntentType.UNKNOWN: "market_prediction_data"  # Default fallback
         }
         
@@ -284,8 +284,8 @@ class AgriculturalRetriever:
             Dictionary with retrieved context and metadata
         """
         try:
-            # Step 1: Define weather-relevant intents that should include weather data
-            weather_relevant_intents = {
+            # Step 1: Handle weather-only intents (no bucket, only weather API)
+            weather_only_intents = {
                 IntentType.WEATHER_INSIGHTS,
                 IntentType.IRRIGATION_PLANNING,
                 IntentType.SEASONAL_PLANNING,
@@ -293,42 +293,67 @@ class AgriculturalRetriever:
                 IntentType.CROP_RECOMMENDATIONS
             }
             
-            # Step 2: For weather-relevant queries, include weather data
-            if intent_result.intent in weather_relevant_intents:
+            if intent_result.intent in weather_only_intents:
                 weather_data_list = self.get_comprehensive_weather_data()
                 if weather_data_list:
                     logger.info(f"Retrieved {len(weather_data_list)} weather data documents for {intent_result.intent.value}")
-                    
-                    # Try to get additional context from vector DB if bucket exists
-                    bucket_name = self.intent_to_bucket.get(intent_result.intent, "market_prediction_data")
-                    additional_context = []
-                    
-                    if bucket_name in self.vector_db.list_buckets():
-                        try:
-                            search_results = self.vector_db.query_bucket(
-                                bucket_name=bucket_name,
-                                query=query,
-                                n_results=top_k
-                            )
-                            additional_context = self._format_results(search_results)
-                            logger.info(f"Found {len(additional_context)} additional context documents from vector DB")
-                        except Exception as e:
-                            logger.warning(f"Failed to query vector DB for context: {e}")
-                    
-                    # Combine weather data with additional context (weather data first for priority)
-                    all_context = weather_data_list + additional_context
-                    
                     return {
-                        "context": all_context,
-                        "bucket_used": bucket_name if bucket_name in self.vector_db.list_buckets() else "weather_api_only",
+                        "context": weather_data_list,
+                        "bucket_used": "weather_api_only",
                         "query_used": query,
-                        "total_results": len(all_context)
+                        "total_results": len(weather_data_list)
                     }
                 else:
                     logger.warning("Failed to fetch weather data")
-                    # Continue with normal retrieval even if weather data fails
+                    return {
+                        "context": [],
+                        "bucket_used": "weather_api_only",
+                        "query_used": query,
+                        "total_results": 0,
+                        "error": "Failed to fetch weather data"
+                    }
             
-            # Step 3: For all queries, use normal bucket-based retrieval
+            # Step 2: Handle all-buckets intents (query all available buckets + weather)
+            all_buckets_intents = {
+                IntentType.SEASONAL_PLANNING,
+                IntentType.GENERAL_FARMING
+            }
+            
+            if intent_result.intent in all_buckets_intents:
+                all_context = []
+                buckets_used = []
+                
+                # Get weather data first
+                weather_data_list = self.get_comprehensive_weather_data()
+                if weather_data_list:
+                    all_context.extend(weather_data_list)
+                    buckets_used.append("weather_api")
+                
+                # Query all available buckets
+                available_buckets = self.vector_db.list_buckets()
+                for bucket_name in available_buckets:
+                    try:
+                        search_results = self.vector_db.query_bucket(
+                            bucket_name=bucket_name,
+                            query=query,
+                            n_results=top_k // len(available_buckets) if len(available_buckets) > 0 else top_k
+                        )
+                        bucket_context = self._format_results(search_results)
+                        all_context.extend(bucket_context)
+                        buckets_used.append(bucket_name)
+                        logger.info(f"Found {len(bucket_context)} documents from bucket '{bucket_name}'")
+                    except Exception as e:
+                        logger.warning(f"Failed to query bucket '{bucket_name}': {e}")
+                
+                return {
+                    "context": all_context,
+                    "bucket_used": "all_buckets",
+                    "buckets_queried": buckets_used,
+                    "query_used": query,
+                    "total_results": len(all_context)
+                }
+            
+            # Step 3: Handle specific bucket intents
             bucket_name = self.intent_to_bucket.get(intent_result.intent, "market_prediction_data")
             
             # Check if bucket exists - if not, return no context
@@ -352,7 +377,32 @@ class AgriculturalRetriever:
             # Format results
             context_documents = self._format_results(search_results)
             
-            # For weather-relevant intents, add weather data if not already added
+            # Special handling for fertilizer guidance - include soil health data
+            if intent_result.intent == IntentType.FERTILIZER_GUIDANCE:
+                # Query soil health data as additional context
+                if "soil_health_data" in self.vector_db.list_buckets():
+                    try:
+                        soil_search_results = self.vector_db.query_bucket(
+                            bucket_name="soil_health_data",
+                            query=query,
+                            n_results=top_k // 2  # Get half the results from soil data
+                        )
+                        soil_context = self._format_results(soil_search_results)
+                        if soil_context:
+                            # Add soil health data to the beginning for priority
+                            for soil_data in reversed(soil_context):
+                                context_documents.insert(0, soil_data)
+                            logger.info(f"Added {len(soil_context)} soil health documents to fertilizer guidance context")
+                    except Exception as e:
+                        logger.warning(f"Failed to query soil health data for fertilizer guidance: {e}")
+            
+            # Add weather data for relevant intents
+            weather_relevant_intents = {
+                IntentType.CROP_RECOMMENDATIONS,
+                IntentType.FERTILIZER_GUIDANCE,
+                IntentType.PEST_CONTROL
+            }
+            
             if intent_result.intent in weather_relevant_intents and context_documents:
                 weather_data_list = self.get_comprehensive_weather_data()
                 if weather_data_list:

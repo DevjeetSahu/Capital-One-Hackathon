@@ -1,0 +1,133 @@
+Commodity,Fertilizers (recommendation),Cost breakdown (approx. ₹),,,
+Bhindi (Ladies Finger),"FYM 25 t/ha
+N 20 kg
+P 50 kg
+K 30 kg basal
+N 20 kg @30 DAS
+Azospirillum & Phosphobacterium 2 kg/ha each mixed in FYM","FYM (25t): 25,000
+Urea (40 kg equiv): 300
+SSP (50 kg equiv): 400
+MOP (30 kg equiv): 600
+Biofertilizers: 500",,,"FYM : Farm Yard Manure 
+It’s an organic fertilizer made from decomposed mixture of cattle dung, urine, farm waste, and crop residues. It improves soil fertility, structure, and water retention.
+DAS : Days After Sowing
+BHC : Benzene Hexachloride
+NAA : Naphthalene Acetic Acid
+SSP : Single Super Phosphate
+DAP : Diammonium Phosphate
+SSP : Single Super Phosphate
+FYM : Farm Yard Manure 
+MOP: Muriate of Potash
+NPK : Nitrogen, Phosphorus, Potassium
+BHC : Benzene Hexachloride
+NAA : Naphthalene Acetic Acid"
+Bitter gourd,"FYM 10 kg/pit (≈20 t/ha)
+NPK 6:12:12 ~100 g/pit basal;
+N 10 g/pit @30 DAS","FYM (20t): 20,000
+NPK mixture: 5,000
+Urea (20 kg equiv): 150",,,
+Bottle gourd,"FYM 10 kg/pit (≈20 t/ha)
+NPK 6:12:12 ~100 g/pit basal
+N 10 g/pit @30 DAS","FYM (20t): 20,000
+NPK mixture: 5,000
+Urea (20 kg equiv): 150",,,
+Brinjal,"N 50 kg, P 50 kg, K 30 kg/ha basal
+N 50 kg/ha @30 DAT
+Azospirillum & Phosphobacteria 2 kg/each at planting","Urea (100 kg): 750
+SSP (300 kg): 2,400
+MOP (50 kg): 1,000
+Biofertilizers: 500",,,Reference: https://agritech.tnau.ac.in/horticulture/FERTILIZER%20SCHEDULE%20FOR%20VEGETABLES.pdf
+Cabbage,"FYM 20 t/ha
+N 50 kg, P 125 kg, K 25 kg/ha basal
+Azospirillum 2 kg basal
+N 50 kg @1 month","FYM (20t): 20,000
+Urea (100 kg): 750
+SSP (750 kg): 6,000
+MOP (40 kg): 800
+Biofertilizers: 300",,,
+Cucumber (Kheera),"FYM 40 t/ha basal
+N 35 kg/ha @30 DAS","FYM (40t): 40,000
+Urea (75 kg equiv): 600",,,
+Drumstick,"FYM ~20 t/ha total (or 20 kg/plant equiv)
+~200 g N, 100 g P₂O₅, 100 g K₂O per plant annually (tree crop dosing)","FYM (20t): 20,000
+Urea (400 kg equiv yearly): 3,000
+SSP (600 kg): 4,800
+MOP (100 kg): 2,000",,,
+Fish (Aquaculture pond fertility),"Cow dung 10 t/ha
+Urea 100 kg/ha/month
+SSP 100 kg/ha/month (for ~6 months)","Cow dung (10t): 10,000
+Urea (600 kg total): 4,500
+SSP (600 kg total): 4,800",,,
+Green Chilli,"FYM 25 t/ha
+N 30 kg, P 60 kg, K 30 kg/ha basal
+N 30 kg/ha @30, 60, 90 days
+K as K₂SO₄ recommended for quality","FYM (25t): 25,000
+Urea (120 kg equiv): 900
+SSP (375 kg): 3,000
+MOP (50 kg): 1,000",,,
+Lemon (Citrus),"FYM 20–25 kg/tree or equivalent per ha
+~300 g N, 200 g P₂O₅, 200 g K₂O per tree annually (tree crop dosing)","FYM (25t equiv): 25,000
+Urea (650 kg equiv): 4,800
+SSP (1,000 kg equiv): 8,000
+MOP (350 kg equiv): 7,000",,,
+Little gourd (Kundru),"FYM 20 t/ha
+N 60 kg, P 40 kg, K 40 kg basal
+additional N 40 kg during growth","FYM (20t): 20,000
+Urea (220 kg): 1,700
+SSP (250 kg): 2,000
+MOP (70 kg): 1,400",,,
+Onion (Bellary onion / Small onion),"Bellary Onion: 
+FYM 25 t/ha
+Azospirillum 2 kg
+Phosphobacteria 2 kg
+N 50 kg, P 150 kg, K 75 kg basal
+N 50 kg top-dress
+ZnSO₄ 50 kg basal. 
+Small onion: 
+FYM 25 t/ha
+Azospirillum 2 kg
+Phosphobacteria 2 kg
+N 30 kg, P 60 kg, K 30 kg basal
+N 30 kg @30 days","FYM (25t): 25,000
+Urea (100 kg): 750
+SSP (900 kg): 7,200
+MOP (125 kg): 2,500
+ZnSO₄ (50 kg): 2,000
+Biofertilizers: 400",,,
+"Paddy (Dhan, Common)","FYM 10–12 t/ha
+fertilizer ~100:50:50 N:P:K (split N in 3–4 doses)","FYM (10t): 10,000
+Urea (220 kg): 1,700
+SSP (300 kg): 2,400
+MOP (80 kg): 1,600",,,
+Papaya (Raw),"FYM 10–15 kg/plant equivalent or 10–15 t/ha
+~200 g N, 200 g P₂O₅, 200 g K₂O per plant/year (split)","FYM (25t equiv): 25,000
+Urea (400 kg equiv): 3,000
+SSP (600 kg): 4,800
+MOP (100 kg): 2,000",,,
+Pointed gourd (Parval),"FYM 15 t/ha; ~80:60:60 NPK basal
+40 kg N at flowering","FYM (15t): 15,000; Urea (220 kg): 1,700; SSP (375 kg): 3,000; MOP (100 kg): 2,000",,,
+Potato (table potato / sweet potato noted separately),"Potato: 
+FYM 15 t/ha
+120:240:120 NPK split (half basal, half top dressing)
+MgSO₄ 60 kg/ha basal. 
+Sweet potato: 
+FYM 25 t/ha
+20:40:60 NPK basal + repeat after 30 days","FYM (15t): 15,000
+Urea (260 kg): 2,000
+SSP (1500 kg equiv): 12,000
+MOP (200 kg): 4,000
+MgSO₄ (60 kg): 1,500",,,
+Ridge gourd (Tori),"FYM 20 t/ha
+~100:60:60 NPK split application","FYM (20t): 20,000
+Urea (220 kg): 1,700
+SSP (375 kg): 3,000
+MOP (100 kg): 2,000",,,
+Tomato,"FYM 25 t/ha
+N 75 kg, P 100 kg, K 50 kg, Borax 10 kg, ZnSO₄ 50 kg basal
+N 75 kg @30 days (earthing up)
+Triacontanol foliar at 30 days and at full bloom","FYM (25t): 25,000
+Urea (325 kg): 2,500
+SSP (625 kg): 5,000
+MOP (80 kg): 1,600
+Borax (10 kg): 800
+ZnSO₄ (50 kg): 2,000",,,

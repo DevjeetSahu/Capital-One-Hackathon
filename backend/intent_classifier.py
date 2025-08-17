@@ -27,6 +27,7 @@ class IntentType(Enum):
     FERTILIZER_GUIDANCE = "fertilizer_guidance"
     SEASONAL_PLANNING = "seasonal_planning"
     GENERAL_FARMING = "general_farming"
+    WORKFLOW_COMPLEX = "workflow_complex"  # NEW: For complex queries requiring workflow
     UNKNOWN = "unknown"
 
 @dataclass
@@ -38,6 +39,8 @@ class IntentResult:
     crop: str = None
     model: str = None  # NEW: Track which model was used
     provider: str = None  # NEW: Track which provider was used
+    is_workflow: bool = False  # NEW: Indicates if this is a workflow query
+    subtasks: List[Dict] = None  # NEW: Subtasks for workflow queries
 
 class AgricultureIntentClassifier:
     def __init__(self, use_llm: bool = True, preferred_provider: str = "groq", preferred_model: str = None):
@@ -305,9 +308,16 @@ Rules:
     def classify_intent(self, query: str) -> IntentResult:
         """
         Classify the intent of the input query
-        Uses LLM first, falls back to keyword matching
+        Uses complexity analysis first, then LLM, falls back to keyword matching
         """
         try:
+            # Step 1: Check if this is a complex workflow query
+            complexity_score = self._analyze_query_complexity(query)
+            if complexity_score >= 0.7:  # Threshold for complex queries
+                logger.info(f"Query complexity score {complexity_score:.2f} - treating as workflow query")
+                return self._handle_workflow_query(query, complexity_score)
+            
+            # Step 2: Regular intent classification for simple queries
             # Try LLM classification first if available
             if self.use_llm and self.llm_service and self.llm_service.is_available():
                 logger.debug("Attempting LLM classification")
@@ -347,6 +357,175 @@ Rules:
             "status": "llm_enabled",
             "available_models": available_models
         }
+
+    def _analyze_query_complexity(self, query: str) -> float:
+        """
+        Analyze query complexity using LLM
+        Returns score between 0-1 (higher = more complex)
+        """
+        if not self.llm_service or not self.llm_service.is_available():
+            # Fallback complexity analysis using keywords
+            return self._analyze_complexity_with_keywords(query)
+        
+        system_prompt = "You are an expert at analyzing the complexity of agricultural queries. Return only a numeric score between 0-1."
+        
+        user_prompt = f"""
+        Analyze the complexity of this agricultural query and return a score between 0-1.
+        
+        Query: "{query}"
+        
+        Consider these factors:
+        - Multiple intents or topics
+        - Temporal aspects (seasons, planning)
+        - Multiple crops or activities
+        - Requires coordination of different data sources
+        - Planning or strategic nature
+        
+        Return only a number between 0-1 (e.g., 0.85):
+        """
+        
+        try:
+            result = self.llm_service.call_llm(system_prompt, user_prompt, max_tokens=50)
+            if result['status'] == 'success':
+                response = result['response']
+                # Extract numeric score from response
+                import re
+                score_match = re.search(r'0\.\d+', response)
+                if score_match:
+                    return float(score_match.group())
+            return 0.5  # Default score
+        except Exception as e:
+            logger.warning(f"Failed to analyze complexity with LLM: {e}")
+            return self._analyze_complexity_with_keywords(query)
+
+    def _analyze_complexity_with_keywords(self, query: str) -> float:
+        """
+        Fallback complexity analysis using keyword patterns
+        """
+        query_lower = query.lower()
+        
+        # Complexity indicators
+        complexity_keywords = [
+            'plan', 'planning', 'strategy', 'comprehensive', 'overall', 'complete',
+            'multiple', 'various', 'different', 'several', 'both', 'and', 'also',
+            'considering', 'including', 'along with', 'as well as', 'together',
+            'season', 'month', 'year', 'timeline', 'schedule', 'timing',
+            'market', 'weather', 'soil', 'fertilizer', 'pest', 'crop'
+        ]
+        
+        # Count complexity indicators
+        complexity_count = sum(1 for keyword in complexity_keywords if keyword in query_lower)
+        
+        # Length factor
+        length_factor = min(len(query.split()) / 20, 1.0)  # Normalize by 20 words
+        
+        # Calculate complexity score
+        complexity_score = min((complexity_count * 0.1) + (length_factor * 0.3), 1.0)
+        
+        return complexity_score
+
+    def _handle_workflow_query(self, query: str, complexity_score: float) -> IntentResult:
+        """
+        Handle complex queries by creating subtasks
+        """
+        subtasks = self._decompose_query_into_subtasks(query)
+        
+        return IntentResult(
+            intent=IntentType.WORKFLOW_COMPLEX,
+            confidence=complexity_score,
+            keywords_matched=[],
+            location=None,
+            crop=None,
+            model=self.llm_service.provider if self.llm_service else "keyword_based",
+            provider=self.llm_service.provider if self.llm_service else "local",
+            is_workflow=True,
+            subtasks=subtasks
+        )
+
+    def _decompose_query_into_subtasks(self, query: str) -> List[Dict]:
+        """
+        Decompose complex query into manageable subtasks
+        """
+        if not self.llm_service or not self.llm_service.is_available():
+            # Fallback subtasks
+            return self._create_fallback_subtasks(query)
+        
+        system_prompt = "You are an expert at breaking down complex agricultural queries into specific, actionable subtasks. Return only valid JSON."
+        
+        user_prompt = f"""
+        Break down this complex agricultural query into 3-5 specific subtasks.
+        
+        Complex Query: "{query}"
+        
+        For each subtask, provide:
+        1. A clear, specific description
+        2. The primary intent type (from: MARKET_PRICES, CROP_RECOMMENDATIONS, FERTILIZER_GUIDANCE, PEST_CONTROL, GOVERNMENT_SCHEMES, WEATHER_INSIGHTS, SEASONAL_PLANNING)
+        3. A specific query for that subtask
+        4. Priority (1-5, where 1 is highest)
+        
+        Format your response as JSON:
+        {{
+            "subtasks": [
+                {{
+                    "description": "Analyze current market prices for specific crops",
+                    "intent_type": "MARKET_PRICES",
+                    "query": "What are the current prices for paddy and wheat in Bargarh mandi?",
+                    "priority": 1
+                }}
+            ]
+        }}
+        
+        Focus on making each subtask specific and actionable.
+        """
+        
+        try:
+            result = self.llm_service.call_llm(system_prompt, user_prompt, max_tokens=500)
+            
+            if result['status'] == 'success':
+                response = result['response']
+                
+                # Parse JSON response
+                import json
+                import re
+                
+                # Extract JSON from response
+                json_match = re.search(r'\{.*\}', response, re.DOTALL)
+                if json_match:
+                    data = json.loads(json_match.group())
+                    subtasks = data.get("subtasks", [])
+                    
+                    # Sort by priority
+                    subtasks.sort(key=lambda x: x.get("priority", 3))
+                    return subtasks
+                    
+        except Exception as e:
+            logger.error(f"Failed to decompose query with LLM: {e}")
+        
+        # Fallback: create basic subtasks
+        return self._create_fallback_subtasks(query)
+
+    def _create_fallback_subtasks(self, query: str) -> List[Dict]:
+        """Create basic subtasks as fallback"""
+        return [
+            {
+                "description": "Analyze current market conditions",
+                "intent_type": "MARKET_PRICES",
+                "query": f"market prices {query}",
+                "priority": 1
+            },
+            {
+                "description": "Check weather conditions",
+                "intent_type": "WEATHER_INSIGHTS",
+                "query": f"weather forecast {query}",
+                "priority": 2
+            },
+            {
+                "description": "Get crop recommendations",
+                "intent_type": "CROP_RECOMMENDATIONS",
+                "query": f"crop recommendations {query}",
+                "priority": 3
+            }
+        ]
 
 
 # Enhanced test function with model information
