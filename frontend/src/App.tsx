@@ -9,12 +9,14 @@ import {
   Phone, Cloud, DollarSign, BookOpen, Home, Menu, Droplets, TreePine, 
   Wheat, Tractor, AlertTriangle, TrendingDown, Calculator, FileText,
   MapPin, Thermometer, Wind, Eye, Lightbulb, GraduationCap, HandHeart,
-  Coins, CreditCard, Smartphone, Wifi, Mountain, Factory, ShoppingCart
+  Coins, CreditCard, Smartphone, Wifi, Mountain, Factory, ShoppingCart,
+  Store, Building2, Package, Handshake, BarChart3, GitCompare, MessageCircle,
+  UserCheck, Banknote, Calendar, Timer, Gauge, Network, Target
 } from 'lucide-react';
 import { FarmerDashboard } from '../components/FarmerDashboard';
 import { SupplierDashboard } from '../components/SupplierDashboard';
 import { SMSInterface } from '../components/SMSInterface';
-import { ImageWithFallback } from './components/figma/ImageWithFallback';
+import { ImageWithFallback } from '../components/figma/ImageWithFallback';
 
 type UserInterface = 'farmer' | 'supplier' | 'sms' | null;
 
@@ -122,6 +124,43 @@ export default function App() {
     { text: "आज मौसम कैसा रहेगा?", icon: "🌦️" },
     { text: "धान का भाव क्या है?", icon: "💰" },
     { text: "खाद कब डालना चाहिए?", icon: "🌱" }
+  ];
+
+  // Demo supplier data for showcase
+  const demoSuppliers = [
+    {
+      id: 1,
+      name: "Kisan AgriSupply Co.",
+      rating: 4.8,
+      price: 1200,
+      originalPrice: 1500,
+      location: "15km away",
+      specialty: "Seeds & Fertilizers",
+      verified: true,
+      responseTime: "< 30 min"
+    },
+    {
+      id: 2,
+      name: "Green Fields Enterprises",
+      rating: 4.6,
+      price: 1350,
+      originalPrice: 1600,
+      location: "25km away",
+      specialty: "Organic Products",
+      verified: true,
+      responseTime: "< 1 hour"
+    },
+    {
+      id: 3,
+      name: "Punjab Krishi Mart",
+      rating: 4.9,
+      price: 1100,
+      originalPrice: 1400,
+      location: "45km away",
+      specialty: "Complete Supplies",
+      verified: true,
+      responseTime: "< 15 min"
+    }
   ];
 
   // Custom JAI-KISSAN Logo Component
@@ -325,7 +364,7 @@ export default function App() {
                         <Button 
                           onClick={handleSearchSubmit}
                           size="lg"
-                          className="ml-4 bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 px-6 lg:px-8 py-4 lg:py-6 text-base lg:text-lg"
+                          className="ml-4 rounded-xl bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 px-6 lg:px-8 py-4 lg:py-6 text-base lg:text-lg"
                         >
                           <Lightbulb className="w-5 h-5 lg:w-6 lg:h-6 mr-2" />
                           Get Help
@@ -347,7 +386,7 @@ export default function App() {
                           setSearchQuery(suggestion.text);
                           handleSearchSubmit();
                         }}
-                        className="text-xs lg:text-sm border-green-200 hover:bg-green-50 hover:border-green-300 ai-suggestion-hover"
+                        className="text-xs lg:text-sm border-green-200 rounded-xl px-6 py-2 hover:bg-green-50 hover:border-green-300 ai-suggestion-hover"
                       >
                         <span className="mr-2">{suggestion.icon}</span>
                         {suggestion.text}
@@ -374,6 +413,228 @@ export default function App() {
                     <div className="text-2xl lg:text-4xl font-bold text-purple-600 mb-2">98%</div>
                     <p className="text-sm lg:text-base text-gray-600">Problems Solved</p>
                   </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* Smart Supplier Marketplace Demo Section */}
+          <section className={`px-4 py-4 lg:px-8 lg:py-16 bg-gradient-to-br from-blue-50 via-white to-green-50 transition-all duration-1000 delay-600 ${showElements ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
+            <div className="max-w-7xl mx-auto">
+              <div className="text-center mb-12 lg:mb-16">
+                <div className="inline-flex items-center gap-3 bg-blue-100 rounded-full px-6 py-3 mb-6">
+                  <Store className="w-5 h-5 text-blue-600" />
+                  <span className="text-blue-800 font-medium">Smart Supplier Marketplace</span>
+                  <Sparkles className="w-5 h-5 text-blue-600" />
+                </div>
+                <h2 className="text-3xl lg:text-5xl mb-6 text-gray-800">
+                  सबसे अच्छा सप्लायर चुनें • Choose Your Best Supplier
+                </h2>
+                <p className="text-lg lg:text-xl text-gray-600 max-w-4xl mx-auto">
+                  Our AI-powered marketplace helps you compare suppliers, prices, and quality - 
+                  ensuring you always get the best deal for your farming needs.
+                </p>
+              </div>
+
+              <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+                {/* Left Side - Process Demo */}
+                <div className="space-y-8">
+                  <div className="relative">
+                    <div className="flex items-center gap-4 p-6 bg-white rounded-2xl shadow-xl border border-white/20">
+                      <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-blue-600 rounded-full flex items-center justify-center">
+                        <Search className="w-6 h-6 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-lg font-semibold text-gray-800 mb-1">1. Search for Supplies</h3>
+                        <p className="text-gray-600">Tell us what you need - fertilizers, seeds, equipment</p>
+                      </div>
+                      <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                        <CheckCircle className="w-5 h-5 text-green-600" />
+                      </div>
+                    </div>
+                    <div className="absolute -right-2 top-1/2 w-4 h-4 bg-gradient-to-br from-green-500 to-blue-600 rounded-full animate-pulse"></div>
+                  </div>
+
+                  <div className="relative ml-8">
+                    <div className="flex items-center gap-4 p-6 bg-white rounded-2xl shadow-xl border border-white/20">
+                      <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                        <GitCompare className="w-6 h-6 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-lg font-semibold text-gray-800 mb-1">2. Compare Suppliers</h3>
+                        <p className="text-gray-600">AI analyzes price, quality, distance, and reviews</p>
+                      </div>
+                      <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                        <BarChart3 className="w-5 h-5 text-blue-600" />
+                      </div>
+                    </div>
+                    <div className="absolute -right-2 top-1/2 w-4 h-4 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full animate-pulse delay-500"></div>
+                  </div>
+
+                  <div className="relative">
+                    <div className="flex items-center gap-4 p-6 bg-white rounded-2xl shadow-xl border border-white/20">
+                      <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center">
+                        <MessageCircle className="w-6 h-6 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-lg font-semibold text-gray-800 mb-1">3. Chat & Negotiate</h3>
+                        <p className="text-gray-600">Direct communication with suppliers for best deals</p>
+                      </div>
+                      <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
+                        <Handshake className="w-5 h-5 text-purple-600" />
+                      </div>
+                    </div>
+                    <div className="absolute -right-2 top-1/2 w-4 h-4 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full animate-pulse delay-1000"></div>
+                  </div>
+
+                  <div className="bg-gradient-to-r from-green-500 to-blue-600 rounded-2xl p-6 text-white">
+                    <div className="flex items-center gap-4 mb-4">
+                      <Award className="w-8 h-8 text-yellow-300" />
+                      <h3 className="text-xl font-semibold">Success Guaranteed!</h3>
+                    </div>
+                    <p className="mb-4">Average savings: ₹15,000 per season | 98% farmer satisfaction</p>
+                    <Button 
+                      onClick={() => handleInterfaceSelection('farmer')}
+                      className="bg-white w-full rounded-xl text-green-600 hover:bg-gray-100 w-full"
+                    >
+                      <Target className="w-5 h-5 mr-2" />
+                      Try Supplier Marketplace
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Right Side - Live Demo */}
+                <div className="bg-white rounded-3xl shadow-2xl border border-gray-200/50 overflow-hidden">
+                  <div className="bg-gradient-to-r from-blue-600 to-purple-600 p-6 text-white">
+                    <div className="flex items-center gap-3 mb-2">
+                      <Store className="w-6 h-6" />
+                      <h3 className="text-xl font-semibold">Live Supplier Comparison</h3>
+                    </div>
+                    <p className="text-blue-100 text-sm">Showing results for "NPK Fertilizer 50kg"</p>
+                  </div>
+
+                  <div className="p-6 space-y-4">
+                    {demoSuppliers.map((supplier, index) => (
+                      <div key={supplier.id} className={`relative p-4 rounded-xl border-2 transition-all duration-300 ${
+                        index === 0 
+                          ? 'border-green-400 bg-green-50' 
+                          : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50'
+                      }`}>
+                        <div className="flex items-center justify-between mb-3">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-gradient-to-br from-green-100 to-blue-100 rounded-lg flex items-center justify-center text-lg">
+                              🏪
+                            </div>
+                            <div>
+                              <h4 className="font-semibold text-gray-800">{supplier.name}</h4>
+                              <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-1">
+                                  <Star className="w-3 h-3 text-yellow-400 fill-current" />
+                                  <span className="text-sm font-medium">{supplier.rating}</span>
+                                </div>
+                                {supplier.verified && (
+                                  <Badge className="bg-green-100 text-green-800 text-xs">
+                                    <CheckCircle className="w-3 h-3 mr-1" />
+                                    Verified
+                                  </Badge>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="text-right">
+                            <div className="text-2xl font-bold text-green-600">₹{supplier.price}</div>
+                            <div className="text-xs text-gray-500 line-through">₹{supplier.originalPrice}</div>
+                            <div className="text-xs text-red-600">Save ₹{supplier.originalPrice - supplier.price}</div>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-3 gap-3 text-xs">
+                          <div className="flex items-center gap-1">
+                            <MapPin className="w-3 h-3 text-blue-500" />
+                            <span>{supplier.location}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Timer className="w-3 h-3 text-green-500" />
+                            <span>{supplier.responseTime}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <Package className="w-3 h-3 text-purple-500" />
+                            <span>{supplier.specialty}</span>
+                          </div>
+                        </div>
+
+                        <div className="flex gap-2 mt-3">
+                          <Button size="sm" variant="outline" className="flex-1 text-xs">
+                            <MessageCircle className="w-3 h-3 mr-1" />
+                            Chat
+                          </Button>
+                          <Button size="sm" variant="outline" className="flex-1 text-xs">
+                            <GitCompare className="w-3 h-3 mr-1" />
+                            Compare
+                          </Button>
+                        </div>
+
+                        {index === 0 && (
+                          <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                            Best Deal!
+                          </div>
+                        )}
+                      </div>
+                    ))}
+
+                    <div className="bg-gray-50 rounded-xl p-4 text-center">
+                      <div className="flex items-center justify-center gap-2 mb-2">
+                        <Gauge className="w-5 h-5 text-blue-600" />
+                        <span className="font-semibold text-gray-800">AI Recommendation</span>
+                      </div>
+                      <p className="text-sm text-gray-600 mb-3">
+                        Based on your location and previous purchases, <strong>Kisan AgriSupply Co.</strong> offers the best value with fastest delivery.
+                      </p>
+                      <Button 
+                      size="sm"
+                      onClick={() => handleInterfaceSelection('farmer')} 
+                      className="bg-green-200 rounded-xl text-green-800 hover:bg-green-300">
+                        <UserCheck className="w-4 h-4 mr-2" />
+                        Select This Supplier
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Feature Highlights */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mt-16">
+                <div className="text-center p-6 bg-white rounded-xl shadow-lg">
+                  <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Banknote className="w-6 h-6 text-green-600" />
+                  </div>
+                  <h4 className="font-semibold mb-2">Best Prices</h4>
+                  <p className="text-sm text-gray-600">AI finds the lowest prices across all suppliers</p>
+                </div>
+
+                <div className="text-center p-6 bg-white rounded-xl shadow-lg">
+                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Shield className="w-6 h-6 text-blue-600" />
+                  </div>
+                  <h4 className="font-semibold mb-2">Verified Quality</h4>
+                  <p className="text-sm text-gray-600">Only trusted suppliers with quality guarantee</p>
+                </div>
+
+                <div className="text-center p-6 bg-white rounded-xl shadow-lg">
+                  <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Network className="w-6 h-6 text-purple-600" />
+                  </div>
+                  <h4 className="font-semibold mb-2">Local Network</h4>
+                  <p className="text-sm text-gray-600">Connect with suppliers in your area</p>
+                </div>
+
+                <div className="text-center p-6 bg-white rounded-xl shadow-lg">
+                  <div className="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Calendar className="w-6 h-6 text-amber-600" />
+                  </div>
+                  <h4 className="font-semibold mb-2">Fast Delivery</h4>
+                  <p className="text-sm text-gray-600">Same-day to 3-day delivery options</p>
                 </div>
               </div>
             </div>
@@ -746,10 +1007,10 @@ export default function App() {
                     </div>
                     
                     <p className="text-gray-700 mb-6">
-                      Full dashboard with crop monitoring, weather alerts, market prices, and expert chat.
+                      Full dashboard with crop monitoring, weather alerts, market prices, expert chat, and supplier marketplace.
                     </p>
 
-                    <Button className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800">
+                    <Button className="w-full rounded-xl bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800">
                       Open Dashboard
                     </Button>
                   </CardContent>
@@ -787,7 +1048,7 @@ export default function App() {
                       Business dashboard with demand forecasting, inventory management, and market analysis.
                     </p>
 
-                    <Button className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800">
+                    <Button className="w-full rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800">
                       Business Dashboard
                     </Button>
                   </CardContent>
@@ -825,7 +1086,7 @@ export default function App() {
                       Simple SMS interface that works on any phone. Perfect for low connectivity areas.
                     </p>
 
-                    <Button className="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800">
+                    <Button className="w-full rounded-xl bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800">
                       Try SMS Interface
                     </Button>
                   </CardContent>
