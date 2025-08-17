@@ -25,7 +25,21 @@ import {
   Brain
 } from "lucide-react";
 
-export function FarmerDashboard() {
+// Add interface for pending query
+interface PendingQuery {
+  question: string;
+  answer: string | null;
+  status: 'answered' | 'error';
+}
+
+// Add interface for component props
+interface FarmerDashboardProps {
+  pendingQuery?: PendingQuery | null;
+  setPendingQuery?: (query: PendingQuery | null) => void;
+}
+
+// Update function signature to accept props
+export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboardProps = {}) {
   const [query, setQuery] = useState("");
   const [tab, setTab] = useState("query");
   const [loading, setLoading] = useState(false);
@@ -41,6 +55,28 @@ export function FarmerDashboard() {
   const [lastUpdated, setLastUpdated] = useState(null);
   const [error, setError] = useState(false);
 
+  // Handle pending query from homepage
+  useEffect(() => {
+    if (pendingQuery) {
+      const newQuery = {
+        id: Date.now(), // Use timestamp for unique ID
+        question: pendingQuery.question,
+        timestamp: "Just now",
+        responses: pendingQuery.status === "answered" ? 1 : 0,
+        status: pendingQuery.status,
+        answer: pendingQuery.answer
+      };
+
+      // Add the query to the beginning of queries array
+      setQueries(prev => [newQuery, ...prev]);
+      
+      // Clear the pending query after processing
+      if (setPendingQuery) {
+        setPendingQuery(null);
+      }
+    }
+  }, [pendingQuery, setPendingQuery]);
+
   // Function to get weather icon based on condition
   const getWeatherIcon = (condition) => {
     const lowerCondition = condition.toLowerCase();
@@ -55,6 +91,7 @@ export function FarmerDashboard() {
     }
     return <Cloud className="w-6 h-6 text-gray-600" />;
   };
+
   // Function to fetch comprehensive weather data
   const fetchWeather = async () => {
     setLoading(true);
@@ -204,8 +241,6 @@ export function FarmerDashboard() {
     }
   ];
 
-  
-
   return (
     <div className="space-y-6 max-w-4xl mx-auto p-4">
       {/** SMS Service **/}
@@ -227,121 +262,130 @@ export function FarmerDashboard() {
 
       {/** Weather **/}
       <div className="bg-gradient-to-r from-blue-50 via-cyan-50 to-sky-50 border border-blue-200 rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
-      {/* Header with location and refresh button */}
-      <div className="flex justify-between items-start mb-4">
-        <div className="flex-1">
-          <h3 className="flex items-center gap-3 text-lg font-bold text-blue-800 mb-1">
-            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-md">
-              {error ? <AlertCircle className="w-5 h-5 text-white" /> : getWeatherIcon(weatherData.condition)}
+        {/** Header with location and refresh button **/}
+        <div className="flex justify-between items-start mb-4">
+          <div className="flex-1">
+            <h3 className="flex items-center gap-3 text-lg font-bold text-blue-800 mb-1">
+              <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-md">
+                {error ? <AlertCircle className="w-5 h-5 text-white" /> : getWeatherIcon(weatherData.condition)}
+              </div>
+              Today's Weather
+            </h3>
+            <div className="flex items-center gap-2 text-sm text-blue-600">
+              <MapPin className="w-3 h-3" />
+              <span className="font-medium">{weatherData.location}</span>
             </div>
-            Today's Weather
-          </h3>
-          <div className="flex items-center gap-2 text-sm text-blue-600">
-            <MapPin className="w-3 h-3" />
-            <span className="font-medium">{weatherData.location}</span>
+            {lastUpdated && (
+              <div className="flex items-center gap-2 text-xs text-gray-500 mt-1">
+                <Calendar className="w-3 h-3" />
+                <span>Last updated: {lastUpdated.toLocaleTimeString()}</span>
+              </div>
+            )}
           </div>
-          {lastUpdated && (
-            <div className="flex items-center gap-2 text-xs text-gray-500 mt-1">
-              <Calendar className="w-3 h-3" />
-              <span>Last updated: {lastUpdated.toLocaleTimeString()}</span>
+          
+            <button
+              onClick={fetchWeather}
+              disabled={loading}
+              className={`flex items-center gap-1 px-2 rounded-full font-medium text-xs transition-all duration-200
+              ${error
+                ? 'bg-red-500 hover:bg-red-600 text-white'
+                : 'bg-blue-500 hover:bg-blue-600 text-white shadow'
+              } disabled:opacity-50 disabled:cursor-not-allowed
+              border border-blue-300
+              focus:outline-none focus:ring-2 focus:ring-blue-400
+              `}
+              style={{
+              paddingTop: 0,
+              paddingBottom: 0,
+              minHeight: 32,
+              minWidth: 70,
+              boxShadow: error ? '0 2px 8px rgba(239,68,68,0.12)' : '0 2px 8px rgba(59,130,246,0.10)'
+              }}
+            >
+              {loading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin mr-1" />
+                <span>Loading</span>
+              </>
+              ) : (
+              <>
+                <RefreshCw className="w-4 h-4 mr-1" />
+                <span>{error ? 'Retry' : 'Refresh'}</span>
+              </>
+              )}
+            </button>
+        </div>
+
+        {/** Weather Description **/}
+        {weatherData.description && (
+          <div className="mb-4 p-3 bg-white/70 rounded-lg border border-blue-100">
+            <p className="text-sm text-center text-gray-700 capitalize font-medium">
+              {weatherData.description}
+            </p>
+          </div>
+        )}
+
+        {/** Weather Metrics Grid **/}
+        <div className="grid grid-cols-2 gap-3 text-sm">
+          <div className={`flex items-center gap-3 bg-white/80 rounded-xl p-4 shadow-sm border transition-all duration-200 hover:shadow-md ${
+            error ? 'border-red-200' : 'border-red-100'
+          }`}>
+            <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+              <Thermometer className="w-5 h-5 text-red-500" />
             </div>
-          )}
+            <div>
+              <span className="font-bold text-gray-800 text-base">{weatherData.temperature}</span>
+              <p className="text-xs text-gray-500">Temperature</p>
+            </div>
+          </div>
+          
+          <div className={`flex items-center gap-3 bg-white/80 rounded-xl p-4 shadow-sm border transition-all duration-200 hover:shadow-md ${
+            error ? 'border-blue-200' : 'border-blue-100'
+          }`}>
+            <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+              <Droplets className="w-5 h-5 text-blue-500" />
+            </div>
+            <div>
+              <span className="font-bold text-gray-800 text-base">{weatherData.humidity}</span>
+              <p className="text-xs text-gray-500">Humidity</p>
+            </div>
+          </div>
+          
+          <div className={`flex items-center gap-3 bg-white/80 rounded-xl p-4 shadow-sm border transition-all duration-200 hover:shadow-md ${
+            error ? 'border-gray-200' : 'border-gray-100'
+          }`}>
+            <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+              <Wind className="w-5 h-5 text-gray-500" />
+            </div>
+            <div>
+              <span className="font-bold text-gray-800 text-base">{weatherData.windSpeed}</span>
+              <p className="text-xs text-gray-500">Wind Speed</p>
+            </div>
+          </div>
+          
+          <div className={`flex items-center gap-3 bg-white/80 rounded-xl p-4 shadow-sm border transition-all duration-200 hover:shadow-md ${
+            error ? 'border-gray-200' : 'border-gray-100'
+          }`}>
+            <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+              {getWeatherIcon(weatherData.condition)}
+            </div>
+            <div>
+              <span className="font-bold text-gray-800 text-base capitalize">{weatherData.condition}</span>
+              <p className="text-xs text-gray-500">Condition</p>
+            </div>
+          </div>
         </div>
-        
-        <button
-          onClick={fetchWeather}
-          disabled={loading}
-          className={`flex items-center gap-1 px-3 py-1.5 rounded-lg font-medium text-sm transition-all duration-200 ${
-            error 
-              ? 'bg-red-500 hover:bg-red-600 text-white' 
-              : 'bg-blue-500 hover:bg-blue-600 text-white shadow-md hover:shadow-lg'
-          } disabled:opacity-50 disabled:cursor-not-allowed`}
-        >
-          {loading ? (
-            <>
-              <Loader2 className="w-4 h-4 animate-spin" />
-              <span>Loading...</span>
-            </>
-          ) : (
-            <>
-              <RefreshCw className="w-4 h-4" />
-              <span>{error ? 'Retry' : 'Refresh'}</span>
-            </>
-          )}
-        </button>
+
+        {/** Loading Overlay **/}
+        {loading && (
+          <div className="absolute inset-0 bg-white/70 rounded-xl flex items-center justify-center">
+            <div className="flex items-center gap-2 text-blue-600">
+              <Loader2 className="w-5 h-5 animate-spin" />
+              <span className="font-medium">Updating weather...</span>
+            </div>
+          </div>
+        )}
       </div>
-
-      {/* Weather Description */}
-      {weatherData.description && (
-        <div className="mb-4 p-3 bg-white/70 rounded-lg border border-blue-100">
-          <p className="text-sm text-center text-gray-700 capitalize font-medium">
-            {weatherData.description}
-          </p>
-        </div>
-      )}
-
-      {/* Weather Metrics Grid */}
-      <div className="grid grid-cols-2 gap-3 text-sm">
-        <div className={`flex items-center gap-3 bg-white/80 rounded-xl p-4 shadow-sm border transition-all duration-200 hover:shadow-md ${
-          error ? 'border-red-200' : 'border-red-100'
-        }`}>
-          <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
-            <Thermometer className="w-5 h-5 text-red-500" />
-          </div>
-          <div>
-            <span className="font-bold text-gray-800 text-base">{weatherData.temperature}</span>
-            <p className="text-xs text-gray-500">Temperature</p>
-          </div>
-        </div>
-        
-        <div className={`flex items-center gap-3 bg-white/80 rounded-xl p-4 shadow-sm border transition-all duration-200 hover:shadow-md ${
-          error ? 'border-blue-200' : 'border-blue-100'
-        }`}>
-          <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-            <Droplets className="w-5 h-5 text-blue-500" />
-          </div>
-          <div>
-            <span className="font-bold text-gray-800 text-base">{weatherData.humidity}</span>
-            <p className="text-xs text-gray-500">Humidity</p>
-          </div>
-        </div>
-        
-        <div className={`flex items-center gap-3 bg-white/80 rounded-xl p-4 shadow-sm border transition-all duration-200 hover:shadow-md ${
-          error ? 'border-gray-200' : 'border-gray-100'
-        }`}>
-          <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
-            <Wind className="w-5 h-5 text-gray-500" />
-          </div>
-          <div>
-            <span className="font-bold text-gray-800 text-base">{weatherData.windSpeed}</span>
-            <p className="text-xs text-gray-500">Wind Speed</p>
-          </div>
-        </div>
-        
-        <div className={`flex items-center gap-3 bg-white/80 rounded-xl p-4 shadow-sm border transition-all duration-200 hover:shadow-md ${
-          error ? 'border-gray-200' : 'border-gray-100'
-        }`}>
-          <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
-            {getWeatherIcon(weatherData.condition)}
-          </div>
-          <div>
-            <span className="font-bold text-gray-800 text-base capitalize">{weatherData.condition}</span>
-            <p className="text-xs text-gray-500">Condition</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Loading Overlay */}
-      {loading && (
-        <div className="absolute inset-0 bg-white/70 rounded-xl flex items-center justify-center">
-          <div className="flex items-center gap-2 text-blue-600">
-            <Loader2 className="w-5 h-5 animate-spin" />
-            <span className="font-medium">Updating weather...</span>
-          </div>
-        </div>
-      )}
-    </div>
-  
 
       {/** Tabs **/}
       <div>
@@ -431,7 +475,7 @@ export function FarmerDashboard() {
                 ) : (
                   queries.map((q) => (
                     <div key={q.id} className="bg-gray-50 border border-gray-200 rounded-xl p-4 hover:shadow-md transition-all duration-300">
-                      {/* Question */}
+                      {/** Question **/}
                       <div className="flex items-start gap-3 mb-3">
                         <div className="w-6 h-6 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
                           <MessageSquare className="w-3 h-3 text-white" />
@@ -439,7 +483,7 @@ export function FarmerDashboard() {
                         <p className="text-sm leading-relaxed font-medium text-gray-800">{q.question}</p>
                       </div>
 
-                      {/* Answer */}
+                      {/** Answer **/}
                       {q.answer && (
                         <div className="ml-9 mb-3">
                           <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg p-4">
@@ -453,7 +497,7 @@ export function FarmerDashboard() {
                         </div>
                       )}
 
-                      {/* Loading State */}
+                      {/** Loading State **/}
                       {q.status === "pending" && (
                         <div className="ml-9 mb-3">
                           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
@@ -465,7 +509,7 @@ export function FarmerDashboard() {
                         </div>
                       )}
 
-                      {/* Error State */}
+                      {/** Error State **/}
                       {q.status === "error" && (
                         <div className="ml-9 mb-3">
                           <div className="bg-red-50 border border-red-200 rounded-lg p-4">
@@ -477,7 +521,7 @@ export function FarmerDashboard() {
                         </div>
                       )}
 
-                      {/* Metadata */}
+                      {/** Metadata **/}
                       <div className="flex items-center justify-between text-xs text-gray-500 ml-9">
                         <div className="flex items-center gap-4">
                           <span className="flex items-center gap-1">
