@@ -1120,7 +1120,7 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
                       <Loader2 className="w-5 h-5 animate-spin" />
                     ) : isRecording ? (
                       // Show a visible stop icon when recording
-                      <StopIcon className="w-5 h-5 text-red-600 border-2 border-red-600 rounded bg-red-100" />
+                      <StopIcon className="w-5 h-5 text-red-600 border-2 border-red-600 rounded bg-red-900" />
                     ) : (
                       <Mic className="w-5 h-5" />
                     )}
