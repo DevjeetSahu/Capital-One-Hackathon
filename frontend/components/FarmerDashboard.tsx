@@ -9,8 +9,8 @@ import {
   Droplets,
   Wind,
   Send,
-  RefreshCw, 
-  Sun, 
+  RefreshCw,
+  Sun,
   Clock,
   CloudRain,
   Snowflake,
@@ -24,9 +24,9 @@ import {
   Share,
   ThumbsUp,
   Copy,
-  Users, 
-  TrendingUp, 
-  Star, 
+  Users,
+  TrendingUp,
+  Star,
   Filter,
   BarChart3,
   Package,
@@ -106,21 +106,20 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
   const [loading, setLoading] = useState(false);
   const [queries, setQueries] = useState([]);
   const [workflowQueries, setWorkflowQueries] = useState<WorkflowQuery[]>([]);
-  
+
   // Voice recording states
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessingVoice, setIsProcessingVoice] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
   const [audioChunks, setAudioChunks] = useState<Blob[]>([]);
   const [showPreviousChats, setShowPreviousChats] = useState(false);
-   const [suppliers, setSuppliers] = useState<Supplier[]>([]);
+  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [selectedSupplier, setSelectedSupplier] = useState<number | null>(null);
   const [showComparison, setShowComparison] = useState(false);
   const [filterCategory, setFilterCategory] = useState("all");
   const [weatherData, setWeatherData] = useState({
     temperature: '-',
     humidity: '-',
-    windSpeed: '-',
     condition: '-',
     description: '',
     location: 'Bargarh, Odisha'
@@ -291,7 +290,7 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
   const fetchWeather = async () => {
     setLoading(true);
     setError(false);
-    
+
     try {
       const response = await fetch('http://127.0.0.1:8000/weather/comprehensive');
       const data = await response.json();
@@ -301,7 +300,7 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
         setWeatherData({
           temperature: `${current.temperature}°C`,
           humidity: `${current.humidity}%`,
-          windSpeed: `${current.wind_speed} m/s`,
+          // windSpeed: `${current.wind_speed} m/s`,
           condition: current.description,
           description: current.description,
           location: data.location
@@ -311,13 +310,13 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
         // Fallback API call to current weather only
         const currentResponse = await fetch('http://127.0.0.1:8000/weather/current');
         const currentData = await currentResponse.json();
-        
+
         if (currentData.status === 'success') {
           const current = currentData.data.metadata;
           setWeatherData({
             temperature: `${current.temperature}°C`,
             humidity: `${current.humidity}%`,
-            windSpeed: `${current.wind_speed} m/s`,
+            // windSpeed: `${current.wind_speed} m/s`,
             condition: current.description,
             description: current.description,
             location: currentData.location
@@ -333,7 +332,7 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
       setWeatherData({
         temperature: 'Unavailable',
         humidity: 'Unavailable',
-        windSpeed: 'Unavailable',
+        // windSpeed: 'Unavailable',
         condition: 'Unable to fetch weather data',
         description: 'Please check your connection',
         location: 'Unknown'
@@ -360,7 +359,7 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
 
   const handleSubmitQuery = async () => {
     if (!query.trim()) return;
-    
+
     const newQuery = {
       id: Date.now(), // Use timestamp to avoid conflicts
       question: query,
@@ -403,23 +402,23 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
           status: 'processing'
         };
         setWorkflowQueries(prev => [workflowQuery, ...prev]);
-        
+
         // Remove from regular queries since it's now a workflow
         setQueries(prev => prev.filter(q => q.id !== newQuery.id));
       } else {
         // Update the specific query with response (regular query)
-      setQueries((prev) =>
-        prev.map((q) =>
-          q.id === newQuery.id
-            ? {
+        setQueries((prev) =>
+          prev.map((q) =>
+            q.id === newQuery.id
+              ? {
                 ...q,
                 status: "answered",
                 responses: (q.responses || 0) + 1,
                 answer: data.response
               }
-            : q
-        )
-      );
+              : q
+          )
+        );
       }
     } catch (err) {
       console.error("Error sending query:", err);
@@ -437,7 +436,7 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
   const handleWorkflowComplete = (workflowId: string, result: any) => {
     // Find the workflow query
     const workflowQuery = workflowQueries.find(wq => wq.workflowId === workflowId);
-    
+
     if (workflowQuery) {
       // Add the workflow result to regular queries as an answered query
       const newQuery = {
@@ -448,14 +447,14 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
         status: "answered",
         answer: result.response || result.summary || "Workflow completed successfully."
       };
-      
+
       setQueries(prev => [newQuery, ...prev]);
     }
-    
+
     // Update workflow status
-    setWorkflowQueries(prev => 
-      prev.map(wq => 
-        wq.workflowId === workflowId 
+    setWorkflowQueries(prev =>
+      prev.map(wq =>
+        wq.workflowId === workflowId
           ? { ...wq, status: 'completed', result }
           : wq
       )
@@ -464,9 +463,9 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
 
   // Handle workflow error
   const handleWorkflowError = (workflowId: string, error: string) => {
-    setWorkflowQueries(prev => 
-      prev.map(wq => 
-        wq.workflowId === workflowId 
+    setWorkflowQueries(prev =>
+      prev.map(wq =>
+        wq.workflowId === workflowId
           ? { ...wq, status: 'error' }
           : wq
       )
@@ -530,7 +529,7 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
       setMediaRecorder(recorder);
       setAudioChunks(chunks);
       console.log('Recording started, isRecording set to true');
-      
+
     } catch (error) {
       console.error('Error starting recording:', error);
       setIsRecording(false);
@@ -552,7 +551,7 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
   const processVoiceInput = async (audioBlob: Blob) => {
     try {
       setIsProcessingVoice(true);
-      
+
       // Create form data for file upload
       const formData = new FormData();
       formData.append('audio_file', audioBlob, 'voice_input.wav');
@@ -568,11 +567,11 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
       }
 
       const result = await response.json();
-      
+
       if (result.success) {
         // Set the translated English text as the query
         setQuery(result.translated_text);
-        
+
         // Optionally auto-submit the query
         // handleSubmitQuery();
       } else {
@@ -629,32 +628,32 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
       {/** Weather **/}
       <div className="bg-gradient-to-r from-blue-50 via-cyan-50 to-sky-50 border border-blue-200 rounded-xl py-2 p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
         {/** Header with location and refresh button **/}
-      <div className="flex justify-between items-start mb-4">
-        <div className="flex-1">
-          <h3 className="flex items-center gap-3 text-lg font-bold text-blue-800 mb-1">
-            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-md">
-              {error ? <AlertCircle className="w-5 h-5 text-white" /> : getWeatherIcon(weatherData.condition)}
+        <div className="flex justify-between items-start mb-4">
+          <div className="flex-1">
+            <h3 className="flex items-center gap-3 text-lg font-bold text-blue-800 mb-1">
+              <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-md">
+                {error ? <AlertCircle className="w-5 h-5 text-white" /> : getWeatherIcon(weatherData.condition)}
+              </div>
+              Today's Weather
+            </h3>
+            <div className="flex items-center gap-2 text-sm text-blue-600">
+              <MapPin className="w-3 h-3" />
+              <span className="font-medium">{weatherData.location}</span>
             </div>
-            Today's Weather
-          </h3>
-          <div className="flex items-center gap-2 text-sm text-blue-600">
-            <MapPin className="w-3 h-3" />
-            <span className="font-medium">{weatherData.location}</span>
+            {lastUpdated && (
+              <div className="flex items-center gap-2 text-xs text-gray-500 mt-1">
+                <Calendar className="w-3 h-3" />
+                <span>Last updated: {lastUpdated.toLocaleTimeString()}</span>
+              </div>
+            )}
           </div>
-          {lastUpdated && (
-            <div className="flex items-center gap-2 text-xs text-gray-500 mt-1">
-              <Calendar className="w-3 h-3" />
-              <span>Last updated: {lastUpdated.toLocaleTimeString()}</span>
-            </div>
-          )}
-        </div>
-        
-        <button
-          onClick={fetchWeather}
-          disabled={loading}
+
+          <button
+            onClick={fetchWeather}
+            disabled={loading}
             className={`flex items-center gap-1 px-2 rounded-full font-medium text-xs transition-all duration-200
               ${error
-              ? 'bg-red-500 hover:bg-red-600 text-white' 
+                ? 'bg-red-500 hover:bg-red-600 text-white'
                 : 'bg-blue-500 hover:bg-blue-600 text-white shadow'
               } disabled:opacity-50 disabled:cursor-not-allowed
               border border-blue-300
@@ -667,87 +666,76 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
               minWidth: 70,
               boxShadow: error ? '0 2px 8px rgba(239,68,68,0.12)' : '0 2px 8px rgba(59,130,246,0.10)'
             }}
-        >
-          {loading ? (
-            <>
+          >
+            {loading ? (
+              <>
                 <Loader2 className="w-4 h-4 animate-spin mr-1" />
                 <span>Loading</span>
-            </>
-          ) : (
-            <>
+              </>
+            ) : (
+              <>
                 <RefreshCw className="w-4 h-4 mr-1" />
-              <span>{error ? 'Retry' : 'Refresh'}</span>
-            </>
-          )}
-        </button>
-      </div>
+                <span>{error ? 'Retry' : 'Refresh'}</span>
+              </>
+            )}
+          </button>
+        </div>
 
         {/** Weather Description **/}
-      {weatherData.description && (
-        <div className="mb-4 p-3 bg-white/70 rounded-lg border border-blue-100">
-          <p className="text-sm text-center text-gray-700 capitalize font-medium">
-            {weatherData.description}
-          </p>
-        </div>
-      )}
+        {weatherData.description && (
+          <div className="mb-4 p-3 bg-white/70 rounded-lg border border-blue-100">
+            <p className="text-sm text-center text-gray-700 capitalize font-medium">
+              {weatherData.description}
+            </p>
+          </div>
+        )}
 
         {/** Weather Metrics Grid **/}
-      <div className="grid grid-cols-2 gap-3 text-sm">
+        <div className="grid grid-cols-3 gap-3 text-sm">
           <div className={`flex items-center gap-3 bg-white/80 rounded-xl p-4 shadow-sm border transition-all duration-200 hover:shadow-md ${error ? 'border-red-200' : 'border-red-100'
-        }`}>
-          <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
-            <Thermometer className="w-5 h-5 text-red-500" />
+            }`}>
+            <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+              <Thermometer className="w-5 h-5 text-red-500" />
+            </div>
+            <div>
+              <span className="font-bold text-gray-800 text-base">{weatherData.temperature}</span>
+              <p className="text-xs text-gray-500">Temperature</p>
+            </div>
           </div>
-          <div>
-            <span className="font-bold text-gray-800 text-base">{weatherData.temperature}</span>
-            <p className="text-xs text-gray-500">Temperature</p>
-          </div>
-        </div>
-        
+
           <div className={`flex items-center gap-3 bg-white/80 rounded-xl p-4 shadow-sm border transition-all duration-200 hover:shadow-md ${error ? 'border-blue-200' : 'border-blue-100'
-        }`}>
-          <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-            <Droplets className="w-5 h-5 text-blue-500" />
+            }`}>
+            <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+              <Droplets className="w-5 h-5 text-blue-500" />
+            </div>
+            <div>
+              <span className="font-bold text-gray-800 text-base">{weatherData.humidity}</span>
+              <p className="text-xs text-gray-500">Humidity</p>
+            </div>
           </div>
-          <div>
-            <span className="font-bold text-gray-800 text-base">{weatherData.humidity}</span>
-            <p className="text-xs text-gray-500">Humidity</p>
-          </div>
-        </div>
-        
+
           <div className={`flex items-center gap-3 bg-white/80 rounded-xl p-4 shadow-sm border transition-all duration-200 hover:shadow-md ${error ? 'border-gray-200' : 'border-gray-100'
-        }`}>
-          <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
-            <Wind className="w-5 h-5 text-gray-500" />
-          </div>
-          <div>
-            <span className="font-bold text-gray-800 text-base">{weatherData.windSpeed}</span>
-            <p className="text-xs text-gray-500">Wind Speed</p>
-          </div>
-        </div>
-        
-          <div className={`flex items-center gap-3 bg-white/80 rounded-xl p-4 shadow-sm border transition-all duration-200 hover:shadow-md ${error ? 'border-gray-200' : 'border-gray-100'
-        }`}>
-          <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
-            {getWeatherIcon(weatherData.condition)}
-          </div>
-          <div>
-            <span className="font-bold text-gray-800 text-base capitalize">{weatherData.condition}</span>
-            <p className="text-xs text-gray-500">Condition</p>
+            }`}>
+            <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+              {getWeatherIcon(weatherData.condition)}
+            </div>
+            <div>
+              <span className="font-bold text-gray-800 text-base capitalize">{weatherData.condition}</span>
+              <p className="text-xs text-gray-500">Condition</p>
+            </div>
           </div>
         </div>
-      </div>
 
         {/** Loading Overlay **/}
-      {loading && (
-        <div className="absolute inset-0 bg-white/70 rounded-xl flex items-center justify-center">
-          <div className="flex items-center gap-2 text-blue-600">
-            <Loader2 className="w-5 h-5 animate-spin" />
-            <span className="font-medium">Updating weather...</span>
+        {loading && (
+          <div className="absolute inset-0 bg-white/70 rounded-xl flex items-center justify-center">
+            <div className="flex items-center gap-2 text-blue-600">
+              <Loader2 className="w-5 h-5 animate-spin" />
+              <span className="font-medium">Updating weather...</span>
+            </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
 
       {/** Tabs **/}
       <div>
@@ -755,20 +743,19 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
           <button
             onClick={() => setTab("query")}
             className={`flex-1 flex items-center gap-2 justify-center py-4 text-sm font-semibold transition-all duration-300 ${tab === "query"
-                ? "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg" 
-                : "text-gray-600 hover:bg-white/50"
-            }`}
+              ? "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg"
+              : "text-gray-600 hover:bg-white/50"
+              }`}
           >
             <MessageSquare className="w-4 h-4" />
             Ask Questions
           </button>
           <button
             onClick={() => setTab("suppliers")}
-            className={`flex-1 flex items-center gap-2 justify-center py-4 text-sm font-semibold transition-all duration-300 ${
-              tab === "suppliers" 
-          ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg" 
-          : "text-gray-600 hover:bg-white/50"
-            }`}
+            className={`flex-1 flex items-center gap-2 justify-center py-4 text-sm font-semibold transition-all duration-300 ${tab === "suppliers"
+                ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg"
+                : "text-gray-600 hover:bg-white/50"
+              }`}
           >
             <Users className="w-4 h-4" />
             Suppliers
@@ -776,9 +763,9 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
           <button
             onClick={() => setTab("updates")}
             className={`flex-1 flex items-center gap-2 justify-center py-4 text-sm font-semibold transition-all duration-300 ${tab === "updates"
-                ? "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg" 
-                : "text-gray-600 hover:bg-white/50"
-            }`}
+              ? "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg"
+              : "text-gray-600 hover:bg-white/50"
+              }`}
           >
             <Newspaper className="w-4 h-4" />
             Updates
@@ -787,16 +774,16 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
 
         {tab === "query" && (
           <div className="space-y-6 mt-6">
-                         {/* Chat Container */}
-             <div className="chat-container bg-white border border-gray-200 rounded-2xl shadow-lg overflow-hidden">
+            {/* Chat Container */}
+            <div className="chat-container bg-white border border-gray-200 rounded-2xl shadow-lg overflow-hidden">
 
               {/* Chat Header */}
               <div className="bg-gradient-to-r from-green-500 to-emerald-600 p-4">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
                     <Bot className="w-5 h-5 text-white" />
-                </div>
-                <div>
+                  </div>
+                  <div>
                     <h3 className="text-white font-bold text-lg">JAI-Kissan</h3>
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 bg-green-300 rounded-full animate-pulse"></div>
@@ -808,7 +795,7 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
                   </div>
                 </div>
               </div>
-              
+
               {/* Previous Conversations - Collapsible */}
               {queries.length > 1 && (
                 <div className="border-b border-gray-100">
@@ -832,18 +819,81 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
                               <MessageSquare className="w-3 h-3 text-blue-600" />
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-xs text-gray-600 truncate">{q.question}</p>
+                              <p className="text-xs text-gray-800 font-medium truncate">{q.question}</p>
                               <div className="flex items-center gap-2 mt-1">
-                                <span className="text-xs text-gray-400">{q.timestamp}</span>
-                                <span className={`px-1.5 py-0.5 rounded-full text-xs ${q.status === "answered"
-                                    ? "bg-green-100 text-green-600"
-                                    : q.status === "error"
-                                      ? "bg-red-100 text-red-600"
-                                      : "bg-blue-100 text-blue-600"
-                                  }`}>
-                                  {q.status}
-                                </span>
+                              <span className="text-xs text-gray-400">
+                                {typeof q.timestamp === "number"
+                                ? new Date(q.timestamp).toLocaleString("en-IN", {
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                  day: "2-digit",
+                                  month: "short",
+                                  year: "numeric"
+                                  })
+                                : q.timestamp}
+                              </span>
+                              <span
+                                className={`px-2 py-0.5 rounded-full text-xs font-semibold capitalize ${
+                                q.status === "answered"
+                                  ? "bg-green-100 text-green-600"
+                                  : q.status === "error"
+                                  ? "bg-red-100 text-red-600"
+                                  : "bg-blue-100 text-blue-600"
+                                }`}
+                              >
+                                {q.status}
+                              </span>
+                              {q.status === "answered" && q.answer && (
+                                <button
+                                className={`ml-2 px-3 py-1 rounded-lg font-semibold text-xs transition-all duration-200 flex items-center gap-1
+                                  ${q.showAnswer
+                                  ? "bg-gradient-to-r from-green-500 to-blue-800 text-black shadow"
+                                  : "bg-gradient-to-r from-blue-500 to-green-600 text-white shadow hover:from-blue-600 hover:to-blue-700"
+                                  }`}
+                                onClick={() => setQueries(prev =>
+                                  prev.map(item =>
+                                  item.id === q.id
+                                    ? { ...item, showAnswer: !item.showAnswer }
+                                    : item
+                                  )
+                                )}
+                                >
+                                {q.showAnswer ? (
+                                  <>
+                                  <ChevronUp className="w-3 h-3" />
+                                  Hide
+                                  </>
+                                ) : (
+                                  <>
+                                  <Eye className="w-3 h-3" />
+                                  Show
+                                  </>
+                                )}
+                                </button>
+                              )}
                               </div>
+                              {q.status === "answered" && q.answer && q.showAnswer && (
+                              <div className="mt-2 p-3 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-100 rounded-lg shadow-sm">
+                                <div className="flex items-center gap-2 mb-1">
+                                <Bot className="w-4 h-4 text-green-500" />
+                                <span className="text-xs font-semibold text-green-700">JAI-Kissan Response</span>
+                                </div>
+                                <div className="prose prose-xs max-w-none text-gray-700">
+                                <ReactMarkdown>{q.answer}</ReactMarkdown>
+                                </div>
+                              </div>
+                              )}
+                              {q.status === "error" && (
+                              <div className="mt-2 p-3 bg-red-50 border border-red-200 rounded-lg shadow-sm">
+                                <div className="flex items-center gap-2 mb-1">
+                                <AlertCircle className="w-4 h-4 text-red-600" />
+                                <span className="text-xs font-semibold text-red-700">Error</span>
+                                </div>
+                                <p className="text-xs text-red-700">
+                                Sorry, could not process your question. Please try again.
+                                </p>
+                              </div>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -877,7 +927,15 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
                               <p className="text-sm leading-relaxed">{q.question}</p>
                             </div>
                             <div className="flex items-center justify-end gap-2 mt-1 px-1">
-                              <span className="text-xs text-gray-400">{q.timestamp}</span>
+                              <span className="text-xs text-gray-400">{typeof q.timestamp === "number"
+                                ? new Date(q.timestamp).toLocaleString("en-IN", {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                    day: "2-digit",
+                                    month: "short",
+                                    year: "numeric"
+                                  })
+                                : q.timestamp}</span>
 
                             </div>
                           </div>
@@ -902,34 +960,34 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
                           </div>
                         )}
 
-                                                 {q.status === "answered" && q.answer && (
-                           <div className="flex justify-start">
-                             <div className="max-w-xs lg:max-w-2xl">
-                               <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-2xl rounded-bl-sm p-4 shadow-md">
-                                 <div className="flex items-center gap-2 mb-3">
+                        {q.status === "answered" && q.answer && (
+                          <div className="flex justify-start">
+                            <div className="max-w-xs lg:max-w-2xl">
+                              <div className="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-2xl rounded-bl-sm p-4 shadow-md">
+                                <div className="flex items-center gap-2 mb-3">
 
-                                   <span className="text-xs font-semibold text-green-700">JAI-Kissan</span>
-                                   <Sparkles className="w-3 h-3 text-green-500" />
-                                 </div>
-                                 <div className="prose prose-sm max-w-none text-gray-700">
-                                   <ReactMarkdown
-                                     components={{
-                                       h1: ({ node, ...props }) => <h1 className="text-lg font-bold text-gray-800 mb-2" {...props} />,
-                                       h2: ({ node, ...props }) => <h2 className="text-base font-semibold text-gray-700 mb-2" {...props} />,
-                                       h3: ({ node, ...props }) => <h3 className="text-sm font-semibold text-gray-600 mb-1" {...props} />,
-                                       p: ({ node, ...props }) => <p className="text-sm mb-2 leading-relaxed" {...props} />,
-                                       ul: ({ node, ...props }) => <ul className="list-disc list-inside space-y-1 mb-2" {...props} />,
-                                       ol: ({ node, ...props }) => <ol className="list-decimal list-inside space-y-1 mb-2" {...props} />,
-                                       li: ({ node, ...props }) => <li className="text-sm" {...props} />,
-                                       strong: ({ node, ...props }) => <strong className="font-semibold text-gray-800" {...props} />,
-                                       em: ({ node, ...props }) => <em className="italic text-gray-700" {...props} />,
-                                       code: ({ node, ...props }) => <code className="bg-gray-100 px-1 py-0.5 rounded text-xs font-mono" {...props} />,
-                                       pre: ({ node, ...props }) => <pre className="bg-gray-100 p-2 rounded text-xs font-mono overflow-x-auto" {...props} />
-                                     }}
-                                   >
-                                     {q.answer}
-                                   </ReactMarkdown>
-                                 </div>
+                                  <span className="text-xs font-semibold text-green-700">JAI-Kissan</span>
+                                  <Sparkles className="w-3 h-3 text-green-500" />
+                                </div>
+                                <div className="prose prose-sm max-w-none text-gray-700">
+                                  <ReactMarkdown
+                                    components={{
+                                      h1: ({ node, ...props }) => <h1 className="text-lg font-bold text-gray-800 mb-2" {...props} />,
+                                      h2: ({ node, ...props }) => <h2 className="text-base font-semibold text-gray-700 mb-2" {...props} />,
+                                      h3: ({ node, ...props }) => <h3 className="text-sm font-semibold text-gray-600 mb-1" {...props} />,
+                                      p: ({ node, ...props }) => <p className="text-sm mb-2 leading-relaxed" {...props} />,
+                                      ul: ({ node, ...props }) => <ul className="list-disc list-inside space-y-1 mb-2" {...props} />,
+                                      ol: ({ node, ...props }) => <ol className="list-decimal list-inside space-y-1 mb-2" {...props} />,
+                                      li: ({ node, ...props }) => <li className="text-sm" {...props} />,
+                                      strong: ({ node, ...props }) => <strong className="font-semibold text-gray-800" {...props} />,
+                                      em: ({ node, ...props }) => <em className="italic text-gray-700" {...props} />,
+                                      code: ({ node, ...props }) => <code className="bg-gray-100 px-1 py-0.5 rounded text-xs font-mono" {...props} />,
+                                      pre: ({ node, ...props }) => <pre className="bg-gray-100 p-2 rounded text-xs font-mono overflow-x-auto" {...props} />
+                                    }}
+                                  >
+                                    {q.answer}
+                                  </ReactMarkdown>
+                                </div>
 
                                 {/* Action Buttons */}
                                 <div className="flex items-center gap-2 mt-3 pt-2 border-t border-green-100">
@@ -940,14 +998,14 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
                                     <Copy className="w-3 h-3" />
                                     Copy
                                   </button>
-                                  <button className="flex items-center gap-1 px-2 py-1 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg text-xs transition-colors">
+                                  {/* <button className="flex items-center gap-1 px-2 py-1 bg-blue-100 hover:bg-blue-200 text-blue-700 rounded-lg text-xs transition-colors">
                                     <ThumbsUp className="w-3 h-3" />
                                     Helpful
-                                  </button>
-                                  <button className="flex items-center gap-1 px-2 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-xs transition-colors">
+                                  </button> */}
+                                  {/* <button className="flex items-center gap-1 px-2 py-1 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg text-xs transition-colors">
                                     <Share className="w-3 h-3" />
                                     Share
-                                  </button>
+                                  </button> */}
                                 </div>
                               </div>
                               <div className="flex items-center gap-2 mt-1 px-1">
@@ -991,30 +1049,30 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
                 )}
               </div>
 
-                             {/* Chat Input */}
-               <div className="border-t border-gray-200 p-4 bg-white">
-                 <div className="flex items-end gap-4">
-                   <div className="flex-1">
-                     <div className="relative">
-                <textarea
-                         placeholder="Ask me about farming, crops, weather, diseases, or any agricultural question... 🌱"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                         onKeyPress={(e) => {
-                           if (e.key === 'Enter' && !e.shiftKey) {
-                             e.preventDefault();
-                             handleSubmitQuery();
-                           }
-                         }}
-                         className="w-full border-2 border-gray-200 rounded-xl p-4 pr-16 text-sm max-h-32 min-h-[48px] focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent transition-all duration-300 resize-none"
-                         rows={1}
-                       />
-                       <div className="absolute right-4 top-4">
-                         <span className="text-xs text-gray-400">
-                           {query.length > 0 && `${query.length}/1000`}
-                         </span>
-                       </div>
-                     </div>
+              {/* Chat Input */}
+              <div className="border-t border-gray-200 p-4 bg-white">
+                <div className="flex items-end gap-4">
+                  <div className="flex-1">
+                    <div className="relative">
+                      <textarea
+                        placeholder="Ask me about farming, crops, weather, diseases, or any agricultural question... 🌱"
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
+                        onKeyPress={(e) => {
+                          if (e.key === 'Enter' && !e.shiftKey) {
+                            e.preventDefault();
+                            handleSubmitQuery();
+                          }
+                        }}
+                        className="w-full border-2 border-gray-200 rounded-xl p-4 pr-16 text-sm max-h-32 min-h-[48px] focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent transition-all duration-300 resize-none"
+                        rows={1}
+                      />
+                      <div className="absolute right-4 top-4">
+                        <span className="text-xs text-gray-400">
+                          {query.length > 0 && `${query.length}/1000`}
+                        </span>
+                      </div>
+                    </div>
 
                     {/* Quick Suggestions */}
                     {query.length === 0 && !isProcessingVoice && (
@@ -1045,55 +1103,56 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
                     )}
                   </div>
 
-                                                        {/* Voice Recording Button */}
-                   <button
-                     onClick={isRecording ? stopRecording : startRecording}
-                     disabled={isProcessingVoice || loading}
-                     className={`p-3 rounded-xl transition-all duration-300 flex-shrink-0 relative ${
-                       isRecording
-                         ? "bg-red-500 hover:bg-red-600 text-white shadow-md hover:shadow-lg animate-pulse"
-                         : isProcessingVoice
-                         ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                         : "bg-blue-500 hover:bg-blue-600 text-white shadow-md hover:shadow-lg"
-                     }`}
-                     title={isRecording ? "Stop recording" : "Start voice recording"}
-                   >
-                     {isProcessingVoice ? (
-                       <Loader2 className="w-5 h-5 animate-spin" />
-                     ) : isRecording ? (
-                       <div className="w-4 h-4 bg-white rounded-sm flex-shrink-0 border border-red-300"></div>
-                     ) : (
-                       <Mic className="w-5 h-5" />
-                     )}
-                   </button>
+                  {/* Voice Recording Button */}
+                  <button
+                    onClick={isRecording ? stopRecording : startRecording}
+                    disabled={isProcessingVoice || loading}
+                    className={`p-3 rounded-xl transition-all duration-300 flex-shrink-0 relative ${
+                      isRecording
+                        ? "bg-red-500 hover:bg-red-600 text-white shadow-md hover:shadow-lg animate-pulse"
+                        : isProcessingVoice
+                        ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                        : "bg-blue-500 hover:bg-blue-600 text-white shadow-md hover:shadow-lg"
+                    }`}
+                    title={isRecording ? "Stop recording" : "Start voice recording"}
+                  >
+                    {isProcessingVoice ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : isRecording ? (
+                      // Show a visible stop icon when recording
+                      <StopIcon className="w-5 h-5 text-red-600 border-2 border-red-600 rounded bg-red-100" />
+                    ) : (
+                      <Mic className="w-5 h-5" />
+                    )}
+                  </button>
 
-                   {/* Send Button */}
-                <button
-                  onClick={handleSubmitQuery}
-                  disabled={!query.trim() || loading}
-                     className={`p-3 rounded-xl transition-all duration-300 ${query.trim() && !loading
-                         ? "bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-md hover:shadow-lg"
-                         : "bg-gray-200 text-gray-400 cursor-not-allowed"
-                       }`}
-                >
-                  {loading ? (
-                       <Loader2 className="w-5 h-5 animate-spin" />
-                  ) : (
-                       <Send className="w-5 h-5" />
-                  )}
-                </button>
-            </div>
+                  {/* Send Button */}
+                  <button
+                    onClick={handleSubmitQuery}
+                    disabled={!query.trim() || loading}
+                    className={`p-3 rounded-xl transition-all duration-300 ${query.trim() && !loading
+                      ? "bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-md hover:shadow-lg"
+                      : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                      }`}
+                  >
+                    {loading ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      <Send className="w-5 h-5" />
+                    )}
+                  </button>
+                </div>
 
                 <div className="flex items-center justify-between mt-2 text-xs text-gray-500">
                   <span>Press Enter to send, Shift+Enter for new line • Click 🎤 for voice input</span>
                   <div className="flex items-center gap-1">
                     <span>Powered by JAI-Kissan</span>
                     <Zap className="w-3 h-3 text-yellow-500" />
+                  </div>
                 </div>
               </div>
-                  </div>
-                        </div>
-                      </div>
+            </div>
+          </div>
         )}
 
         {/* New Suppliers Tab */}
@@ -1105,13 +1164,13 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg">
                     <Users className="w-6 h-6 text-white" />
-                            </div>
+                  </div>
                   <div>
                     <h3 className="text-blue-800 font-bold text-lg">Agricultural Suppliers</h3>
                     <p className="text-sm text-blue-600">Connect with verified suppliers and compare offers</p>
-                          </div>
-                        </div>
-                
+                  </div>
+                </div>
+
                 <button
                   onClick={() => setShowComparison(!showComparison)}
                   className="flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm transition-colors"
@@ -1124,9 +1183,9 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
               {/* Filter and Stats */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                            <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2">
                     <Filter className="w-4 h-4 text-blue-600" />
-                    <select 
+                    <select
                       value={filterCategory}
                       onChange={(e) => setFilterCategory(e.target.value)}
                       className="border border-blue-200 rounded-lg px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
@@ -1137,14 +1196,14 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
                       <option value="equipment">Equipment</option>
                       <option value="organic">Organic Products</option>
                     </select>
-                            </div>
-                          </div>
-                
+                  </div>
+                </div>
+
                 <div className="flex items-center gap-4 text-sm text-blue-600">
                   <div className="flex items-center gap-1">
                     <Shield className="w-4 h-4" />
                     <span>{suppliers.filter(s => s.verified).length} Verified</span>
-                        </div>
+                  </div>
                   <div className="flex items-center gap-1">
                     <Star className="w-4 h-4" />
                     <span>Avg 4.7 Rating</span>
@@ -1160,7 +1219,7 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
                   <BarChart3 className="w-5 h-5 text-blue-600" />
                   Supplier Comparison
                 </h4>
-                
+
                 <div className="min-w-full">
                   <table className="w-full text-sm">
                     <thead>
@@ -1182,7 +1241,7 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
                               <div>
                                 <div className="font-medium text-gray-800">{supplier.name}</div>
                                 <div className="text-xs text-gray-500">{supplier.company}</div>
-                            </div>
+                              </div>
                             </div>
                           </td>
                           <td className="py-3 px-2">
@@ -1218,21 +1277,21 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
                       ))}
                     </tbody>
                   </table>
-                          </div>
-                        </div>
-                      )}
+                </div>
+              </div>
+            )}
 
             {/* Supplier Cards */}
             <div className="grid gap-6">
               {suppliers.map((supplier) => (
                 <div key={supplier.id} className="bg-white border border-gray-200 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300">
-                  
+
                   {/* Supplier Header */}
                   <div className="flex items-start justify-between mb-4">
-                        <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-4">
                       <div className="w-16 h-16 bg-gradient-to-r from-blue-100 to-cyan-100 rounded-full flex items-center justify-center text-2xl">
                         {supplier.profileImage}
-                        </div>
+                      </div>
                       <div>
                         <div className="flex items-center gap-2 mb-1">
                           <h3 className="text-lg font-bold text-gray-800">{supplier.name}</h3>
@@ -1242,7 +1301,7 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
                         </div>
                         <p className="text-gray-600 font-medium">{supplier.company}</p>
                         <div className="flex items-center gap-4 mt-1 text-sm text-gray-500">
-                        <div className="flex items-center gap-1">
+                          <div className="flex items-center gap-1">
                             <MapPin className="w-3 h-3" />
                             <span>{supplier.location}</span>
                           </div>
@@ -1253,7 +1312,7 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="text-right">
                       <div className="flex items-center gap-1 mb-1">
                         <Star className="w-4 h-4 text-yellow-400 fill-current" />
@@ -1277,8 +1336,8 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
                     <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
                       <Clock className="w-3 h-3 inline mr-1" />
                       Responds {supplier.responseTime}
-                          </span>
-                        </div>
+                    </span>
+                  </div>
 
                   {/* Products */}
                   <div className="mb-4">
@@ -1289,8 +1348,8 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
                           {product}
                         </span>
                       ))}
-                      </div>
                     </div>
+                  </div>
 
                   {/* Current Bids */}
                   <div className="mb-4">
@@ -1385,7 +1444,7 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
               </div>
               <h4 className="text-lg font-bold text-gray-800">Complex AI Workflows</h4>
             </div>
-            
+
             <div className="space-y-4">
               {workflowQueries.map((workflow) => (
                 <div key={workflow.id} className="bg-purple-50 border border-purple-200 rounded-xl p-4">
@@ -1397,16 +1456,16 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
                     <p className="text-sm leading-relaxed font-medium text-gray-800">{workflow.question}</p>
                   </div>
 
-                                     {/** Workflow Progress Component **/}
-                   <div className="ml-9">
-                     <WorkflowProgress
-                       workflowId={workflow.workflowId}
-                       originalQuery={workflow.question}
-                       subtasks={workflow.subtasks}
-                       onComplete={(result) => handleWorkflowComplete(workflow.workflowId, result)}
-                       onError={(error) => handleWorkflowError(workflow.workflowId, error)}
-                     />
-                   </div>
+                  {/** Workflow Progress Component **/}
+                  <div className="ml-9">
+                    <WorkflowProgress
+                      workflowId={workflow.workflowId}
+                      originalQuery={workflow.question}
+                      subtasks={workflow.subtasks}
+                      onComplete={(result) => handleWorkflowComplete(workflow.workflowId, result)}
+                      onError={(error) => handleWorkflowError(workflow.workflowId, error)}
+                    />
+                  </div>
 
                   {/** Error State **/}
                   {workflow.status === 'error' && (
