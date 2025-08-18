@@ -9,8 +9,8 @@ import {
   Droplets,
   Wind,
   Send,
-  RefreshCw,
-  Sun,
+  RefreshCw, 
+  Sun, 
   Clock,
   CloudRain,
   Snowflake,
@@ -42,7 +42,11 @@ import {
   ChevronDown,
   ChevronUp,
   Eye,
-  MessageCircle
+  MessageCircle,
+  Mic,
+  MicOff,
+  Square,
+  Square as StopIcon
 } from "lucide-react";
 import { WorkflowProgress } from "./WorkflowProgress";
 
@@ -102,6 +106,12 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
   const [loading, setLoading] = useState(false);
   const [queries, setQueries] = useState([]);
   const [workflowQueries, setWorkflowQueries] = useState<WorkflowQuery[]>([]);
+  
+  // Voice recording states
+  const [isRecording, setIsRecording] = useState(false);
+  const [isProcessingVoice, setIsProcessingVoice] = useState(false);
+  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
+  const [audioChunks, setAudioChunks] = useState<Blob[]>([]);
   const [showPreviousChats, setShowPreviousChats] = useState(false);
    const [suppliers, setSuppliers] = useState<Supplier[]>([]);
   const [selectedSupplier, setSelectedSupplier] = useState<number | null>(null);
@@ -281,7 +291,7 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
   const fetchWeather = async () => {
     setLoading(true);
     setError(false);
-
+    
     try {
       const response = await fetch('http://127.0.0.1:8000/weather/comprehensive');
       const data = await response.json();
@@ -301,7 +311,7 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
         // Fallback API call to current weather only
         const currentResponse = await fetch('http://127.0.0.1:8000/weather/current');
         const currentData = await currentResponse.json();
-
+        
         if (currentData.status === 'success') {
           const current = currentData.data.metadata;
           setWeatherData({
@@ -338,9 +348,19 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
     fetchWeather();
   }, []);
 
+  // Cleanup recording on component unmount
+  useEffect(() => {
+    return () => {
+      if (mediaRecorder && isRecording) {
+        mediaRecorder.stop();
+        setIsRecording(false);
+      }
+    };
+  }, [mediaRecorder, isRecording]);
+
   const handleSubmitQuery = async () => {
     if (!query.trim()) return;
-
+    
     const newQuery = {
       id: Date.now(), // Use timestamp to avoid conflicts
       question: query,
@@ -372,39 +392,9 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
       if (!res.ok) throw new Error("API error");
       const data = await res.json();
 
-      // Check if this is a workflow query that needs to be redirected
-      if (data.redirect_to_workflow) {
-        // Call the workflow endpoint
-        const workflowRes = await fetch("http://127.0.0.1:8000/workflow", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            query: newQuery.question,
-            llm_provider: "groq",
-            llm_model: "llama-3.1-8b-instant",
-            top_k: 5
-          })
-        });
-
-        if (!workflowRes.ok) throw new Error("Workflow API error");
-        const workflowData = await workflowRes.json();
-
-        // Add to workflow queries
-        const workflowQuery: WorkflowQuery = {
-          id: newQuery.id.toString(),
-          workflowId: workflowData.workflow_id,
-          question: newQuery.question,
-          subtasks: data.subtasks || [],
-          status: 'processing'
-        };
-        setWorkflowQueries(prev => [workflowQuery, ...prev]);
-        
-        // Remove from regular queries since it's now a workflow
-        setQueries(prev => prev.filter(q => q.id !== newQuery.id));
-      } else if (data.is_workflow && data.workflow_id) {
-        // Direct workflow response (fallback)
+      // Check if this is a workflow query
+      if (data.is_workflow && data.workflow_id) {
+        // Add to workflow queries for sequential execution
         const workflowQuery: WorkflowQuery = {
           id: newQuery.id.toString(),
           workflowId: data.workflow_id,
@@ -418,18 +408,18 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
         setQueries(prev => prev.filter(q => q.id !== newQuery.id));
       } else {
         // Update the specific query with response (regular query)
-        setQueries((prev) =>
-          prev.map((q) =>
-            q.id === newQuery.id
-              ? {
-                  ...q,
-                  status: "answered",
-                  responses: (q.responses || 0) + 1,
-                  answer: data.response
-                }
-              : q
-          )
-        );
+      setQueries((prev) =>
+        prev.map((q) =>
+          q.id === newQuery.id
+            ? {
+                ...q,
+                status: "answered",
+                responses: (q.responses || 0) + 1,
+                answer: data.response
+              }
+            : q
+        )
+      );
       }
     } catch (err) {
       console.error("Error sending query:", err);
@@ -491,6 +481,111 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
     }
   };
 
+  // Monitor recording state changes
+  useEffect(() => {
+    console.log('Recording state changed to:', isRecording);
+  }, [isRecording]);
+
+  // Voice recording functions
+  const startRecording = async () => {
+    try {
+      // Check if MediaRecorder is supported
+      if (!window.MediaRecorder) {
+        alert('MediaRecorder is not supported in this browser. Please use a modern browser.');
+        return;
+      }
+
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      const chunks: Blob[] = [];
+
+      recorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          chunks.push(event.data);
+        }
+      };
+
+      recorder.onstart = () => {
+        console.log('MediaRecorder actually started');
+        console.log('Setting isRecording to true');
+        setIsRecording(true);
+      };
+
+      recorder.onstop = async () => {
+        console.log('MediaRecorder stopped');
+        console.log('Setting isRecording to false');
+        setIsRecording(false);
+        const audioBlob = new Blob(chunks, { type: 'audio/wav' });
+        await processVoiceInput(audioBlob);
+        stream.getTracks().forEach(track => track.stop());
+      };
+
+      recorder.onerror = (event) => {
+        console.error('MediaRecorder error:', event);
+        setIsRecording(false);
+        alert('Recording error occurred. Please try again.');
+      };
+
+      recorder.start();
+      setMediaRecorder(recorder);
+      setAudioChunks(chunks);
+      console.log('Recording started, isRecording set to true');
+      
+    } catch (error) {
+      console.error('Error starting recording:', error);
+      setIsRecording(false);
+      alert('Unable to access microphone. Please check permissions.');
+    }
+  };
+
+  const stopRecording = () => {
+    console.log('stopRecording called, mediaRecorder:', !!mediaRecorder, 'isRecording:', isRecording);
+    if (mediaRecorder && isRecording) {
+      console.log('Stopping MediaRecorder...');
+      mediaRecorder.stop();
+      console.log('Recording stopped, isRecording set to false');
+    } else {
+      console.log('Cannot stop recording - mediaRecorder or isRecording not set');
+    }
+  };
+
+  const processVoiceInput = async (audioBlob: Blob) => {
+    try {
+      setIsProcessingVoice(true);
+      
+      // Create form data for file upload
+      const formData = new FormData();
+      formData.append('audio_file', audioBlob, 'voice_input.wav');
+
+      // Send to voice processing endpoint
+      const response = await fetch('http://127.0.0.1:8000/voice/process', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Voice processing failed');
+      }
+
+      const result = await response.json();
+      
+      if (result.success) {
+        // Set the translated English text as the query
+        setQuery(result.translated_text);
+        
+        // Optionally auto-submit the query
+        // handleSubmitQuery();
+      } else {
+        alert('Voice processing failed: ' + (result.error || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Error processing voice input:', error);
+      alert('Error processing voice input. Please try again.');
+    } finally {
+      setIsProcessingVoice(false);
+    }
+  };
+
   const agriculturalUpdates = [
     {
       id: 1,
@@ -534,32 +629,32 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
       {/** Weather **/}
       <div className="bg-gradient-to-r from-blue-50 via-cyan-50 to-sky-50 border border-blue-200 rounded-xl py-2 p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
         {/** Header with location and refresh button **/}
-        <div className="flex justify-between items-start mb-4">
-          <div className="flex-1">
-            <h3 className="flex items-center gap-3 text-lg font-bold text-blue-800 mb-1">
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-md">
-                {error ? <AlertCircle className="w-5 h-5 text-white" /> : getWeatherIcon(weatherData.condition)}
-              </div>
-              Today's Weather
-            </h3>
-            <div className="flex items-center gap-2 text-sm text-blue-600">
-              <MapPin className="w-3 h-3" />
-              <span className="font-medium">{weatherData.location}</span>
+      <div className="flex justify-between items-start mb-4">
+        <div className="flex-1">
+          <h3 className="flex items-center gap-3 text-lg font-bold text-blue-800 mb-1">
+            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-md">
+              {error ? <AlertCircle className="w-5 h-5 text-white" /> : getWeatherIcon(weatherData.condition)}
             </div>
-            {lastUpdated && (
-              <div className="flex items-center gap-2 text-xs text-gray-500 mt-1">
-                <Calendar className="w-3 h-3" />
-                <span>Last updated: {lastUpdated.toLocaleTimeString()}</span>
-              </div>
-            )}
+            Today's Weather
+          </h3>
+          <div className="flex items-center gap-2 text-sm text-blue-600">
+            <MapPin className="w-3 h-3" />
+            <span className="font-medium">{weatherData.location}</span>
           </div>
-
-          <button
-            onClick={fetchWeather}
-            disabled={loading}
+          {lastUpdated && (
+            <div className="flex items-center gap-2 text-xs text-gray-500 mt-1">
+              <Calendar className="w-3 h-3" />
+              <span>Last updated: {lastUpdated.toLocaleTimeString()}</span>
+            </div>
+          )}
+        </div>
+        
+        <button
+          onClick={fetchWeather}
+          disabled={loading}
             className={`flex items-center gap-1 px-2 rounded-full font-medium text-xs transition-all duration-200
               ${error
-                ? 'bg-red-500 hover:bg-red-600 text-white'
+              ? 'bg-red-500 hover:bg-red-600 text-white' 
                 : 'bg-blue-500 hover:bg-blue-600 text-white shadow'
               } disabled:opacity-50 disabled:cursor-not-allowed
               border border-blue-300
@@ -572,87 +667,87 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
               minWidth: 70,
               boxShadow: error ? '0 2px 8px rgba(239,68,68,0.12)' : '0 2px 8px rgba(59,130,246,0.10)'
             }}
-          >
-            {loading ? (
-              <>
+        >
+          {loading ? (
+            <>
                 <Loader2 className="w-4 h-4 animate-spin mr-1" />
                 <span>Loading</span>
-              </>
-            ) : (
-              <>
+            </>
+          ) : (
+            <>
                 <RefreshCw className="w-4 h-4 mr-1" />
-                <span>{error ? 'Retry' : 'Refresh'}</span>
-              </>
-            )}
-          </button>
-        </div>
+              <span>{error ? 'Retry' : 'Refresh'}</span>
+            </>
+          )}
+        </button>
+      </div>
 
         {/** Weather Description **/}
-        {weatherData.description && (
-          <div className="mb-4 p-3 bg-white/70 rounded-lg border border-blue-100">
-            <p className="text-sm text-center text-gray-700 capitalize font-medium">
-              {weatherData.description}
-            </p>
-          </div>
-        )}
+      {weatherData.description && (
+        <div className="mb-4 p-3 bg-white/70 rounded-lg border border-blue-100">
+          <p className="text-sm text-center text-gray-700 capitalize font-medium">
+            {weatherData.description}
+          </p>
+        </div>
+      )}
 
         {/** Weather Metrics Grid **/}
-        <div className="grid grid-cols-2 gap-3 text-sm">
+      <div className="grid grid-cols-2 gap-3 text-sm">
           <div className={`flex items-center gap-3 bg-white/80 rounded-xl p-4 shadow-sm border transition-all duration-200 hover:shadow-md ${error ? 'border-red-200' : 'border-red-100'
-            }`}>
-            <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
-              <Thermometer className="w-5 h-5 text-red-500" />
-            </div>
-            <div>
-              <span className="font-bold text-gray-800 text-base">{weatherData.temperature}</span>
-              <p className="text-xs text-gray-500">Temperature</p>
-            </div>
+        }`}>
+          <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+            <Thermometer className="w-5 h-5 text-red-500" />
           </div>
-
-          <div className={`flex items-center gap-3 bg-white/80 rounded-xl p-4 shadow-sm border transition-all duration-200 hover:shadow-md ${error ? 'border-blue-200' : 'border-blue-100'
-            }`}>
-            <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-              <Droplets className="w-5 h-5 text-blue-500" />
-            </div>
-            <div>
-              <span className="font-bold text-gray-800 text-base">{weatherData.humidity}</span>
-              <p className="text-xs text-gray-500">Humidity</p>
-            </div>
-          </div>
-
-          <div className={`flex items-center gap-3 bg-white/80 rounded-xl p-4 shadow-sm border transition-all duration-200 hover:shadow-md ${error ? 'border-gray-200' : 'border-gray-100'
-            }`}>
-            <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
-              <Wind className="w-5 h-5 text-gray-500" />
-            </div>
-            <div>
-              <span className="font-bold text-gray-800 text-base">{weatherData.windSpeed}</span>
-              <p className="text-xs text-gray-500">Wind Speed</p>
-            </div>
-          </div>
-
-          <div className={`flex items-center gap-3 bg-white/80 rounded-xl p-4 shadow-sm border transition-all duration-200 hover:shadow-md ${error ? 'border-gray-200' : 'border-gray-100'
-            }`}>
-            <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
-              {getWeatherIcon(weatherData.condition)}
-            </div>
-            <div>
-              <span className="font-bold text-gray-800 text-base capitalize">{weatherData.condition}</span>
-              <p className="text-xs text-gray-500">Condition</p>
-            </div>
+          <div>
+            <span className="font-bold text-gray-800 text-base">{weatherData.temperature}</span>
+            <p className="text-xs text-gray-500">Temperature</p>
           </div>
         </div>
+        
+          <div className={`flex items-center gap-3 bg-white/80 rounded-xl p-4 shadow-sm border transition-all duration-200 hover:shadow-md ${error ? 'border-blue-200' : 'border-blue-100'
+        }`}>
+          <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+            <Droplets className="w-5 h-5 text-blue-500" />
+          </div>
+          <div>
+            <span className="font-bold text-gray-800 text-base">{weatherData.humidity}</span>
+            <p className="text-xs text-gray-500">Humidity</p>
+          </div>
+        </div>
+        
+          <div className={`flex items-center gap-3 bg-white/80 rounded-xl p-4 shadow-sm border transition-all duration-200 hover:shadow-md ${error ? 'border-gray-200' : 'border-gray-100'
+        }`}>
+          <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+            <Wind className="w-5 h-5 text-gray-500" />
+          </div>
+          <div>
+            <span className="font-bold text-gray-800 text-base">{weatherData.windSpeed}</span>
+            <p className="text-xs text-gray-500">Wind Speed</p>
+          </div>
+        </div>
+        
+          <div className={`flex items-center gap-3 bg-white/80 rounded-xl p-4 shadow-sm border transition-all duration-200 hover:shadow-md ${error ? 'border-gray-200' : 'border-gray-100'
+        }`}>
+          <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+            {getWeatherIcon(weatherData.condition)}
+          </div>
+          <div>
+            <span className="font-bold text-gray-800 text-base capitalize">{weatherData.condition}</span>
+            <p className="text-xs text-gray-500">Condition</p>
+          </div>
+        </div>
+      </div>
 
         {/** Loading Overlay **/}
-        {loading && (
-          <div className="absolute inset-0 bg-white/70 rounded-xl flex items-center justify-center">
-            <div className="flex items-center gap-2 text-blue-600">
-              <Loader2 className="w-5 h-5 animate-spin" />
-              <span className="font-medium">Updating weather...</span>
-            </div>
+      {loading && (
+        <div className="absolute inset-0 bg-white/70 rounded-xl flex items-center justify-center">
+          <div className="flex items-center gap-2 text-blue-600">
+            <Loader2 className="w-5 h-5 animate-spin" />
+            <span className="font-medium">Updating weather...</span>
           </div>
-        )}
-      </div>
+        </div>
+      )}
+    </div>
 
       {/** Tabs **/}
       <div>
@@ -660,9 +755,9 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
           <button
             onClick={() => setTab("query")}
             className={`flex-1 flex items-center gap-2 justify-center py-4 text-sm font-semibold transition-all duration-300 ${tab === "query"
-          ? "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg"
-          : "text-gray-600 hover:bg-white/50"
-              }`}
+                ? "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg" 
+                : "text-gray-600 hover:bg-white/50"
+            }`}
           >
             <MessageSquare className="w-4 h-4" />
             Ask Questions
@@ -681,9 +776,9 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
           <button
             onClick={() => setTab("updates")}
             className={`flex-1 flex items-center gap-2 justify-center py-4 text-sm font-semibold transition-all duration-300 ${tab === "updates"
-          ? "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg"
-          : "text-gray-600 hover:bg-white/50"
-              }`}
+                ? "bg-gradient-to-r from-green-500 to-green-600 text-white shadow-lg" 
+                : "text-gray-600 hover:bg-white/50"
+            }`}
           >
             <Newspaper className="w-4 h-4" />
             Updates
@@ -700,8 +795,8 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
                     <Bot className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
+                </div>
+                <div>
                     <h3 className="text-white font-bold text-lg">JAI-Kissan</h3>
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 bg-green-300 rounded-full animate-pulse"></div>
@@ -713,7 +808,7 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
                   </div>
                 </div>
               </div>
-
+              
               {/* Previous Conversations - Collapsible */}
               {queries.length > 1 && (
                 <div className="border-b border-gray-100">
@@ -896,33 +991,33 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
                 )}
               </div>
 
-              {/* Chat Input */}
-              <div className="border-t border-gray-200 p-4 bg-white">
-                <div className="flex items-end gap-3">
-                  <div className="flex-1">
-                    <div className="relative">
-                      <textarea
-                        placeholder="Ask me about farming, crops, weather, diseases, or any agricultural question... 🌱"
-                        value={query}
-                        onChange={(e) => setQuery(e.target.value)}
-                        onKeyPress={(e) => {
-                          if (e.key === 'Enter' && !e.shiftKey) {
-                            e.preventDefault();
-                            handleSubmitQuery();
-                          }
-                        }}
-                        className="w-full border-2 border-gray-200 rounded-xl p-3 pr-12 text-sm max-h-32 min-h-[44px] focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent transition-all duration-300 resize-none"
-                        rows={1}
-                      />
-                      <div className="absolute right-3 top-3">
-                        <span className="text-xs text-gray-400">
-                          {query.length > 0 && `${query.length}/1000`}
-                        </span>
-                      </div>
-                    </div>
+                             {/* Chat Input */}
+               <div className="border-t border-gray-200 p-4 bg-white">
+                 <div className="flex items-end gap-4">
+                   <div className="flex-1">
+                     <div className="relative">
+                <textarea
+                         placeholder="Ask me about farming, crops, weather, diseases, or any agricultural question... 🌱"
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                         onKeyPress={(e) => {
+                           if (e.key === 'Enter' && !e.shiftKey) {
+                             e.preventDefault();
+                             handleSubmitQuery();
+                           }
+                         }}
+                         className="w-full border-2 border-gray-200 rounded-xl p-4 pr-16 text-sm max-h-32 min-h-[48px] focus:outline-none focus:ring-2 focus:ring-green-400 focus:border-transparent transition-all duration-300 resize-none"
+                         rows={1}
+                       />
+                       <div className="absolute right-4 top-4">
+                         <span className="text-xs text-gray-400">
+                           {query.length > 0 && `${query.length}/1000`}
+                         </span>
+                       </div>
+                     </div>
 
                     {/* Quick Suggestions */}
-                    {query.length === 0 && (
+                    {query.length === 0 && !isProcessingVoice && (
                       <div className="flex flex-wrap gap-2 mt-2">
                         {[
                           "Crop diseases 🦠",
@@ -940,34 +1035,65 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
                         ))}
                       </div>
                     )}
+
+                    {/* Voice Processing Status */}
+                    {isProcessingVoice && (
+                      <div className="flex items-center gap-2 mt-2 text-sm text-blue-600">
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span>Processing voice input...</span>
+                      </div>
+                    )}
                   </div>
 
-                  <button
-                    onClick={handleSubmitQuery}
-                    disabled={!query.trim() || loading}
-                    className={`p-3 rounded-xl transition-all duration-300 ${query.trim() && !loading
-                        ? "bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-md hover:shadow-lg"
-                        : "bg-gray-200 text-gray-400 cursor-not-allowed"
-                      }`}
-                  >
-                    {loading ? (
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                    ) : (
-                      <Send className="w-5 h-5" />
-                    )}
-                  </button>
-                </div>
+                                                        {/* Voice Recording Button */}
+                   <button
+                     onClick={isRecording ? stopRecording : startRecording}
+                     disabled={isProcessingVoice || loading}
+                     className={`p-3 rounded-xl transition-all duration-300 flex-shrink-0 relative ${
+                       isRecording
+                         ? "bg-red-500 hover:bg-red-600 text-white shadow-md hover:shadow-lg animate-pulse"
+                         : isProcessingVoice
+                         ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                         : "bg-blue-500 hover:bg-blue-600 text-white shadow-md hover:shadow-lg"
+                     }`}
+                     title={isRecording ? "Stop recording" : "Start voice recording"}
+                   >
+                     {isProcessingVoice ? (
+                       <Loader2 className="w-5 h-5 animate-spin" />
+                     ) : isRecording ? (
+                       <div className="w-4 h-4 bg-white rounded-sm flex-shrink-0 border border-red-300"></div>
+                     ) : (
+                       <Mic className="w-5 h-5" />
+                     )}
+                   </button>
+
+                   {/* Send Button */}
+                <button
+                  onClick={handleSubmitQuery}
+                  disabled={!query.trim() || loading}
+                     className={`p-3 rounded-xl transition-all duration-300 ${query.trim() && !loading
+                         ? "bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-md hover:shadow-lg"
+                         : "bg-gray-200 text-gray-400 cursor-not-allowed"
+                       }`}
+                >
+                  {loading ? (
+                       <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                       <Send className="w-5 h-5" />
+                  )}
+                </button>
+            </div>
 
                 <div className="flex items-center justify-between mt-2 text-xs text-gray-500">
-                  <span>Press Enter to send, Shift+Enter for new line</span>
+                  <span>Press Enter to send, Shift+Enter for new line • Click 🎤 for voice input</span>
                   <div className="flex items-center gap-1">
                     <span>Powered by JAI-Kissan</span>
                     <Zap className="w-3 h-3 text-yellow-500" />
-                  </div>
                 </div>
               </div>
-            </div>
-          </div>
+                  </div>
+                        </div>
+                      </div>
         )}
 
         {/* New Suppliers Tab */}
@@ -979,12 +1105,12 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg">
                     <Users className="w-6 h-6 text-white" />
-                  </div>
+                            </div>
                   <div>
                     <h3 className="text-blue-800 font-bold text-lg">Agricultural Suppliers</h3>
                     <p className="text-sm text-blue-600">Connect with verified suppliers and compare offers</p>
-                  </div>
-                </div>
+                          </div>
+                        </div>
                 
                 <button
                   onClick={() => setShowComparison(!showComparison)}
@@ -998,7 +1124,7 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
               {/* Filter and Stats */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2">
                     <Filter className="w-4 h-4 text-blue-600" />
                     <select 
                       value={filterCategory}
@@ -1011,14 +1137,14 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
                       <option value="equipment">Equipment</option>
                       <option value="organic">Organic Products</option>
                     </select>
-                  </div>
-                </div>
+                            </div>
+                          </div>
                 
                 <div className="flex items-center gap-4 text-sm text-blue-600">
                   <div className="flex items-center gap-1">
                     <Shield className="w-4 h-4" />
                     <span>{suppliers.filter(s => s.verified).length} Verified</span>
-                  </div>
+                        </div>
                   <div className="flex items-center gap-1">
                     <Star className="w-4 h-4" />
                     <span>Avg 4.7 Rating</span>
@@ -1056,7 +1182,7 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
                               <div>
                                 <div className="font-medium text-gray-800">{supplier.name}</div>
                                 <div className="text-xs text-gray-500">{supplier.company}</div>
-                              </div>
+                            </div>
                             </div>
                           </td>
                           <td className="py-3 px-2">
@@ -1092,9 +1218,9 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
                       ))}
                     </tbody>
                   </table>
-                </div>
-              </div>
-            )}
+                          </div>
+                        </div>
+                      )}
 
             {/* Supplier Cards */}
             <div className="grid gap-6">
@@ -1103,10 +1229,10 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
                   
                   {/* Supplier Header */}
                   <div className="flex items-start justify-between mb-4">
-                    <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-4">
                       <div className="w-16 h-16 bg-gradient-to-r from-blue-100 to-cyan-100 rounded-full flex items-center justify-center text-2xl">
                         {supplier.profileImage}
-                      </div>
+                        </div>
                       <div>
                         <div className="flex items-center gap-2 mb-1">
                           <h3 className="text-lg font-bold text-gray-800">{supplier.name}</h3>
@@ -1116,7 +1242,7 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
                         </div>
                         <p className="text-gray-600 font-medium">{supplier.company}</p>
                         <div className="flex items-center gap-4 mt-1 text-sm text-gray-500">
-                          <div className="flex items-center gap-1">
+                        <div className="flex items-center gap-1">
                             <MapPin className="w-3 h-3" />
                             <span>{supplier.location}</span>
                           </div>
@@ -1151,8 +1277,8 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
                     <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
                       <Clock className="w-3 h-3 inline mr-1" />
                       Responds {supplier.responseTime}
-                    </span>
-                  </div>
+                          </span>
+                        </div>
 
                   {/* Products */}
                   <div className="mb-4">
@@ -1163,8 +1289,8 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
                           {product}
                         </span>
                       ))}
+                      </div>
                     </div>
-                  </div>
 
                   {/* Current Bids */}
                   <div className="mb-4">

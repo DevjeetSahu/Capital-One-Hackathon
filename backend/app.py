@@ -4,7 +4,7 @@ FastAPI application for Agricultural Assistant with Integrated Workflow Engine
 """
 
 import logging
-from fastapi import FastAPI, HTTPException, Query
+from fastapi import FastAPI, HTTPException, Query, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
@@ -15,6 +15,9 @@ from datetime import datetime
 
 # Import your existing AgriculturalAssistant from main.py
 from main import AgriculturalAssistant
+
+# Import voice processing module
+from voice import process_speech_endpoint, SpeechProcessResponse
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -1093,6 +1096,71 @@ async def check_weather_service_status():
             "error": str(e),
             "message": "Weather service check failed"
         }
+
+# ============================================================================
+# VOICE PROCESSING ENDPOINTS
+# ============================================================================
+
+@app.post("/voice/process", response_model=SpeechProcessResponse)
+async def process_speech(audio_file: UploadFile = File(...)):
+    """
+    Process speech audio: Hindi speech → Hindi text → English text
+    
+    This endpoint accepts an audio file and returns:
+    - Transcribed Hindi text
+    - Translated English text
+    - Processing time and confidence metrics
+    
+    Supported audio formats: WAV, MP3, M4A (WAV recommended for best results)
+    """
+    try:
+        logger.info(f"Processing speech audio: {audio_file.filename}")
+        
+        # Use the imported endpoint function
+        result = await process_speech_endpoint(audio_file)
+        
+        logger.info(f"Speech processing completed successfully")
+        return result
+        
+    except Exception as e:
+        logger.error(f"Speech processing failed: {str(e)}")
+        raise HTTPException(
+            status_code=500, 
+            detail=f"Speech processing failed: {str(e)}"
+        )
+
+
+
+@app.get("/voice/status")
+async def check_voice_service_status():
+    """Check if voice processing services are working"""
+    try:
+        from voice import get_voice_processor
+        
+        # Try to get the voice processor (this will test API key loading)
+        voice_processor = get_voice_processor()
+        
+        return {
+            "status": "online",
+            "services": {
+                "transcription": "ElevenLabs API",
+                "translation": "Google Translate API",
+                "api_key_configured": bool(voice_processor.elevenlabs_api_key)
+            },
+            "message": "Voice processing services are operational"
+        }
+        
+    except Exception as e:
+        logger.error(f"Voice service check failed: {e}")
+        return {
+            "status": "error",
+            "error": str(e),
+            "message": "Voice processing services are unavailable"
+        }
+
+# ============================================================================
+# END VOICE PROCESSING ENDPOINTS
+# ============================================================================
 
 # Run the server
 if __name__ == "__main__":
