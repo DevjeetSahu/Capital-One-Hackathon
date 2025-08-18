@@ -27,6 +27,31 @@ load_dotenv()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+def translate_to_hindi(text: str) -> str:
+    """Translate English text to Hindi using Google Translate API"""
+    try:
+        # Using Google Translate API (free tier)
+        url = "https://translate.googleapis.com/translate_a/single"
+        params = {
+            "client": "gtx",
+            "sl": "en",
+            "tl": "hi",
+            "dt": "t",
+            "q": text
+        }
+        
+        response = requests.get(url, params=params, timeout=10)
+        response.raise_for_status()
+        
+        # Extract translated text from response
+        translated_parts = response.json()[0]
+        translated_text = "".join([part[0] for part in translated_parts if part[0]])
+        
+        return translated_text
+    except Exception as e:
+        logger.error(f"Translation failed: {e}")
+        return text  # Return original text if translation fails
+
 # Pydantic models for API requests/responses
 class SpeechProcessRequest(BaseModel):
     """Request model for speech processing"""

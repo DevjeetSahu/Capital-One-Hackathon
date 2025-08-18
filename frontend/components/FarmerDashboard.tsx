@@ -46,14 +46,17 @@ import {
   Mic,
   MicOff,
   Square,
-  Square as StopIcon
+  Square as StopIcon,
+  Globe
 } from "lucide-react";
+import { Switch } from "./ui/switch";
 import { WorkflowProgress } from "./WorkflowProgress";
 
 // Add interface for pending query
 interface PendingQuery {
   question: string;
   answer: string | null;
+  answer_hindi?: string | null;
   status: 'answered' | 'error';
 }
 
@@ -106,6 +109,7 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
   const [loading, setLoading] = useState(false);
   const [queries, setQueries] = useState([]);
   const [workflowQueries, setWorkflowQueries] = useState<WorkflowQuery[]>([]);
+  const [language, setLanguage] = useState<'english' | 'hindi'>('english');
 
   // Voice recording states
   const [isRecording, setIsRecording] = useState(false);
@@ -414,7 +418,8 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
                 ...q,
                 status: "answered",
                 responses: (q.responses || 0) + 1,
-                answer: data.response
+                answer: data.response,
+                answer_hindi: data.response_hindi
               }
               : q
           )
@@ -445,7 +450,8 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
         timestamp: "Just now",
         responses: 1,
         status: "answered",
-        answer: result.response || result.summary || "Workflow completed successfully."
+        answer: result.response || result.summary || "Workflow completed successfully.",
+        answer_hindi: result.response_hindi || result.response // Fallback to English if Hindi not available
       };
 
       setQueries(prev => [newQuery, ...prev]);
@@ -796,6 +802,37 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
                 </div>
               </div>
 
+              {/* Language Toggle */}
+              <div className="bg-gray-50 border-b border-gray-200 p-3">
+                <div className="flex items-center justify-center gap-3">
+                  <span className={`text-sm font-medium ${language === 'english' ? 'text-green-600 font-bold' : 'text-gray-500'}`}>
+                    English
+                  </span>
+                  <button
+                    onClick={() => setLanguage(language === 'english' ? 'hindi' : 'english')}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
+                      language === 'hindi' ? 'bg-green-600' : 'bg-gray-300'
+                    }`}
+                    style={{
+                      boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.1)'
+                    }}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform shadow-md ${
+                        language === 'hindi' ? 'translate-x-6' : 'translate-x-1'
+                      }`}
+                      style={{
+                        boxShadow: '0 1px 3px rgba(0,0,0,0.2)'
+                      }}
+                    />
+                  </button>
+                  <span className={`text-sm font-medium ${language === 'hindi' ? 'text-green-600 font-bold' : 'text-gray-500'}`}>
+                    हिंदी
+                  </span>
+                  <Globe className="w-4 h-4 text-gray-500" />
+                </div>
+              </div>
+
               {/* Previous Conversations - Collapsible */}
               {queries.length > 1 && (
                 <div className="border-b border-gray-100">
@@ -879,7 +916,7 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
                                 <span className="text-xs font-semibold text-green-700">JAI-Kissan Response</span>
                                 </div>
                                 <div className="prose prose-xs max-w-none text-gray-700">
-                                <ReactMarkdown>{q.answer}</ReactMarkdown>
+                                <ReactMarkdown>{language === 'hindi' && q.answer_hindi ? q.answer_hindi : q.answer}</ReactMarkdown>
                                 </div>
                               </div>
                               )}
@@ -985,14 +1022,14 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
                                       pre: ({ node, ...props }) => <pre className="bg-gray-100 p-2 rounded text-xs font-mono overflow-x-auto" {...props} />
                                     }}
                                   >
-                                    {q.answer}
+                                    {language === 'hindi' && q.answer_hindi ? q.answer_hindi : q.answer}
                                   </ReactMarkdown>
                                 </div>
 
                                 {/* Action Buttons */}
                                 <div className="flex items-center gap-2 mt-3 pt-2 border-t border-green-100">
                                   <button
-                                    onClick={() => navigator.clipboard.writeText(q.answer)}
+                                    onClick={() => navigator.clipboard.writeText(language === 'hindi' && q.answer_hindi ? q.answer_hindi : q.answer)}
                                     className="flex items-center gap-1 px-2 py-1 bg-green-100 hover:bg-green-200 text-green-700 rounded-lg text-xs transition-colors"
                                   >
                                     <Copy className="w-3 h-3" />

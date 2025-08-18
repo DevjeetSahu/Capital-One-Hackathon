@@ -42,35 +42,38 @@ if TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN:
         logger.error(f"Failed to initialize Twilio client: {e}")
 
 def format_sms_response(response_text: str) -> str:
-    """Format response for SMS (limit to 160 characters)"""
+    """Format response for SMS (limit to 1000 characters)"""
     if not response_text:
         return "Sorry, I couldn't process your request. Please try again."
     
     # Clean and truncate response
     cleaned = response_text.strip()
     
-    # Remove URLs (not useful in SMS)
+    # Remove Twilio trial account message
     import re
+    cleaned = re.sub(r'^Sent from your Twilio trial account\s*-\s*', '', cleaned)
+    
+    # Remove URLs (not useful in SMS)
     cleaned = re.sub(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', '', cleaned)
     
     # Remove extra whitespace
     cleaned = re.sub(r'\s+', ' ', cleaned)
     
-    # Truncate if too long
-    if len(cleaned) > 150:  # Leave some buffer
+    # Only truncate if REALLY long (over 1000 chars)
+    if len(cleaned) > 1000:
         # Try to truncate at sentence boundary
-        for i in range(150, max(0, 150 - 50), -1):
+        for i in range(1000, max(0, 1000 - 100), -1):
             if cleaned[i] in '.!?':
                 cleaned = cleaned[:i+1]
                 break
         else:
             # Fallback to word boundary
-            for i in range(150, max(0, 150 - 30), -1):
+            for i in range(1000, max(0, 1000 - 50), -1):
                 if cleaned[i] == ' ':
                     cleaned = cleaned[:i]
                     break
             else:
-                cleaned = cleaned[:150]
+                cleaned = cleaned[:1000]
         
         cleaned += "..."
     
@@ -95,15 +98,25 @@ def send_sms(to_number: str, message: str) -> bool:
         return False
 
 def query_backend(query: str) -> Dict[str, Any]:
-    """Query the backend agricultural assistant"""
+    """Query the backend agricultural assistant with brief response prompt"""
     try:
+        # Add brief response prompt for SMS - keep it very concise
+        sms_query = f"Provide a very brief, direct answer for SMS (max 300 characters, no fluff): {query}"
+        
         response = requests.post(
             BACKEND_QUERY_ENDPOINT,
-            json={"query": query},
+            json={"query": sms_query},
             timeout=30
         )
         response.raise_for_status()
-        return response.json()
+        result = response.json()
+        
+        # Add Hindi translation if response exists
+        if 'response' in result and result['response']:
+            from voice import translate_to_hindi
+            result['response_hindi'] = translate_to_hindi(result['response'])
+        
+        return result
     except requests.exceptions.RequestException as e:
         logger.error(f"Backend query failed: {e}")
         return {"error": "Backend service unavailable"}

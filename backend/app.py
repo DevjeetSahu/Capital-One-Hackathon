@@ -12,12 +12,13 @@ from typing import Optional, List, Dict, Any
 import asyncio
 import json
 from datetime import datetime
+import requests
 
 # Import your existing AgriculturalAssistant from main.py
 from main import AgriculturalAssistant
 
 # Import voice processing module
-from voice import process_speech_endpoint, SpeechProcessResponse
+from voice import process_speech_endpoint, SpeechProcessResponse, translate_to_hindi
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -61,6 +62,7 @@ class QueryRequest(BaseModel):
 class QueryResponse(BaseModel):
     query: str
     response: str
+    response_hindi: Optional[str] = None  # NEW: Hindi translation
     intent: str
     confidence: float
     crop: Optional[str]
@@ -97,6 +99,7 @@ class WorkflowSummaryRequest(BaseModel):
 class WorkflowSummary(BaseModel):
     workflow_id: str
     summary: str
+    summary_hindi: Optional[str] = None
     completed: bool
     error: Optional[str] = None
 
@@ -269,9 +272,14 @@ async def process_query_endpoint(
             
             logger.info(f"Workflow {workflow_id} initialized with {len(intent_result.subtasks)} subtasks")
             
+            # Translate response to Hindi
+            response_text = "Complex query detected. Subtasks have been generated and are ready for execution."
+            response_hindi = translate_to_hindi(response_text)
+            
             return QueryResponse(
                 query=request.query,
-                response="Complex query detected. Subtasks have been generated and are ready for execution.",
+                response=response_text,
+                response_hindi=response_hindi,
                 intent=intent_result.intent.value,
                 confidence=intent_result.confidence,
                 crop=None,
@@ -286,7 +294,7 @@ async def process_query_endpoint(
                 redirect_to_workflow=False
             )
         
-        # Process regular query
+        # Process regular query (only if not a workflow)
         result = await asyncio.to_thread(
             assistant.process_query, 
             request.query, 
@@ -304,6 +312,11 @@ async def process_query_endpoint(
         if result.get('context_count', 0) == 0 and result.get('bucket_used') == '' and result.get('intent') != 'weather_insights':
             # This is not an error, just no data available for this intent
             result['response'] = f"I don't have specific data available for {result.get('intent', 'this type of query')} in Bargarh district. Please consult with local agricultural experts or visit the nearest Krishi Vigyan Kendra in Bargarh for assistance."
+        
+        # Add Hindi translation to the response
+        response_text = result.get('response', '')
+        if response_text:
+            result['response_hindi'] = translate_to_hindi(response_text)
         
         return QueryResponse(**result)
         
@@ -1049,11 +1062,15 @@ async def generate_workflow_summary(request: WorkflowSummaryRequest):
         workflow["status"] = "completed"
         workflow["completion_time"] = datetime.now()
         
+        # Translate summary to Hindi
+        summary_hindi = translate_to_hindi(summary)
+        
         logger.info(f"Summary generated for workflow {workflow_id}")
         
         return WorkflowSummary(
             workflow_id=workflow_id,
             summary=summary,
+            summary_hindi=summary_hindi,
             completed=True
         )
         

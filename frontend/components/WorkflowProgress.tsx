@@ -34,6 +34,7 @@ interface SubtaskResult {
 interface WorkflowSummary {
   workflow_id: string;
   summary: string;
+  summary_hindi?: string;
   completed: boolean;
   error?: string;
 }
@@ -159,6 +160,7 @@ export function WorkflowProgress({
           workflow_id: workflowId,
           query: originalQuery,
           response: summaryResult.summary,
+          response_hindi: summaryResult.summary_hindi, // Include Hindi translation if available
           subtasks: allCompletedSubtasksRef.current
         });
 
