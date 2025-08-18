@@ -107,6 +107,7 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
   const [query, setQuery] = useState("");
   const [tab, setTab] = useState("query");
   const [loading, setLoading] = useState(false);
+  const [weatherLoading, setWeatherLoading] = useState(false);
   const [queries, setQueries] = useState([]);
   const [workflowQueries, setWorkflowQueries] = useState<WorkflowQuery[]>([]);
   const [language, setLanguage] = useState<'english' | 'hindi'>('english');
@@ -292,7 +293,7 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
 
   // Function to fetch comprehensive weather data
   const fetchWeather = async () => {
-    setLoading(true);
+    setWeatherLoading(true);
     setError(false);
 
     try {
@@ -342,7 +343,7 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
         location: 'Unknown'
       });
     } finally {
-      setLoading(false);
+      setWeatherLoading(false);
     }
   };
 
@@ -656,7 +657,7 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
 
           <button
             onClick={fetchWeather}
-            disabled={loading}
+            disabled={weatherLoading}
             className={`flex items-center gap-1 px-2 rounded-full font-medium text-xs transition-all duration-200
               ${error
                 ? 'bg-red-500 hover:bg-red-600 text-white'
@@ -673,7 +674,7 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
               boxShadow: error ? '0 2px 8px rgba(239,68,68,0.12)' : '0 2px 8px rgba(59,130,246,0.10)'
             }}
           >
-            {loading ? (
+            {weatherLoading ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin mr-1" />
                 <span>Loading</span>
@@ -733,7 +734,7 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
         </div>
 
         {/** Loading Overlay **/}
-        {loading && (
+        {weatherLoading && (
           <div className="absolute inset-0 bg-white/70 rounded-xl flex items-center justify-center">
             <div className="flex items-center gap-2 text-blue-600">
               <Loader2 className="w-5 h-5 animate-spin" />
