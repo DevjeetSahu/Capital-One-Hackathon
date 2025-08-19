@@ -297,7 +297,7 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
     setError(false);
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/weather/comprehensive');
+      const response = await fetch('https://jai-kissan-service-945629796480.asia-south1.run.app/weather/comprehensive');
       const data = await response.json();
 
       if (data.status === 'success' && data.data.current_weather) {
@@ -313,7 +313,7 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
         setLastUpdated(new Date());
       } else {
         // Fallback API call to current weather only
-        const currentResponse = await fetch('http://127.0.0.1:8000/weather/current');
+        const currentResponse = await fetch('https://jai-kissan-service-945629796480.asia-south1.run.app/weather/current');
         const currentData = await currentResponse.json();
 
         if (currentData.status === 'success') {
@@ -380,7 +380,7 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
 
     try {
       setLoading(true);
-      const res = await fetch("http://127.0.0.1:8000/query", {
+      const res = await fetch("https://jai-kissan-service-945629796480.asia-south1.run.app/query", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -564,7 +564,7 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
       formData.append('audio_file', audioBlob, 'voice_input.wav');
 
       // Send to voice processing endpoint
-      const response = await fetch('http://127.0.0.1:8000/voice/process', {
+      const response = await fetch('https://jai-kissan-service-945629796480.asia-south1.run.app/voice/process', {
         method: 'POST',
         body: formData,
       });

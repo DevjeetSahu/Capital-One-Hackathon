@@ -73,7 +73,7 @@ export default function App() {
 
     try {
       // Make the API call first
-      const response = await fetch("http://127.0.0.1:8000/query", {
+      const response = await fetch("https://jai-kissan-service-945629796480.asia-south1.run.app/query", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

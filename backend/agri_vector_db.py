@@ -511,7 +511,7 @@ class AgriculturalVectorDB:
             
             # Load market data if bucket is market_prediction_data
             if bucket_name == 'market_prediction_data':
-                csv_path = "../data_sources/bargarh_mandi_prices.csv"
+                csv_path = "data_sources/bargarh_mandi_prices.csv"
                 if os.path.exists(csv_path):
                     logger.info(f"Loading market data from {csv_path}...")
                     self.load_dataset_from_file(csv_path, bucket_name, 'csv')
@@ -520,7 +520,7 @@ class AgriculturalVectorDB:
             
             # Load government schemes data if bucket is government_schemes_data
             elif bucket_name == 'government_schemes_data':
-                csv_path = "../data_sources/bargarh_government_schemes.csv"
+                csv_path = "data_sources/bargarh_government_schemes.csv"
                 if os.path.exists(csv_path):
                     logger.info(f"Loading government schemes data from {csv_path}...")
                     self.load_dataset_from_file(csv_path, bucket_name, 'csv')
@@ -529,7 +529,7 @@ class AgriculturalVectorDB:
 
             # Load fertilizer data if bucket is fertilizer_guidance_data
             elif bucket_name == 'fertilizer_guidance_data':
-                csv_path = "../data_sources/bargarh_fertilizers.csv"
+                csv_path = "data_sources/bargarh_fertilizers.csv"
                 if os.path.exists(csv_path):
                     logger.info(f"Loading fertilizer data from {csv_path}...")
                     self.load_dataset_from_file(csv_path, bucket_name, 'csv')
@@ -538,7 +538,7 @@ class AgriculturalVectorDB:
 
             # Load pest control data if bucket is pest_control_data
             elif bucket_name == 'pest_control_data':
-                csv_path = "../data_sources/bargarh_pest_control.csv"
+                csv_path = "data_sources/bargarh_pest_control.csv"
                 if os.path.exists(csv_path):
                     logger.info(f"Loading pest control data from {csv_path}...")
                     self.load_dataset_from_file(csv_path, bucket_name, 'csv')
@@ -547,7 +547,7 @@ class AgriculturalVectorDB:
 
             # Load soil health data if bucket is soil_health_data
             elif bucket_name == 'soil_health_data':
-                csv_path = "../data_sources/bargarh_soil_data.csv"
+                csv_path = "data_sources/bargarh_soil_data.csv"
                 if os.path.exists(csv_path):
                     logger.info(f"Loading soil health data from {csv_path}...")
                     self.load_dataset_from_file(csv_path, bucket_name, 'csv')

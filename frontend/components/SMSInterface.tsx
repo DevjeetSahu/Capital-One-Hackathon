@@ -38,7 +38,7 @@ export function SMSInterface({ onBack }: SMSInterfaceProps) {
 
   const farmingQueryAPI = async (queryText: string) => {
     try {
-      const res = await fetch("http://127.0.0.1:8000/query", {
+      const res = await fetch("https://jai-kissan-service-945629796480.asia-south1.run.app/query", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 

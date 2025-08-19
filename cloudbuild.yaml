@@ -1,0 +1,49 @@
+steps:
+  # Step 1: Build the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: [
+      'build',
+      '-t', 'gcr.io/$PROJECT_ID/agri-assistant:$COMMIT_SHA',
+      '-t', 'gcr.io/$PROJECT_ID/agri-assistant:latest',
+      '-f', 'backend/Dockerfile',
+      '.'
+    ]
+    dir: '.'
+
+  # Step 2: Push the image to Container Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/agri-assistant:$COMMIT_SHA']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', 'gcr.io/$PROJECT_ID/agri-assistant:latest']
+
+  # Step 3: Deploy to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args: [
+      'run', 'deploy', 'agri-assistant',
+      '--image', 'gcr.io/$PROJECT_ID/agri-assistant:$COMMIT_SHA',
+      '--region', 'us-central1',
+      '--platform', 'managed',
+      '--allow-unauthenticated',
+      '--port', '8080',
+      '--memory', '2Gi',
+      '--cpu', '2',
+      '--timeout', '300',
+      '--concurrency', '80',
+      '--max-instances', '10',
+      '--set-env-vars', 'PYTHONPATH=/app'
+    ]
+
+# Store images in Container Registry
+images:
+  - 'gcr.io/$PROJECT_ID/agri-assistant:$COMMIT_SHA'
+  - 'gcr.io/$PROJECT_ID/agri-assistant:latest'
+
+# Build timeout
+timeout: '1200s'
+
+# Build options
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: 'E2_HIGHCPU_8'
