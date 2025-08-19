@@ -383,7 +383,7 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
       setLoading(true);
       
       // Always use query endpoint, but set type as "complex" when financial mode is enabled
-      const res = await fetch("http://localhost:8080/query", {
+      const res = await fetch("https://jai-kissan-service-945629796480.asia-south1.run.app/query", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
