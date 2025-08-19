@@ -987,7 +987,7 @@ export default function App() {
                   
                   <div className="relative h-48 lg:h-64 overflow-hidden">
                     <ImageWithFallback
-                      src="https://images.unsplash.com/photo-1594736797933-d0f06ba07890?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx3b21hbiUyMGhhcnZlc3RpbmclMjByaWNlfGVufDF8fHx8MTczNTc0MzQ0MHww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
+                      src="https://images.unsplash.com/photo-1722119272044-fc49006131e0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzbWFydCUyMGZhcm1pbmclMjB0ZWNobm9sb2d5fGVufDF8fHx8MTc1NTI3NDg3NXww&ixlib=rb-4.1.0&q=80&w=1080&utm_source=figma&utm_medium=referral"
                       alt="Woman harvesting rice"
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     />

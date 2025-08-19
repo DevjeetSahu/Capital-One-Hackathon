@@ -138,7 +138,7 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
     const mockSuppliers: Supplier[] = [
       {
         id: 1,
-        name: "Rajesh Kumar",
+        name: "Kisan AgriSupply Co.",
         company: "Kumar Agriculture Supplies",
         location: "Bargarh, Odisha",
         rating: 4.8,
