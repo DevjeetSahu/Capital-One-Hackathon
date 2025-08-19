@@ -1,40 +1,56 @@
 steps:
   # Build the container image
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['build', '-t', 'gcr.io/$PROJECT_ID/jai-kissan-backend:$COMMIT_SHA', '.']
-  
-  # Push the container image to Container Registry
+    args:
+      [
+        'build',
+        '-t',
+        'asia-south1-docker.pkg.dev/$PROJECT_ID/jai-kissan/jai-kissan-backend:$COMMIT_SHA',
+        '.'
+      ]
+
+  # Push the container image to Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
-    args: ['push', 'gcr.io/$PROJECT_ID/jai-kissan-backend:$COMMIT_SHA']
-  
+    args:
+      [
+        'push',
+        'asia-south1-docker.pkg.dev/$PROJECT_ID/jai-kissan/jai-kissan-backend:$COMMIT_SHA'
+      ]
+
   # Deploy container image to Cloud Run
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: gcloud
     args:
-      - 'run'
-      - 'deploy'
-      - 'jai-kissan-backend'
-      - '--image'
-      - 'gcr.io/$PROJECT_ID/jai-kissan-backend:$COMMIT_SHA'
-      - '--region'
-      - 'us-central1'
-      - '--platform'
-      - 'managed'
-      - '--allow-unauthenticated'
-      - '--memory'
-      - '2Gi'
-      - '--cpu'
-      - '2'
-      - '--max-instances'
-      - '10'
-      - '--timeout'
-      - '300'
-      - '--set-env-vars'
-      - 'PYTHONPATH=/app,CHROMA_DB_IMPL=duckdb+parquet,PERSIST_DIRECTORY=/app/agri_chromadb'
+      [
+        'run',
+        'deploy',
+        'jai-kissan-service',
+        '--image',
+        'asia-south1-docker.pkg.dev/$PROJECT_ID/jai-kissan/jai-kissan-backend:$COMMIT_SHA',
+        '--region',
+        'asia-south1',
+        '--platform',
+        'managed',
+        '--allow-unauthenticated',
+        '--memory',
+        '2Gi',
+        '--cpu',
+        '2',
+        '--max-instances',
+        '10',
+        '--timeout',
+        '300',
+        '--add-volume',
+        'name=chromadb-volume,type=cloud-storage,bucket=jai-kissan-chromadb',
+        '--add-volume-mount',
+        'volume=chromadb-volume,mount-path=/app/agri_chromadb',
+        '--set-env-vars',
+        'PYTHONPATH=/app,GROQ_API_KEY=$_GROQ_API_KEY,OPENWEATHER_API_KEY=$_OPENWEATHER_API_KEY,ELEVENLABS_API_KEY=$_ELEVENLABS_API_KEY'
+      ]
 
-# Store images in Google Container Registry
+# Store images in Artifact Registry
 images:
-  - 'gcr.io/$PROJECT_ID/jai-kissan-backend:$COMMIT_SHA'
+  - 'asia-south1-docker.pkg.dev/$PROJECT_ID/jai-kissan/jai-kissan-backend:$COMMIT_SHA'
 
 # Timeout for the entire build
 timeout: '1200s'
