@@ -58,6 +58,7 @@ class QueryRequest(BaseModel):
     top_k: Optional[int] = 5
     llm_provider: Optional[str] = "groq"  # NEW: Allow provider in request body
     llm_model: Optional[str] = None       # NEW: Allow model in request body
+    type: Optional[str] = "simple"        # NEW: Allow type specification (simple/complex)
 
 class QueryResponse(BaseModel):
     query: str
@@ -243,11 +244,41 @@ async def process_query_endpoint(
                 llm_model=final_model
             )
         
-        # First, classify the intent to check if it's a workflow query
-        intent_result = await asyncio.to_thread(
-            assistant.classifier.classify_intent,
-            request.query
-        )
+        # Handle type parameter from frontend (financial mode)
+        if request.type == "complex":
+            # Financial mode enabled - force workflow processing for ANY query
+            intent_result = await asyncio.to_thread(
+                assistant.classifier.classify_intent,
+                request.query
+            )
+            # Override to ensure it's treated as workflow regardless of complexity
+            intent_result.is_workflow = True
+            
+            # Ensure subtasks are generated for financial mode
+            if not intent_result.subtasks or len(intent_result.subtasks) == 0:
+                try:
+                    # Use the LLM-based subtask generation function for financial analysis
+                    intent_result.subtasks = await asyncio.to_thread(
+                        assistant.classifier._create_financial_workflow_subtasks,
+                        request.query
+                    )
+                    logger.info(f"Generated {len(intent_result.subtasks)} financial subtasks using LLM for query in financial mode")
+                except Exception as e:
+                    logger.error(f"Failed to generate financial subtasks: {e}")
+                    # Use fallback method if LLM method fails
+                    intent_result.subtasks = await asyncio.to_thread(
+                        assistant.classifier._create_fallback_financial_subtasks,
+                        request.query
+                    )
+                    logger.info(f"Generated {len(intent_result.subtasks)} fallback financial subtasks for query in financial mode")
+            
+            logger.info(f"Financial mode enabled - forcing workflow processing for query: {request.query}")
+        else:
+            # Normal mode - let intent classifier decide if it's simple or workflow
+            intent_result = await asyncio.to_thread(
+                assistant.classifier.classify_intent,
+                request.query
+            )
         
         # If it's a workflow query, return subtasks immediately
         if intent_result.is_workflow:
@@ -1176,7 +1207,58 @@ async def check_voice_service_status():
         }
 
 # ============================================================================
-# END VOICE PROCESSING ENDPOINTS
+# FINANCIAL ANALYSIS ENDPOINTS (Now handled through workflow system)
+# ============================================================================
+
+@app.get("/financial/loan-products")
+async def get_loan_products():
+    """Get available loan products for farmers"""
+    try:
+        loan_products = [
+            {
+                "name": "Kisan Credit Card",
+                "max_amount": 300000,
+                "interest_rate": 7.0,
+                "tenure": "12 months",
+                "eligibility": ["Land ownership", "Farming experience", "No default history"],
+                "documents": ["Aadhaar Card", "Land documents", "Income certificate", "Bank account"],
+                "application_process": "Apply at nearest bank branch with required documents"
+            },
+            {
+                "name": "Crop Loan",
+                "max_amount": 500000,
+                "interest_rate": 8.5,
+                "tenure": "18 months",
+                "eligibility": ["Land ownership", "Crop plan", "Good credit history"],
+                "documents": ["Aadhaar Card", "Land papers", "Crop insurance", "Bank statements"],
+                "application_process": "Submit application with crop plan and land documents"
+            },
+            {
+                "name": "Agricultural Term Loan",
+                "max_amount": 1000000,
+                "interest_rate": 9.0,
+                "tenure": "60 months",
+                "eligibility": ["Land ownership", "Stable income", "Good credit score"],
+                "documents": ["Aadhaar Card", "Land documents", "Income proof", "Credit report"],
+                "application_process": "Detailed application with financial statements and project report"
+            }
+        ]
+        
+        return {
+            "status": "success",
+            "loan_products": loan_products,
+            "message": "Loan products retrieved successfully"
+        }
+        
+    except Exception as e:
+        logger.error(f"Error getting loan products: {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to retrieve loan products: {str(e)}"
+        )
+
+# ============================================================================
+# END FINANCIAL ANALYSIS ENDPOINTS
 # ============================================================================
 
 # Run the server

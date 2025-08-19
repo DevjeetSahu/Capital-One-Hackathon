@@ -235,6 +235,42 @@ def create_soil_data_documents_metadata(df: pd.DataFrame):
 
     return documents, metadatas, ids
 
+def load_and_clean_bank_data_csv(path: str) -> pd.DataFrame:
+    """Load bank data CSV and clean columns."""
+    df = pd.read_csv(path)
+    # Remove rows with missing essential data
+    df = df.dropna(subset=["Bank Name", "Financial Service", "Service Details"])
+    # Clean up any empty strings
+    df = df[df['Bank Name'].str.strip() != '']
+    df = df[df['Financial Service'].str.strip() != '']
+    df = df[df['Service Details'].str.strip() != '']
+    return df
+
+def create_bank_data_documents_metadata(df: pd.DataFrame):
+    """Generate Chroma-ready documents from bank data dataframe."""
+    documents, metadatas, ids = [], [], []
+
+    for i, row in tqdm(df.iterrows(), total=len(df), desc="Preparing bank data"):
+        # Create a comprehensive document description
+        doc = (
+            f"Bank: {row['Bank Name']}. "
+            f"Financial Service: {row['Financial Service']}. "
+            f"Service Details: {row['Service Details']}."
+        )
+        
+        metadata = {
+            "bank_name": row["Bank Name"],
+            "financial_service": row["Financial Service"],
+            "service_details": row["Service Details"],
+            "data_type": "bank_financial_services"
+        }
+
+        documents.append(doc)
+        metadatas.append(metadata)
+        ids.append(f"bank_{i}")
+
+    return documents, metadatas, ids
+
 class AgriculturalVectorDB:
     """
     Agricultural Vector Database Manager using ChromaDB
@@ -247,7 +283,8 @@ class AgriculturalVectorDB:
         'government_schemes_data': 'Government agricultural schemes and subsidies',
         'fertilizer_guidance_data': 'Fertilizer recommendations and nutrient management',
         'pest_control_data': 'Pest and disease management information',
-        'soil_health_data': 'Soil analysis and health data for Bargarh villages'
+        'soil_health_data': 'Soil analysis and health data for Bargarh villages',
+        'bank_financial_services_data': 'Bank and financial service information for Bargarh'
     }
     
     # Maximum batch size for ChromaDB (set to 5000 to be safe)
@@ -450,6 +487,10 @@ class AgriculturalVectorDB:
                     # This is mandi prices data
                     df = load_and_clean_csv(file_path)
                     documents, metadatas, ids = create_documents_metadata(df)
+                elif 'Bank Name' in df_temp.columns and 'Financial Service' in df_temp.columns:
+                    # This is bank data
+                    df = load_and_clean_bank_data_csv(file_path)
+                    documents, metadatas, ids = create_bank_data_documents_metadata(df)
                 else:
                     # Default fallback - try to process as generic CSV
                     logger.warning(f"Unknown CSV format for {file_path}, attempting generic processing")
@@ -553,6 +594,15 @@ class AgriculturalVectorDB:
                     self.load_dataset_from_file(csv_path, bucket_name, 'csv')
                 else:
                     logger.warning(f"Soil health data file {csv_path} not found.")
+
+            # Load bank financial services data if bucket is bank_financial_services_data
+            elif bucket_name == 'bank_financial_services_data':
+                csv_path = "data_sources/bargarh_bank_data.csv"
+                if os.path.exists(csv_path):
+                    logger.info(f"Loading bank financial services data from {csv_path}...")
+                    self.load_dataset_from_file(csv_path, bucket_name, 'csv')
+                else:
+                    logger.warning(f"Bank financial services data file {csv_path} not found.")
         
         logger.info("Default buckets initialization completed.")
 

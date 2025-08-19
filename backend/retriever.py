@@ -37,6 +37,7 @@ class AgriculturalRetriever:
             IntentType.WEATHER_INSIGHTS: None,  # No bucket, only weather API
             IntentType.GOVERNMENT_SCHEMES: "government_schemes_data",
             IntentType.FERTILIZER_GUIDANCE: "fertilizer_guidance_data",
+            IntentType.FINANCIAL_ANALYSIS: "all_buckets",  # Use all buckets for comprehensive financial analysis
             IntentType.SEASONAL_PLANNING: "all_buckets",  # Special flag for all buckets
             IntentType.GENERAL_FARMING: "all_buckets",  # Special flag for all buckets
             IntentType.UNKNOWN: "market_prediction_data"  # Default fallback
@@ -316,7 +317,8 @@ class AgriculturalRetriever:
             # Step 2: Handle all-buckets intents (query all available buckets + weather)
             all_buckets_intents = {
                 IntentType.SEASONAL_PLANNING,
-                IntentType.GENERAL_FARMING
+                IntentType.GENERAL_FARMING,
+                IntentType.FINANCIAL_ANALYSIS  # Financial analysis needs comprehensive data from all sources
             }
             
             if intent_result.intent in all_buckets_intents:
@@ -494,7 +496,9 @@ def test_retriever():
         "When should I irrigate my paddy field in Bargarh?",
         "Which crops are best to plant this season in Bargarh?",
         "How to plan irrigation for my farm in Bargarh?",
-        "What farming activities should I do this month in Bargarh?"
+        "What farming activities should I do this month in Bargarh?",
+        "What are the available bank loans for farmers in Bargarh?",
+        "How can I get a Kisan Credit Card in Bargarh?"
     ]
     
     for query in test_queries:

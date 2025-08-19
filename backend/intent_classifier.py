@@ -27,6 +27,7 @@ class IntentType(Enum):
     FERTILIZER_GUIDANCE = "fertilizer_guidance"
     SEASONAL_PLANNING = "seasonal_planning"
     GENERAL_FARMING = "general_farming"
+    FINANCIAL_ANALYSIS = "financial_analysis"  # NEW: For financial queries requiring comprehensive analysis
     WORKFLOW_COMPLEX = "workflow_complex"  # NEW: For complex queries requiring workflow
     UNKNOWN = "unknown"
 
@@ -127,6 +128,11 @@ class AgricultureIntentClassifier:
                 'keywords': ['farming', 'agriculture', 'cultivation', 'farm', 'field', 'soil', 'harvest', 'produce', 'yield'],
                 'phrases': ['farming advice', 'agricultural help', 'general farming', 'crop cultivation', 'farm management'],
                 'weight': 1.0
+            },
+            IntentType.FINANCIAL_ANALYSIS: {
+                'keywords': ['loan', 'investment', 'cost', 'money', 'finance', 'budget', 'expense', 'profit', 'return', 'credit', 'bank', 'financial', 'funding', 'capital', 'investment', 'roi', 'break-even', 'cash flow'],
+                'phrases': ['how much money', 'loan needed', 'investment required', 'financial planning', 'cost analysis', 'profit calculation', 'loan recommendation', 'financial advice', 'budget planning', 'investment analysis'],
+                'weight': 1.5  # Higher weight for financial queries
             }
         }
 
@@ -428,10 +434,16 @@ Rules:
         """
         Handle complex queries by creating subtasks
         """
-        subtasks = self._decompose_query_into_subtasks(query)
+        # Check if this is a financial query
+        if self._is_financial_query(query):
+            subtasks = self._create_financial_workflow_subtasks(query)
+            intent_type = IntentType.FINANCIAL_ANALYSIS
+        else:
+            subtasks = self._decompose_query_into_subtasks(query)
+            intent_type = IntentType.WORKFLOW_COMPLEX
         
         return IntentResult(
-            intent=IntentType.WORKFLOW_COMPLEX,
+            intent=intent_type,
             confidence=complexity_score,
             keywords_matched=[],
             location=None,
@@ -441,6 +453,165 @@ Rules:
             is_workflow=True,
             subtasks=subtasks
         )
+
+    def _is_financial_query(self, query: str) -> bool:
+        """Check if query is financial in nature or requires financial analysis"""
+        financial_keywords = [
+            'loan', 'investment', 'cost', 'money', 'finance', 'budget', 'expense', 
+            'profit', 'return', 'credit', 'bank', 'financial', 'funding', 'capital',
+            'roi', 'break-even', 'cash flow', 'how much', 'cost analysis', 'investment',
+            'expense', 'budget', 'financial planning', 'economic', 'cost benefit'
+        ]
+        
+        # Also check for farming planning queries that would benefit from financial analysis
+        planning_keywords = [
+            'plan', 'planning', 'strategy', 'seasonal', 'crop selection', 'which crop',
+            'what to grow', 'farming plan', 'agricultural planning', 'cultivation plan'
+        ]
+        
+        query_lower = query.lower()
+        financial_score = sum(1 for keyword in financial_keywords if keyword in query_lower)
+        planning_score = sum(1 for keyword in planning_keywords if keyword in query_lower)
+        
+        # Consider it financial if:
+        # 1. Has 2+ financial keywords, OR
+        # 2. Has planning keywords AND mentions crops/land area
+        crop_mentions = any(crop in query_lower for crop in ['paddy', 'wheat', 'maize', 'cotton', 'sugarcane', 'rice', 'crop', 'acres', 'hectares'])
+        
+        return financial_score >= 2 or (planning_score >= 2 and crop_mentions)
+
+    def _create_financial_workflow_subtasks(self, query: str) -> List[Dict]:
+        """Create comprehensive financial analysis workflow subtasks using LLM"""
+        if not self.llm_service or not self.llm_service.is_available():
+            # Fallback to predefined subtasks
+            return self._create_fallback_financial_subtasks(query)
+        
+        system_prompt = """You are an expert agricultural financial advisor specializing in Bargarh district, Odisha. 
+        Create a comprehensive financial analysis workflow for farming queries that will provide detailed financial planning and recommendations.
+        
+        For each subtask, provide:
+        1. A clear, specific description of what this subtask will analyze
+        2. The primary intent type (from: FINANCIAL_ANALYSIS, MARKET_PRICES, GOVERNMENT_SCHEMES, CROP_RECOMMENDATIONS, WEATHER_INSIGHTS)
+        3. A specific query for that subtask that will retrieve relevant data from our comprehensive database
+        4. Priority (1-5, where 1 is highest priority)
+        5. subtask_type (cost_analysis, market_analysis, government_schemes, loan_analysis, final_recommendation)
+        
+        Focus on comprehensive financial analysis including:
+        - Detailed cost calculation using real market data from Bargarh district
+        - Market price analysis for expected returns and revenue projections
+        - Government schemes, subsidies, and financial support programs
+        - Bank loan recommendations based on ROI and financial feasibility
+        - Weather impact on financial planning
+        - Final financial decision with specific amounts and clear recommendations
+        
+        Ensure each subtask will retrieve relevant data from our comprehensive database including:
+        - Market prices from Bargarh mandis
+        - Fertilizer and input costs
+        - Government schemes and subsidies
+        - Bank financial services and loan products
+        - Weather data for planning
+        - Soil health information for optimal input usage
+        
+        Return only valid JSON with 4-6 subtasks that provide a complete financial analysis."""
+        
+        user_prompt = f"""
+        Create comprehensive financial analysis subtasks for this farming query: "{query}"
+        
+        The subtasks should provide a complete financial analysis including:
+        1. Extract crop and land area information from the query and calculate detailed investment requirements
+        2. Analyze current market prices and expected returns with revenue projections
+        3. Check available government schemes, subsidies, and financial support programs
+        4. Analyze weather impact on financial planning and crop success
+        5. Provide specific loan recommendations based on ROI and financial feasibility
+        6. Give final comprehensive financial decision with specific amounts and clear recommendations
+        
+        Each subtask should retrieve relevant data from our comprehensive database including:
+        - Market prices from Bargarh mandis (Attabira, Bargarh, Godabhaga, Sohela, Padampur)
+        - Fertilizer and input costs from local suppliers
+        - Government schemes (PM-KISAN, KALIA, PMFBY, etc.)
+        - Bank financial services (Kisan Credit Card, crop loans, etc.)
+        - Weather data for planning and risk assessment
+        - Soil health information for optimal input usage
+        
+        Format as JSON:
+        {{
+            "subtasks": [
+                {{
+                    "description": "Extract crop and land details and calculate comprehensive investment requirements",
+                    "intent_type": "FINANCIAL_ANALYSIS",
+                    "query": "detailed investment cost breakdown for [crop] cultivation per acre in Bargarh including seeds, fertilizers, pesticides, labor, machinery, irrigation, and miscellaneous costs with current market rates",
+                    "priority": 1,
+                    "subtask_type": "cost_analysis"
+                }}
+            ]
+        }}
+        """
+        
+        try:
+            result = self.llm_service.call_llm(system_prompt, user_prompt, max_tokens=800)
+            
+            if result['status'] == 'success':
+                response = result['response']
+                
+                # Parse JSON response
+                import json
+                import re
+                
+                # Extract JSON from response
+                json_match = re.search(r'\{.*\}', response, re.DOTALL)
+                if json_match:
+                    data = json.loads(json_match.group())
+                    subtasks = data.get("subtasks", [])
+                    
+                    # Sort by priority
+                    subtasks.sort(key=lambda x: x.get("priority", 3))
+                    return subtasks
+                    
+        except Exception as e:
+            logger.error(f"Failed to create financial subtasks with LLM: {e}")
+        
+        # Fallback: create basic financial subtasks
+        return self._create_fallback_financial_subtasks(query)
+
+    def _create_fallback_financial_subtasks(self, query: str) -> List[Dict]:
+        """Create basic financial subtasks as fallback"""
+        return [
+            {
+                "description": "Extract crop and land details and calculate investment requirements",
+                "intent_type": "FINANCIAL_ANALYSIS",
+                "query": f"investment cost breakdown for crops mentioned in {query} including seeds, fertilizers, pesticides, labor, machinery costs per acre in Bargarh",
+                "priority": 1,
+                "subtask_type": "cost_analysis"
+            },
+            {
+                "description": "Retrieve current market prices and expected returns",
+                "intent_type": "MARKET_PRICES",
+                "query": f"current market prices for crops mentioned in {query} in Bargarh mandi, expected yield per acre, and total revenue calculation",
+                "priority": 2,
+                "subtask_type": "market_analysis"
+            },
+            {
+                "description": "Check available government schemes and subsidies",
+                "intent_type": "GOVERNMENT_SCHEMES",
+                "query": f"government schemes, subsidies, and financial support for crops mentioned in {query} in Bargarh district, PM-KISAN, KALIA, PMFBY benefits",
+                "priority": 3,
+                "subtask_type": "government_schemes"
+            },
+            {
+                "description": "Analyze loan requirements and provide recommendations",
+                "intent_type": "FINANCIAL_ANALYSIS",
+                "query": f"loan analysis for {query}, calculate required amount, ROI analysis, and recommend suitable loan products like Kisan Credit Card",
+                "priority": 4,
+                "subtask_type": "loan_analysis"
+            },
+            {
+                "description": "Provide comprehensive financial decision and final recommendations",
+                "intent_type": "FINANCIAL_ANALYSIS",
+                "query": f"final financial recommendation for {query} including total investment, expected returns, loan amount needed, and whether to proceed with the farming plan",
+                "priority": 5,
+                "subtask_type": "final_recommendation"
+            }
+        ]
 
     def _decompose_query_into_subtasks(self, query: str) -> List[Dict]:
         """

@@ -47,6 +47,9 @@ class AgriculturalAssistant:
         
         logger.info("Agricultural Assistant ready!")
     
+    # Financial analysis is now handled through the workflow system
+    # All financial queries are processed as workflow queries with LLM-generated subtasks
+    
     def process_query(self, query: str, top_k: int = 5) -> dict:
         """
         Process agricultural query through complete pipeline
@@ -168,7 +171,7 @@ def main():
         print(f"Crop: {result['crop'] or 'Not detected'}")
         print(f"Location: {result['location'] or 'Not detected'}")
         print(f"Data Source: {result['bucket_used']}")
-        print(f"Context Documents: {result['context_count']}")
+        print(f"Context Documents Retrieved: {result['context_count']} documents")
         print(f"Processing Time: {result['processing_time']:.2f} seconds")
         
         # NEW: Show model and provider information
@@ -242,6 +245,7 @@ def run_interactive():
             # Show brief metadata
             if result['status'] != 'error':
                 print(f"\n📊 Intent: {result['intent']} | Time: {result['processing_time']:.1f}s")
+                print(f"📄 Context Documents: {result['context_count']} retrieved")
                 print(f"🔧 Models: Intent({result['intent_model']}) | Response({result['llm_model']})")
             
             print("-" * 50)
@@ -283,6 +287,7 @@ def run_benchmark():
             
             print(f"Response: {result['response'][:150]}...")
             print(f"Intent: {result['intent']} (confidence: {result['confidence']:.2f})")
+            print(f"Context Documents: {result['context_count']} retrieved")
             print(f"Processing Time: {result['processing_time']:.2f}s")
             print(f"Models Used: Intent({result['intent_model']}) | Response({result['llm_model']})")
             

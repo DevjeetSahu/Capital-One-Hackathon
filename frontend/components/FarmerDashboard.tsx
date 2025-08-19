@@ -122,6 +122,7 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
   const [selectedSupplier, setSelectedSupplier] = useState<number | null>(null);
   const [showComparison, setShowComparison] = useState(false);
   const [filterCategory, setFilterCategory] = useState("all");
+  const [financialMode, setFinancialMode] = useState(false);
   const [weatherData, setWeatherData] = useState({
     temperature: '-',
     humidity: '-',
@@ -380,7 +381,9 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
 
     try {
       setLoading(true);
-      const res = await fetch("https://jai-kissan-service-945629796480.asia-south1.run.app/query", {
+      
+      // Always use query endpoint, but set type as "complex" when financial mode is enabled
+      const res = await fetch("http://localhost:8080/query", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -389,7 +392,8 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
           query: newQuery.question,
           llm_provider: "groq",
           llm_model: "llama-3.1-8b-instant",
-          top_k: 5
+          top_k: 5,
+          type: financialMode ? "complex" : "simple"  // Set type based on financial mode
         })
       });
 
@@ -1087,13 +1091,73 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
                 )}
               </div>
 
+              {/* Financial Mode Toggle */}
+              <div className="border-t border-gray-200 p-4 bg-gradient-to-r from-green-50 to-blue-50">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className={`p-2 rounded-full transition-all duration-300 ${
+                      financialMode 
+                        ? 'bg-green-100 text-green-600 shadow-md' 
+                        : 'bg-gray-100 text-gray-500'
+                    }`}>
+                      <DollarSign className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <span className="text-sm font-semibold text-gray-800">Financial Analysis Mode</span>
+                      <p className="text-xs text-gray-600 mt-0.5">
+                        {financialMode ? "Comprehensive financial workflows enabled" : "Standard query processing"}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <div className="text-right">
+                      <span className={`text-xs font-medium ${
+                        financialMode ? 'text-green-600' : 'text-gray-500'
+                      }`}>
+                        {financialMode ? "ACTIVE" : "INACTIVE"}
+                      </span>
+                    </div>
+                                                              <button
+                        onClick={() => setFinancialMode(!financialMode)}
+                        className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
+                          financialMode 
+                            ? 'bg-green-600 text-black shadow-lg hover:bg-green-700' 
+                            : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
+                        }`}
+                      >
+                        {financialMode ? 'ON' : 'OFF'}
+                      </button>
+                  </div>
+                </div>
+                {financialMode && (
+                  <div className="mt-3 p-3 bg-gradient-to-r from-green-100 to-blue-100 border border-green-200 rounded-lg ai-card-hover">
+                    <div className="flex items-start gap-2">
+                      <div className="p-1 bg-green-200 rounded-full">
+                        <Sparkles className="w-3 h-3 text-green-700" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-medium text-green-800 mb-1">
+                          💰 Financial Analysis Mode Active
+                        </p>
+                        <p className="text-xs text-green-700 leading-relaxed">
+                          Your queries will be processed as comprehensive financial analysis workflows, including cost analysis, market research, loan recommendations, and ROI calculations.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
               {/* Chat Input */}
               <div className="border-t border-gray-200 p-4 bg-white">
                 <div className="flex items-end gap-4">
                   <div className="flex-1">
                     <div className="relative">
                       <textarea
-                        placeholder="Ask me about farming, crops, weather, diseases, or any agricultural question... 🌱"
+                        placeholder={financialMode 
+                          ? "Ask for financial analysis, loan advice, investment planning, or cost analysis... 💰" 
+                          : "Ask me about farming, crops, weather, diseases, or any agricultural question... 🌱"
+                        }
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
                         onKeyPress={(e) => {
@@ -1115,12 +1179,17 @@ export function FarmerDashboard({ pendingQuery, setPendingQuery }: FarmerDashboa
                     {/* Quick Suggestions */}
                     {query.length === 0 && !isProcessingVoice && (
                       <div className="flex flex-wrap gap-2 mt-2">
-                        {[
+                        {(financialMode ? [
+                          "Financial analysis for rice farming 💰",
+                          "Loan advice for wheat cultivation 🏦",
+                          "Investment analysis for cotton farming 📊",
+                          "Cost breakdown for vegetable farming 💵"
+                        ] : [
                           "Crop diseases 🦠",
                           "Weather advice ☀️",
                           "Fertilizer tips 🧪",
                           "Pest control 🐛"
-                        ].map((suggestion, idx) => (
+                        ]).map((suggestion, idx) => (
                           <button
                             key={idx}
                             onClick={() => setQuery(suggestion.replace(/\s+\S+$/, ''))}

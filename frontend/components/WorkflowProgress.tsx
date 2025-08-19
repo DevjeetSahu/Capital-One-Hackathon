@@ -89,7 +89,7 @@ export function WorkflowProgress({
           setCurrentSubtask(i + 1);
 
           // Execute subtask
-          const response = await fetch('https://jai-kissan-service-945629796480.asia-south1.run.app/workflow/execute', {
+          const response = await fetch('http://localhost:8080/workflow/execute', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -122,7 +122,7 @@ export function WorkflowProgress({
         // Generate final summary
         console.log('📝 Generating final summary...');
         setIsGeneratingSummary(true);
-        const summaryResponse = await fetch('https://jai-kissan-service-945629796480.asia-south1.run.app/workflow/summary', {
+        const summaryResponse = await fetch('http://localhost:8080/workflow/summary', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
